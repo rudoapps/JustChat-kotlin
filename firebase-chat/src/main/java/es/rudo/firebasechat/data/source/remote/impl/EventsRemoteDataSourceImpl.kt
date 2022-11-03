@@ -5,7 +5,9 @@ import es.rudo.firebasechat.data.model.chats.Chat
 import es.rudo.firebasechat.data.model.chats.ChatInfo
 import es.rudo.firebasechat.data.model.chats.Group
 import es.rudo.firebasechat.data.model.chats.Message
+import es.rudo.firebasechat.data.model.chats.firebase_chat.EmptyChat
 import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
+import es.rudo.firebasechat.data.model.result.ResultInfo
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.firebasechat.main.instance.RudoChatInstance
@@ -22,7 +24,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 ) :
     EventsRemoteDataSource {
 
-    override fun initUser(): Flow<String> {
+    override fun initUser(): Flow<ResultInfo> {
         // TODO: Work in progress
         return callbackFlow {
             when (type) {
@@ -44,8 +46,19 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 databaseReference.child("YlIxkR1s3mUPNnJ7s3dUabCgL3g2")
                                     .child("userName")
                                     .setValue(RudoChatInstance.getFirebaseAuth()?.currentUser?.displayName)
-                                val newChatId = generateId()
-                                initChat(newChatId)
+                                    .addOnCompleteListener {
+                                        val result = ResultInfo().apply {
+                                            success = true
+                                        }
+                                        trySend(result).isSuccess
+                                    }
+                                    .addOnFailureListener {
+                                        val result = ResultInfo().apply {
+                                            success = false
+                                            error = it
+                                        }
+                                        trySend(result).isSuccess
+                                    }
                             }
                         }
 
@@ -64,8 +77,26 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    private fun initChat(chatId: String) {
-        databaseReference
+    override fun initChat(): Flow<ResultInfo> {
+        return callbackFlow {
+            val chatId = generateId()
+            databaseReference.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(users: DataSnapshot) {
+                    databaseReference.removeEventListener(this)
+                    for (user in users.children) {
+                        val chat = EmptyChat().apply {
+
+                        }
+
+//                        user.child("chats").child(chatId).
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+            databaseReference.child("YlIxkR1s3mUPNnJ7s3dUabCgL3g2").child("chats")
+        }
     }
 
     override fun getChats(): Flow<MutableList<Chat>> {
@@ -196,7 +227,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<Boolean> {
+    override fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<ResultInfo> {
         return callbackFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
@@ -218,22 +249,41 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         .addOnCompleteListener {
                                             otherUserChat.updateChildren(mapOf("lastMessage" to message.text))
                                                 .addOnCompleteListener {
-                                                    trySend(true).isSuccess
+                                                    val result = ResultInfo().apply {
+                                                        success = true
+                                                    }
+                                                    trySend(result).isSuccess
                                                 }
                                                 .addOnFailureListener {
-                                                    trySend(false).isSuccess
+                                                    val result = ResultInfo().apply {
+                                                        success = false
+                                                        error = it
+                                                    }
+                                                    trySend(result).isSuccess
                                                 }
                                         }
                                         .addOnFailureListener {
-                                            trySend(false).isSuccess
+                                            val result = ResultInfo().apply {
+                                                success = false
+                                                error = it
+                                            }
+                                            trySend(result).isSuccess
                                         }
                                 }
                                 .addOnFailureListener {
-                                    trySend(false).isSuccess
+                                    val result = ResultInfo().apply {
+                                        success = false
+                                        error = it
+                                    }
+                                    trySend(result).isSuccess
                                 }
                         }
                         .addOnFailureListener {
-                            trySend(false).isSuccess
+                            val result = ResultInfo().apply {
+                                success = false
+                                error = it
+                            }
+                            trySend(result).isSuccess
                         }
                     awaitClose {}
                 }

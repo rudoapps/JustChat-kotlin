@@ -37,9 +37,9 @@ class ChatActivity : AppCompatActivity() {
         initObservers()
         initListeners()
 
-        viewModel.initUser()
+//        viewModel.initUser()
 //        viewModel.loadMessageList()
-//        viewModel.getChats()
+        viewModel.getChats()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -95,7 +95,17 @@ class ChatActivity : AppCompatActivity() {
         }
 
         viewModel.messageSent.observe(this) {
+            if (it.success == false) {
+                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
+            }
             binding.editText.setText("")
+        }
+
+        viewModel.userInitialized.observe(this) {
+            if (it.success == false) {
+                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
+            } else {
+            }
         }
 
         viewModel.newMessageAddedToList.observe(this) {
