@@ -1,7 +1,6 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -14,6 +13,7 @@ import es.rudo.firebasechat.data.model.chats.Chat
 import es.rudo.firebasechat.data.model.chats.ChatInfo
 import es.rudo.firebasechat.data.model.chats.Message
 import es.rudo.firebasechat.databinding.ActivityChatBinding
+import es.rudo.firebasechat.helpers.Constants.CHAT
 import es.rudo.firebasechat.main.instance.RudoChatInstance
 
 @AndroidEntryPoint
@@ -36,11 +36,7 @@ class ChatActivity : AppCompatActivity() {
         setupAdapter()
         initObservers()
         initListeners()
-
-//        viewModel.loadMessageList()
-        viewModel.getChats()
         checkIntent()
-//        viewModel.initChat(Chat())
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -87,10 +83,6 @@ class ChatActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.chats.observe(this) { chats ->
-            setupChat(chats)
-        }
-
         viewModel.messages.observe(this) { messages ->
             adapter.submitList(messages)
         }
@@ -134,36 +126,15 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupChat(chats: MutableList<Chat>) {
-        if (!chats.isNullOrEmpty()) {
-            chat = chats[0]
-            binding.textUser.text = chat.name
-            Glide.with(this).load(chat.otherUserImage).into(binding.imageUser)
-            viewModel.getMessages(chat)
-        }
-    }
-
-    private fun closeSessionAndFinish() {
-        RudoChatInstance.getOnTapClient()?.signOut()
-            ?.addOnCompleteListener {
-                Toast.makeText(
-                    this,
-                    getString(R.string.correct),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            ?.addOnFailureListener {
-                Toast.makeText(
-                    this,
-                    getString(R.string.error_closing_session),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        finish()
+    private fun setupChat(chat: Chat) {
+        binding.textUser.text = chat.name
+        Glide.with(this).load(chat.otherUserImage).into(binding.imageUser)
+        adapter.submitList(chat.messages)
+        viewModel.getMessages(chat)
     }
 
     override fun onBackPressed() {
-        closeSessionAndFinish()
+        finish()
     }
 
     private fun checkIntent() {
@@ -171,13 +142,9 @@ class ChatActivity : AppCompatActivity() {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     this.chat = chat
-                    setupChat(mutableListOf(chat))
+                    setupChat(chat)
                 }
             }
         }
-    }
-
-    companion object {
-        const val CHAT = "chat"
     }
 }
