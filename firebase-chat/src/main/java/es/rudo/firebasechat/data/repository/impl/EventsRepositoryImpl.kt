@@ -20,34 +20,34 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsLocalDataSource: EventsLocalDataSource
 ) : EventsRepository {
 
-    override suspend fun initChat(chat: Chat) {
-        when (RudoChatInstance.getType()) {
+    override fun initUser(): Flow<String> {
+        return when (RudoChatInstance.getType()) {
             BasicConfiguration.Type.FIREBASE -> {
                 if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
+                    eventsRemoteDataSource.initUser()
                 } else {
-                    eventsLocalDataSource.initChat(chat)
+                    eventsLocalDataSource.initUser()
                 }
             }
             BasicConfiguration.Type.BACK -> {
                 if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
+                    eventsRemoteDataSource.initUser()
                 } else {
-                    eventsLocalDataSource.initChat(chat)
+                    eventsLocalDataSource.initUser()
                 }
             }
             BasicConfiguration.Type.MIX -> {
                 if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
+                    eventsRemoteDataSource.initUser()
                 } else {
-                    eventsLocalDataSource.initChat(chat)
+                    eventsLocalDataSource.initUser()
                 }
             }
             else -> { // By default return user conf
                 if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
+                    eventsRemoteDataSource.initUser()
                 } else {
-                    eventsLocalDataSource.initChat(chat)
+                    eventsLocalDataSource.initUser()
                 }
             }
         }

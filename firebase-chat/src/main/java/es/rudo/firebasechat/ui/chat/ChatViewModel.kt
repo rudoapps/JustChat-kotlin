@@ -64,9 +64,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun initChat(chat: Chat) {
+    fun initUser() {
         viewModelScope.launch {
-            eventsUseCase.initChat(chat)
+            eventsUseCase.initUser().collect {
+            }
         }
     }
 

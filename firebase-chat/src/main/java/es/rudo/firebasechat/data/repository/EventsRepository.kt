@@ -7,7 +7,7 @@ import es.rudo.firebasechat.data.model.chats.Message
 import kotlinx.coroutines.flow.Flow
 
 interface EventsRepository {
-    suspend fun initChat(chat: Chat)
+    fun initUser(): Flow<String>
     fun getChats(): Flow<MutableList<Chat>>
     fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>>
     fun getGroups(): Flow<MutableList<Group>>

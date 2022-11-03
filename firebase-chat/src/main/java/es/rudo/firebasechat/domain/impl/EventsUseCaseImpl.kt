@@ -12,8 +12,8 @@ import javax.inject.Inject
 class EventsUseCaseImpl @Inject constructor(private val eventsRepository: EventsRepository) :
     EventsUseCase {
 
-    override suspend fun initChat(chat: Chat) {
-        eventsRepository.initChat(chat)
+    override fun initUser(): Flow<String> {
+        return eventsRepository.initUser()
     }
 
     override fun getChats(): Flow<MutableList<Chat>> {

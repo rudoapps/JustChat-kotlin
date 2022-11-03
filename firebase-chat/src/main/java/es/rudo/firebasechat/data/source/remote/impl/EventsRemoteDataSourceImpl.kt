@@ -9,6 +9,7 @@ import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.firebasechat.main.instance.RudoChatInstance
+import es.rudo.firebasechat.utils.generateId
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -21,41 +22,50 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 ) :
     EventsRemoteDataSource {
 
-    override fun initChat(chat: Chat) {
+    override fun initUser(): Flow<String> {
         // TODO: Work in progress
-        when (type) {
-            BasicConfiguration.Type.FIREBASE -> {
-                databaseReference.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(users: DataSnapshot) {
-                        databaseReference.removeEventListener(this)
-                        var userFound = false
-                        for (user in users.children) {
+        return callbackFlow {
+            when (type) {
+                BasicConfiguration.Type.FIREBASE -> {
+                    databaseReference.addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(users: DataSnapshot) {
+                            databaseReference.removeEventListener(this)
+                            var userFound = false
+                            for (user in users.children) {
 //                            val userId = RudoChatInstance.getFirebaseAuth()?.uid.toString()
-                            val userId = "YlIxkR1s3mUPNnJ7s3dUabCgL3g2"
-                            val currentUserId = user.key
-                            if (userId == currentUserId) {
-                                userFound = true
-                                break
+                                val userId = "YlIxkR1s3mUPNnJ7s3dUabCgL3g2"
+                                val currentUserId = user.key
+                                if (userId == currentUserId) {
+                                    userFound = true
+                                    break
+                                }
+                            }
+                            if (!userFound) {
+                                databaseReference.child("YlIxkR1s3mUPNnJ7s3dUabCgL3g2")
+                                    .child("userName")
+                                    .setValue(RudoChatInstance.getFirebaseAuth()?.currentUser?.displayName)
+                                val newChatId = generateId()
+                                initChat(newChatId)
                             }
                         }
-                        if (!userFound) {
-                            databaseReference.child("YlIxkR1s3mUPNnJ7s3dUabCgL3g2")
-                                .child("userName")
-                                .setValue(RudoChatInstance.getFirebaseAuth()?.currentUser?.displayName)
-                        }
-                    }
 
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
-            }
-            BasicConfiguration.Type.BACK -> {
-            }
-            BasicConfiguration.Type.MIX -> {
-            }
-            BasicConfiguration.Type.USER_CONF -> {
+                        override fun onCancelled(error: DatabaseError) {
+                        }
+                    })
+                    awaitClose {}
+                }
+                BasicConfiguration.Type.BACK -> {
+                }
+                BasicConfiguration.Type.MIX -> {
+                }
+                BasicConfiguration.Type.USER_CONF -> {
+                }
             }
         }
+    }
+
+    private fun initChat(chatId: String) {
+        databaseReference
     }
 
     override fun getChats(): Flow<MutableList<Chat>> {

@@ -37,9 +37,9 @@ class ChatActivity : AppCompatActivity() {
         initObservers()
         initListeners()
 
+        viewModel.initUser()
 //        viewModel.loadMessageList()
-        viewModel.getChats()
-//        viewModel.initChat(Chat())
+//        viewModel.getChats()
     }
 
     override fun onSupportNavigateUp(): Boolean {

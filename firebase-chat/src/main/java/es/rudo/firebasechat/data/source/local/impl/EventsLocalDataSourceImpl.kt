@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.flow
 
 class EventsLocalDataSourceImpl : EventsLocalDataSource {
 
-    override suspend fun initChat(chat: Chat) {
+    override fun initUser(): Flow<String> {
+        return flow {
+            emit("")
+        }
     }
 
     override fun getChats(): Flow<MutableList<Chat>> {
