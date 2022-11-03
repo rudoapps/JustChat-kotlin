@@ -39,6 +39,7 @@ class ChatActivity : AppCompatActivity() {
 
 //        viewModel.loadMessageList()
         viewModel.getChats()
+        checkIntent()
 //        viewModel.initChat(Chat())
     }
 
@@ -163,5 +164,20 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         closeSessionAndFinish()
+    }
+
+    private fun checkIntent() {
+        intent.extras?.let {
+            if (it.containsKey(CHAT)) {
+                (it.getSerializable(CHAT) as? Chat)?.let { chat ->
+                    this.chat = chat
+                    setupChat(mutableListOf(chat))
+                }
+            }
+        }
+    }
+
+    companion object {
+        const val CHAT = "chat"
     }
 }
