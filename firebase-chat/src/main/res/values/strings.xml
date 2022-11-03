@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">FirebaseChatLibrary</string>
+    <string name="chat_title">Chat</string>
+    <string name="auth_failed">Authentication failed.</string>
+    <string name="close_session">Close session</string>
+    <string name="correct">Close session correct</string>
+    <string name="error_closing_session">Error closing session</string>
+    <string name="hint_write_message">Write a message</string>
+</resources>
