@@ -14,6 +14,7 @@ object Constants {
     // Bundle extras
     const val LIST_CHATS = "listChats"
     const val EXTRAS = "extras"
+    const val CHAT = "chat"
 
     // Date
     const val SIMPLE_DATE_FORMAT_DATE = "dd/MM/yyyy"

@@ -10,6 +10,7 @@ import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
 import es.rudo.firebasechat.data.model.configuration.FirebaseConfiguration
 import es.rudo.firebasechat.data.model.configuration.MixConfiguration
 import es.rudo.firebasechat.ui.chat.ChatActivity
+import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import javax.inject.Inject
 
 class RudoChatInstance @Inject constructor(
@@ -65,7 +66,7 @@ class RudoChatInstance @Inject constructor(
     fun loadChat(client: SignInClient, auth: FirebaseAuth) {
         onTapClient = client
         firebaseAuth = auth
-        context.startActivity(Intent(context, ChatActivity::class.java))
+        context.startActivity(Intent(context, ChatListActivity::class.java))
     }
 
     private fun parseConfiguration(conf: BasicConfiguration) {

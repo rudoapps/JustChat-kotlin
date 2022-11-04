@@ -17,5 +17,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/Chat"
             android:windowSoftInputMode="adjustPan" />
+
+        <activity
+            android:name=".ui.chat_list.ChatListActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Chat" />
+
     </application>
+
 </manifest>
