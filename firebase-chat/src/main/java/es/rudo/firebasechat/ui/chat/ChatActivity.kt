@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.adapters.ChatListAdapter
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message

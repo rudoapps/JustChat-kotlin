@@ -20,10 +20,15 @@
     <!-- TEXT STYLES -->
     <style name="text_large_bold">
         <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="text_body_regular">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text_body_small">
+        <item name="android:textSize">10sp</item>
     </style>
 
     <style name="Chat" parent="Theme.FirebaseChat">
