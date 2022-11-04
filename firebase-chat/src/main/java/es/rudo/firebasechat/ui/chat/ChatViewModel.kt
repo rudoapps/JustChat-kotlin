@@ -25,10 +25,8 @@ class ChatViewModel @Inject constructor(
     val messageList = mutableListOf<Message>()
     val newMessageText = MutableLiveData<String>()
 
-    val chats = MutableLiveData<MutableList<Chat>>()
     val messages = MutableLiveData<MutableList<Message>>()
     val messageSent = MutableLiveData<ResultInfo>()
-    val userInitialized = MutableLiveData<ResultInfo>()
 
     private val _initialMessageListLoaded = MutableLiveData<Boolean>()
     val initialMessageListLoaded: LiveData<Boolean> = _initialMessageListLoaded
@@ -42,14 +40,6 @@ class ChatViewModel @Inject constructor(
     private val _messageListHistoryUpdateFinished = MutableLiveData<Boolean>()
     val messageListHistoryUpdateFinished: LiveData<Boolean> = _messageListHistoryUpdateFinished
 
-    fun getChats() {
-        viewModelScope.launch {
-            eventsUseCase.getChats().collect {
-                chats.postValue(it)
-            }
-        }
-    }
-
     fun getMessages(chat: Chat) {
         viewModelScope.launch {
             eventsUseCase.getMessagesIndividual(chat, 0).collect {
@@ -62,14 +52,6 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             eventsUseCase.sendMessage(chatInfo, message).collect {
                 messageSent.postValue(it)
-            }
-        }
-    }
-
-    fun initUser() {
-        viewModelScope.launch {
-            eventsUseCase.initUser().collect {
-                userInitialized.value = it
             }
         }
     }

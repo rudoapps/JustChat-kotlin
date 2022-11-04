@@ -6,4 +6,8 @@
     <string name="correct">Close session correct</string>
     <string name="error_closing_session">Error closing session</string>
     <string name="hint_write_message">Write a message</string>
+
+    <!-- Titles -->
+    <string name="chat_list_title">Chats list</string>
+
 </resources>

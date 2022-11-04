@@ -1,9 +1,11 @@
 package es.rudo.firebasechat.data.model.chats
 
+import java.io.Serializable
+
 /**
  * This class need to be implemented in your object to send a basic message
  */
-class Message : Comparable<Message> {
+class Message : Serializable, Comparable<Message> {
     var id: String? = null
     var text: String? = null
     var timestamp: Long? = null
