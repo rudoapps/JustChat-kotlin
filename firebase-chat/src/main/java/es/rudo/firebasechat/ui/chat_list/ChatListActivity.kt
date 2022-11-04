@@ -63,6 +63,13 @@ class ChatListActivity : AppCompatActivity() {
 //                )
 //            )
         }
+
+        viewModel.userInitialized.observe(this) {
+            if (it.success == false) {
+                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
+            } else {
+            }
+        }
     }
 
     override fun onBackPressed() {
