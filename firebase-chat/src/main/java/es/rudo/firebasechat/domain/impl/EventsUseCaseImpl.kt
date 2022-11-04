@@ -17,8 +17,12 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
         return eventsRepository.initUser()
     }
 
-    override fun initChat(): Flow<ResultInfo> {
-        return eventsRepository.initChat()
+    override fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>> {
+        return eventsRepository.initCurrentUserChats()
+    }
+
+    override fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo> {
+        return eventsRepository.initOtherUsersChats(listChatId)
     }
 
     override fun getChats(): Flow<MutableList<Chat>> {

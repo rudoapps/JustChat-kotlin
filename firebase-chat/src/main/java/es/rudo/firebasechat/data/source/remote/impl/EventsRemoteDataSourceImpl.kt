@@ -9,9 +9,11 @@ import es.rudo.firebasechat.data.model.chats.firebase_chat.EmptyChat
 import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
 import es.rudo.firebasechat.data.model.result.ResultInfo
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
+import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.firebasechat.main.instance.RudoChatInstance
 import es.rudo.firebasechat.utils.generateId
+import es.rudo.firebasechat.utils.getPair
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -24,8 +26,8 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 ) :
     EventsRemoteDataSource {
 
+    // TODO RETURN DIFFERENT OBJECT THAN RESULTINFO
     override fun initUser(): Flow<ResultInfo> {
-        // TODO: Work in progress
         return callbackFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
@@ -34,8 +36,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             databaseReference.removeEventListener(this)
                             var userFound = false
                             for (user in users.children) {
-//                            val userId = RudoChatInstance.getFirebaseAuth()?.uid.toString()
-                                val userId = "YlIxkR1s3mUPNnJ7s3dUabCgL3g2"
+                                val userId = RudoChatInstance.getFirebaseAuth()?.uid.toString()
                                 val currentUserId = user.key
                                 if (userId == currentUserId) {
                                     userFound = true
@@ -43,14 +44,26 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 }
                             }
                             if (!userFound) {
-                                databaseReference.child("YlIxkR1s3mUPNnJ7s3dUabCgL3g2")
+                                databaseReference.child(RudoChatInstance.getFirebaseAuth()?.uid.toString())
                                     .child("userName")
                                     .setValue(RudoChatInstance.getFirebaseAuth()?.currentUser?.displayName)
                                     .addOnCompleteListener {
-                                        val result = ResultInfo().apply {
-                                            success = true
-                                        }
-                                        trySend(result).isSuccess
+                                        databaseReference.child(RudoChatInstance.getFirebaseAuth()?.uid.toString())
+                                            .child("profilePhoto")
+                                            .setValue(DEFAULT_USER_PHOTO)
+                                            .addOnCompleteListener {
+                                                val result = ResultInfo().apply {
+                                                    success = true
+                                                }
+                                                trySend(result).isSuccess
+                                            }
+                                            .addOnFailureListener {
+                                                val result = ResultInfo().apply {
+                                                    success = false
+                                                    error = it
+                                                }
+                                                trySend(result).isSuccess
+                                            }
                                     }
                                     .addOnFailureListener {
                                         val result = ResultInfo().apply {
@@ -59,6 +72,12 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         }
                                         trySend(result).isSuccess
                                     }
+                            } else {
+                                val result = ResultInfo().apply {
+                                    success = true
+                                    exists = true
+                                }
+                                trySend(result).isSuccess
                             }
                         }
 
@@ -77,25 +96,70 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun initChat(): Flow<ResultInfo> {
+    override fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>> {
         return callbackFlow {
-            val chatId = generateId()
+            val listChatId = mutableListOf<Pair<String, String>>()
             databaseReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
-                        val chat = EmptyChat().apply {
-
+                        if (user.key != RudoChatInstance.getFirebaseAuth()?.uid) {
+                            val chatId = generateId()
+                            listChatId.add(Pair(user.key.toString(), chatId))
+                            val chat = EmptyChat().apply {
+                                lastMessage = ""
+                                name = user.child("userName").value.toString()
+                                otherUserId = user.key
+                                otherUserImage = user.child("profilePhoto").value.toString()
+                            }
+                            databaseReference.child(RudoChatInstance.getFirebaseAuth()?.uid.toString())
+                                .child("chats")
+                                .child(chatId)
+                                .setValue(chat)
                         }
-
-//                        user.child("chats").child(chatId).
                     }
+                    trySend(listChatId).isSuccess
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
-            databaseReference.child("YlIxkR1s3mUPNnJ7s3dUabCgL3g2").child("chats")
+            awaitClose {}
+        }
+    }
+
+    override fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo> {
+        return callbackFlow {
+            databaseReference.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(users: DataSnapshot) {
+                    databaseReference.removeEventListener(this)
+                    for (user in users.children) {
+                        if (user.key != RudoChatInstance.getFirebaseAuth()?.uid.toString()) {
+                            listChatId.getPair(user.key.toString())?.let { pair ->
+                                val chat = EmptyChat().apply {
+                                    lastMessage = ""
+                                    name =
+                                        RudoChatInstance.getFirebaseAuth()?.currentUser?.displayName
+                                    otherUserId = RudoChatInstance.getFirebaseAuth()?.uid
+                                    otherUserImage = DEFAULT_USER_PHOTO
+                                }
+                                databaseReference.child(user.key.toString())
+                                    .child("chats")
+                                    .child(pair.second)
+                                    .setValue(chat)
+                            }
+                        }
+                    }
+                    val resultInfo = ResultInfo().apply {
+                        success = true
+                    }
+                    trySend(resultInfo).isSuccess
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+            awaitClose {}
         }
     }
 

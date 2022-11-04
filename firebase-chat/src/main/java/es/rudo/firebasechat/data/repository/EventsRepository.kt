@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface EventsRepository {
     fun initUser(): Flow<ResultInfo>
-    fun initChat(): Flow<ResultInfo>
+    fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>>
+    fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo>
     fun getChats(): Flow<MutableList<Chat>>
     fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>>
     fun getGroups(): Flow<MutableList<Group>>

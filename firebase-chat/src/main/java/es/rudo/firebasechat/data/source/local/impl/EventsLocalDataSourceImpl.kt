@@ -17,7 +17,13 @@ class EventsLocalDataSourceImpl : EventsLocalDataSource {
         }
     }
 
-    override fun initChat(): Flow<ResultInfo> {
+    override fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>> {
+        return flow {
+            emit(mutableListOf())
+        }
+    }
+
+    override fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo> {
         return flow {
             emit(ResultInfo())
         }

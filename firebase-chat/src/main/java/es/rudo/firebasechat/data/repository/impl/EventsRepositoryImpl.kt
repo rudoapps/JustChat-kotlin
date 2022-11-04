@@ -27,11 +27,19 @@ class EventsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun initChat(): Flow<ResultInfo> {
+    override fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>> {
         return if (context.isNetworkAvailable) {
-            eventsRemoteDataSource.initChat()
+            eventsRemoteDataSource.initCurrentUserChats()
         } else {
-            eventsLocalDataSource.initChat()
+            eventsLocalDataSource.initCurrentUserChats()
+        }
+    }
+
+    override fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo> {
+        return if (context.isNetworkAvailable) {
+            eventsRemoteDataSource.initOtherUsersChats(listChatId)
+        } else {
+            eventsLocalDataSource.initOtherUsersChats(listChatId)
         }
     }
 

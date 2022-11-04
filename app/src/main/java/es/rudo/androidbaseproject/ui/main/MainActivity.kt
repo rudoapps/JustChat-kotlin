@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.gms.auth.api.identity.* // ktlint-disable no-wildcard-imports
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.firebase.auth.FirebaseAuth
@@ -14,8 +16,8 @@ import es.rudo.androidbaseproject.BuildConfig
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
 import es.rudo.androidbaseproject.ui.base.BaseActivity
-import es.rudo.firebasechat.main.instance.RudoChatInstance
 import es.rudo.firebasechat.data.model.configuration.FirebaseConfiguration
+import es.rudo.firebasechat.main.instance.RudoChatInstance
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
@@ -78,7 +80,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                     .setSupported(true)
                     .setServerClientId(BuildConfig.CLIENT_ID)
-                    .setFilterByAuthorizedAccounts(true)
+                    .setFilterByAuthorizedAccounts(false)
                     .build()
             )
             .setAutoSelectEnabled(true)
@@ -122,5 +124,38 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     Toast.makeText(this, "Login canceled", Toast.LENGTH_SHORT).show()
                 }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (this::rudoChatInstance.isInitialized) {
+            if (RudoChatInstance.getFirebaseAuth() != null) {
+                logout()
+            }
+        }
+    }
+
+    private fun logout() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(BuildConfig.CLIENT_ID)
+            .requestEmail()
+            .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(this, gso)
+        googleSignInClient.signOut()
+            .addOnCompleteListener {
+                Toast.makeText(
+                    this,
+                    getString(es.rudo.firebasechat.R.string.correct),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(
+                    this,
+                    getString(es.rudo.firebasechat.R.string.error_closing_session),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 }

@@ -36,7 +36,7 @@ class ChatListActivity : AppCompatActivity() {
         initAdapter()
         setUpObservables()
 
-        viewModel.getChats()
+        viewModel.initUser()
     }
 
     private fun initAdapter() {
@@ -68,12 +68,32 @@ class ChatListActivity : AppCompatActivity() {
             if (it.success == false) {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
+                if (it.exists == true) {
+                    viewModel.getChats()
+                } else {
+                    viewModel.initCurrentUserChats()
+                }
+            }
+        }
+
+        viewModel.listChatId.observe(this) {
+            if (it.isNotEmpty()) {
+                viewModel.initOtherUsersChats(it)
+            }
+        }
+
+        viewModel.chatsInitialized.observe(this) {
+            if (it.success == false) {
+                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.getChats()
             }
         }
     }
 
     override fun onBackPressed() {
-        closeSessionAndFinish()
+//        closeSessionAndFinish()
+        finish()
     }
 
     private fun closeSessionAndFinish() {
