@@ -76,7 +76,7 @@ class ChatListAdapter(
                     null
                 )
             )
-            shape.paint.color = ContextCompat.getColor(binding.root.context, R.color.teal_700)
+            shape.paint.color = ContextCompat.getColor(binding.root.context, R.color.purple_200)
             binding.viewBackground.background = shape
         }
 
@@ -109,7 +109,7 @@ class ChatListAdapter(
             @BindingAdapter("endPaddedText")
             @JvmStatic
             fun setEndPaddedText(textView: TextView, message: String) {
-                textView.text = message.padEnd(message.length + 10, ' ')
+                textView.text = message.padEnd(message.length + 10, '\u00A0')
             }
         }
     }
