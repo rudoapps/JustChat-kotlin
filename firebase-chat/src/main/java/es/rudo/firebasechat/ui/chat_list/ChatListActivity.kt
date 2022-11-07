@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
+import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.databinding.ActivityChatListBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
 import es.rudo.firebasechat.main.instance.RudoChatInstance
@@ -36,7 +37,15 @@ class ChatListActivity : AppCompatActivity() {
         initAdapter()
         setUpObservables()
 
-        viewModel.initUser()
+        viewModel.sendNotification(
+            Notification(
+                "titleExample",
+                "messageDescription",
+                RudoChatInstance.getFirebaseAuth()?.uid.toString()
+            )
+        )
+
+//        viewModel.initUser()
     }
 
     private fun initAdapter() {

@@ -1,16 +1,16 @@
 package es.rudo.firebasechat.data.ws
 
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.Group
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.data.dto.Notification
+import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface EventsApi {
 
-    fun getMessage(): Message
-
-    fun sendMessage(message: Message)
-
-    fun getChats(): ArrayList<Chat>
-
-    fun getGroups(): ArrayList<Group>
+    @POST("topics/{notificationUserId}")
+    fun sendNotification(
+        @Path("notificationUserId") notificationUserId: String?,
+        @Body notification: Notification
+    ): Call<Void>
 }

@@ -1,17 +1,19 @@
 package es.rudo.firebasechat.data.repository.impl
 
 import android.content.Context
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatInfo
-import es.rudo.firebasechat.domain.models.Group
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.repository.EventsRepository
 import es.rudo.firebasechat.data.source.local.EventsLocalDataSource
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
+import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.domain.models.ChatInfo
+import es.rudo.firebasechat.domain.models.Group
+import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 import javax.inject.Inject
 
 class EventsRepositoryImpl @Inject constructor(
@@ -19,6 +21,13 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsRemoteDataSource: EventsRemoteDataSource,
     private val eventsLocalDataSource: EventsLocalDataSource
 ) : EventsRepository {
+
+    override suspend fun sendNotification(
+        userId: String,
+        notification: Notification
+    ): Response<Void> {
+        return eventsRemoteDataSource.sendNotification(userId, notification)
+    }
 
     override fun initUser(): Flow<ResultUserChat> {
         return if (context.isNetworkAvailable) {

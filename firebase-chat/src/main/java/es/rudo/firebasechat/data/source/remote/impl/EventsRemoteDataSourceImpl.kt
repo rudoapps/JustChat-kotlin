@@ -2,9 +2,11 @@ package es.rudo.firebasechat.data.source.remote.impl
 
 import com.google.firebase.database.*
 import es.rudo.firebasechat.data.dto.EmptyChat
+import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
+import es.rudo.firebasechat.data.ws.EventsApi
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Group
@@ -13,20 +15,34 @@ import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.firebasechat.main.instance.RudoChatInstance
-import es.rudo.firebasechat.utils.generateId
-import es.rudo.firebasechat.utils.getPair
-import es.rudo.firebasechat.utils.getResult
-import es.rudo.firebasechat.utils.getResultUserChat
+import es.rudo.firebasechat.utils.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 class EventsRemoteDataSourceImpl @Inject constructor(
+    private val eventsApi: EventsApi,
     private val databaseReference: DatabaseReference,
     private val type: BasicConfiguration.Type
 ) : EventsRemoteDataSource {
+
+    override suspend fun sendNotification(
+        userId: String,
+        notification: Notification
+    ): Response<Void> {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = eventsApi.sendNotification(userId, notification).execute()
+            if (response.isSuccessful) {
+                response.body()
+            }
+        }
+    }
 
     override fun initUser(): Flow<ResultUserChat> {
         return callbackFlow {
@@ -61,13 +77,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                                         isSuccess = true,
                                                         exception = it
                                                     )
-                                                ).isSuccess
+                                                ).isFailure
                                             }
                                     }
                                     .addOnFailureListener {
                                         trySend(
                                             getResultUserChat(isSuccess = true, exception = it)
-                                        ).isSuccess
+                                        ).isFailure
                                     }
                             } else {
                                 trySend(getResultUserChat(isSuccess = true, exist = true)).isSuccess
@@ -313,19 +329,19 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                                     trySend(getResult(true)).isSuccess
                                                 }
                                                 .addOnFailureListener {
-                                                    trySend(getResult(false, it)).isSuccess
+                                                    trySend(getResult(false, it)).isFailure
                                                 }
                                         }
                                         .addOnFailureListener {
-                                            trySend(getResult(false, it)).isSuccess
+                                            trySend(getResult(false, it)).isFailure
                                         }
                                 }
                                 .addOnFailureListener {
-                                    trySend(getResult(false, it)).isSuccess
+                                    trySend(getResult(false, it)).isFailure
                                 }
                         }
                         .addOnFailureListener {
-                            trySend(getResult(false, it)).isSuccess
+                            trySend(getResult(false, it)).isFailure
                         }
                     awaitClose {}
                 }
