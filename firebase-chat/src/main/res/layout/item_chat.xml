@@ -37,7 +37,6 @@
             android:autoLink="all"
             android:paddingHorizontal="10dp"
             android:paddingVertical="6dp"
-            app:endPaddedText="@{message.text}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -50,7 +49,6 @@
             android:layout_height="wrap_content"
             android:paddingEnd="6dp"
             android:paddingBottom="2dp"
-            android:text="@{message.timestamp}"
             app:layout_constraintBottom_toBottomOf="@id/text_message"
             app:layout_constraintEnd_toEndOf="@id/text_message"
             tools:text="20:15" />

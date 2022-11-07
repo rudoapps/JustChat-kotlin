@@ -1,8 +1,12 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.graphics.fonts.Font
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -16,7 +20,9 @@ import androidx.recyclerview.widget.RecyclerView
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.databinding.ItemChatBinding
+import es.rudo.firebasechat.helpers.extensions.dpToPx
 import es.rudo.firebasechat.helpers.extensions.getTime
+import es.rudo.firebasechat.helpers.extensions.pxToDp
 
 class ChatListAdapter(
     private val userId: String?, // TODO valorar setearlo en el companion object del activity y ahorrarse el param
@@ -35,15 +41,21 @@ class ChatListAdapter(
     class ViewHolder private constructor(private val binding: ItemChatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        private val textFont: Font? = null
+        private val textSize: Int? = null
+        private val outMsgDrawable: Drawable? = null
+        private val inMsgDrawable: Drawable? = null
+        private val outMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.purple_200)
+        private val inMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.teal_700)
+        private val outMsgPaddingDp: Int = 40
+        private val inMsgPaddingDp: Int = 40
+        private val showMsgTime: Boolean = true
+
         fun bind(
             item: Message,
             userId: String?,
             clickListener: MessageClickListener
         ) {
-            binding.message = item
-            binding.clickListener = clickListener
-            binding.executePendingBindings()
-
             if (item.userId == userId) {
                 setOutgoingMessageGravity()
                 setOutgoingMessageBackground()
@@ -51,9 +63,15 @@ class ChatListAdapter(
                 setIncomingMessageGravity()
                 setIncomingMessageBackground()
             }
+
+            setMessageStyle()
+            setMessageContent(item.text, item.timestamp)
         }
 
         private fun setOutgoingMessageGravity() {
+            binding.layout.updateLayoutParams<RecyclerView.LayoutParams> {
+                marginStart = binding.root.context.dpToPx(outMsgPaddingDp)
+            }
             binding.textMessage.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 startToStart = ConstraintLayout.LayoutParams.UNSET
                 endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
@@ -61,6 +79,9 @@ class ChatListAdapter(
         }
 
         private fun setIncomingMessageGravity() {
+            binding.layout.updateLayoutParams<RecyclerView.LayoutParams> {
+                marginEnd = binding.root.context.dpToPx(inMsgPaddingDp)
+            }
             binding.textMessage.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 startToStart = ConstraintLayout.LayoutParams.PARENT_ID
                 endToEnd = ConstraintLayout.LayoutParams.UNSET
@@ -76,7 +97,7 @@ class ChatListAdapter(
                     null
                 )
             )
-            shape.paint.color = ContextCompat.getColor(binding.root.context, R.color.purple_200)
+            shape.paint.color = outMsgColor
             binding.viewBackground.background = shape
         }
 
@@ -89,8 +110,22 @@ class ChatListAdapter(
                     null
                 )
             )
-            shape.paint.color = ContextCompat.getColor(binding.root.context, R.color.teal_700)
+            shape.paint.color = inMsgColor
             binding.viewBackground.background = shape
+        }
+
+        private fun setMessageStyle() {
+
+        }
+
+        private fun setMessageContent(message: String?, timestamp: Long?) {
+            if (showMsgTime) {
+                binding.textMessage.text = message?.padEnd(message.length + 10, '\u00A0')
+                binding.textTimestamp.text = timestamp.getTime()
+            } else {
+                binding.textMessage.text = message
+                binding.textTimestamp.text = ""
+            }
         }
 
         companion object {
@@ -98,18 +133,6 @@ class ChatListAdapter(
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val binding = ItemChatBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding)
-            }
-
-            @BindingAdapter("android:text")
-            @JvmStatic
-            fun setText(textView: TextView, timestamp: Long) {
-                textView.text = timestamp.getTime()
-            }
-
-            @BindingAdapter("endPaddedText")
-            @JvmStatic
-            fun setEndPaddedText(textView: TextView, message: String) {
-                textView.text = message.padEnd(message.length + 10, '\u00A0')
             }
         }
     }
