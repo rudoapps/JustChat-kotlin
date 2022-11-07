@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.data.model.chats
+package es.rudo.firebasechat.domain.models
 
 import java.io.Serializable
 

@@ -9,14 +9,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.data.model.chats.Chat
+import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.databinding.ItemChatListBinding
 
 class ChatHistoryAdapter(
     private val context: Context,
     private val clickListener: (Chat) -> Unit
-): ListAdapter<Chat, ChatHistoryAdapter.ViewHolder>(ListAdapterCallback()) {
+) : ListAdapter<Chat, ChatHistoryAdapter.ViewHolder>(ListAdapterCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)
@@ -26,7 +27,7 @@ class ChatHistoryAdapter(
         holder.bind(getItem(position), context, clickListener)
     }
 
-    class ViewHolder private constructor(private val binding: ItemChatListBinding):
+    class ViewHolder private constructor(private val binding: ItemChatListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
@@ -41,6 +42,7 @@ class ChatHistoryAdapter(
 
             Glide.with(context)
                 .load(item.otherUserImage)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(binding.imageUser)
                 .onLoadFailed(ContextCompat.getDrawable(context, R.color.purple_700))
         }
@@ -52,7 +54,6 @@ class ChatHistoryAdapter(
                 return ViewHolder(binding)
             }
         }
-
     }
 
     class ListAdapterCallback : DiffUtil.ItemCallback<Chat>() {

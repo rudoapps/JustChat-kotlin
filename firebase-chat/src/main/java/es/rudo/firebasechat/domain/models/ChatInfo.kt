@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.data.model.chats
+package es.rudo.firebasechat.domain.models
 
 class ChatInfo {
     var chatId: String? = null

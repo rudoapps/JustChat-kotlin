@@ -1,6 +1,7 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -9,9 +10,9 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.adapters.ChatListAdapter
-import es.rudo.firebasechat.data.model.chats.Chat
-import es.rudo.firebasechat.data.model.chats.ChatInfo
-import es.rudo.firebasechat.data.model.chats.Message
+import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.domain.models.ChatInfo
+import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
 import es.rudo.firebasechat.main.instance.RudoChatInstance
@@ -88,6 +89,9 @@ class ChatActivity : AppCompatActivity() {
         }
 
         viewModel.messageSent.observe(this) {
+            if (it.success == false) {
+                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
+            }
             binding.editText.setText("")
         }
 

@@ -1,16 +1,16 @@
 package es.rudo.firebasechat.data.repository.impl
 
 import android.content.Context
-import es.rudo.firebasechat.data.model.chats.Chat
-import es.rudo.firebasechat.data.model.chats.ChatInfo
-import es.rudo.firebasechat.data.model.chats.Group
-import es.rudo.firebasechat.data.model.chats.Message
-import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
+import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.domain.models.ChatInfo
+import es.rudo.firebasechat.domain.models.Group
+import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.data.dto.results.ResultInfo
+import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.repository.EventsRepository
 import es.rudo.firebasechat.data.source.local.EventsLocalDataSource
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
-import es.rudo.firebasechat.main.instance.RudoChatInstance
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -20,102 +20,43 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsLocalDataSource: EventsLocalDataSource
 ) : EventsRepository {
 
-    override suspend fun initChat(chat: Chat) {
-        when (RudoChatInstance.getType()) {
-            BasicConfiguration.Type.FIREBASE -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
-                } else {
-                    eventsLocalDataSource.initChat(chat)
-                }
-            }
-            BasicConfiguration.Type.BACK -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
-                } else {
-                    eventsLocalDataSource.initChat(chat)
-                }
-            }
-            BasicConfiguration.Type.MIX -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
-                } else {
-                    eventsLocalDataSource.initChat(chat)
-                }
-            }
-            else -> { // By default return user conf
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.initChat(chat)
-                } else {
-                    eventsLocalDataSource.initChat(chat)
-                }
-            }
+    override fun initUser(): Flow<ResultUserChat> {
+        return if (context.isNetworkAvailable) {
+            eventsRemoteDataSource.initUser()
+        } else {
+            eventsLocalDataSource.initUser()
+        }
+    }
+
+    override fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>> {
+        return if (context.isNetworkAvailable) {
+            eventsRemoteDataSource.initCurrentUserChats()
+        } else {
+            eventsLocalDataSource.initCurrentUserChats()
+        }
+    }
+
+    override fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo> {
+        return if (context.isNetworkAvailable) {
+            eventsRemoteDataSource.initOtherUsersChats(listChatId)
+        } else {
+            eventsLocalDataSource.initOtherUsersChats(listChatId)
         }
     }
 
     override fun getChats(): Flow<MutableList<Chat>> {
-        return when (RudoChatInstance.getType()) {
-            BasicConfiguration.Type.FIREBASE -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getChats()
-                } else {
-                    eventsLocalDataSource.getChats()
-                }
-            }
-            BasicConfiguration.Type.BACK -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getChats()
-                } else {
-                    eventsLocalDataSource.getChats()
-                }
-            }
-            BasicConfiguration.Type.MIX -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getChats()
-                } else {
-                    eventsLocalDataSource.getChats()
-                }
-            }
-            else -> { // By default return user conf
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getChats()
-                } else {
-                    eventsLocalDataSource.getChats()
-                }
-            }
+        return if (context.isNetworkAvailable) {
+            eventsRemoteDataSource.getChats()
+        } else {
+            eventsLocalDataSource.getChats()
         }
     }
 
     override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>> {
-        return when (RudoChatInstance.getType()) {
-            BasicConfiguration.Type.FIREBASE -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getMessagesIndividual(chat, page)
-                } else {
-                    eventsLocalDataSource.getMessagesIndividual(chat, page)
-                }
-            }
-            BasicConfiguration.Type.BACK -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getMessagesIndividual(chat, page)
-                } else {
-                    eventsLocalDataSource.getMessagesIndividual(chat, page)
-                }
-            }
-            BasicConfiguration.Type.MIX -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getMessagesIndividual(chat, page)
-                } else {
-                    eventsLocalDataSource.getMessagesIndividual(chat, page)
-                }
-            }
-            else -> { // By default return user conf
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.getMessagesIndividual(chat, page)
-                } else {
-                    eventsLocalDataSource.getMessagesIndividual(chat, page)
-                }
-            }
+        return if (context.isNetworkAvailable) {
+            eventsRemoteDataSource.getMessagesIndividual(chat, page)
+        } else {
+            eventsLocalDataSource.getMessagesIndividual(chat, page)
         }
     }
 
@@ -123,36 +64,11 @@ class EventsRepositoryImpl @Inject constructor(
         return eventsRemoteDataSource.getGroups()
     }
 
-    override fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<Boolean> {
-        return when (RudoChatInstance.getType()) {
-            BasicConfiguration.Type.FIREBASE -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.sendMessage(chatInfo, message)
-                } else {
-                    eventsLocalDataSource.sendMessage(chatInfo, message)
-                }
-            }
-            BasicConfiguration.Type.BACK -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.sendMessage(chatInfo, message)
-                } else {
-                    eventsLocalDataSource.sendMessage(chatInfo, message)
-                }
-            }
-            BasicConfiguration.Type.MIX -> {
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.sendMessage(chatInfo, message)
-                } else {
-                    eventsLocalDataSource.sendMessage(chatInfo, message)
-                }
-            }
-            else -> { // By default return user conf
-                if (context.isNetworkAvailable) {
-                    eventsRemoteDataSource.sendMessage(chatInfo, message)
-                } else {
-                    eventsLocalDataSource.sendMessage(chatInfo, message)
-                }
-            }
+    override fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<ResultInfo> {
+        return if (context.isNetworkAvailable) {
+            eventsRemoteDataSource.sendMessage(chatInfo, message)
+        } else {
+            eventsLocalDataSource.sendMessage(chatInfo, message)
         }
     }
 }

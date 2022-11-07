@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.data.model.configuration
+package es.rudo.firebasechat.domain.models.configuration
 
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_NODE_FIREBASE
 
