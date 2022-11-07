@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.rudo.firebasechat.data.model.chats.Chat
 import es.rudo.firebasechat.data.model.result.ResultInfo
+import es.rudo.firebasechat.data.model.result.ResultUserChat
 import es.rudo.firebasechat.domain.EventsUseCase
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -17,7 +18,7 @@ class ChatListViewModel @Inject constructor(
 ) : ViewModel() {
 
     val chats = MutableLiveData<MutableList<Chat>>()
-    val userInitialized = MutableLiveData<ResultInfo>()
+    val userInitialized = MutableLiveData<ResultUserChat>()
     val listChatId = MutableLiveData<MutableList<Pair<String, String>>>()
     val chatsInitialized = MutableLiveData<ResultInfo>()
 

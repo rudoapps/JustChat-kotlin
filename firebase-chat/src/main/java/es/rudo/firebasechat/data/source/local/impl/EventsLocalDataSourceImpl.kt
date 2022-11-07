@@ -5,15 +5,16 @@ import es.rudo.firebasechat.data.model.chats.ChatInfo
 import es.rudo.firebasechat.data.model.chats.Group
 import es.rudo.firebasechat.data.model.chats.Message
 import es.rudo.firebasechat.data.model.result.ResultInfo
+import es.rudo.firebasechat.data.model.result.ResultUserChat
 import es.rudo.firebasechat.data.source.local.EventsLocalDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class EventsLocalDataSourceImpl : EventsLocalDataSource {
 
-    override fun initUser(): Flow<ResultInfo> {
+    override fun initUser(): Flow<ResultUserChat> {
         return flow {
-            emit(ResultInfo())
+            emit(ResultUserChat())
         }
     }
 

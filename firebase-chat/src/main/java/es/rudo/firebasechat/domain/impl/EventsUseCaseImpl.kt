@@ -5,6 +5,7 @@ import es.rudo.firebasechat.data.model.chats.ChatInfo
 import es.rudo.firebasechat.data.model.chats.Group
 import es.rudo.firebasechat.data.model.chats.Message
 import es.rudo.firebasechat.data.model.result.ResultInfo
+import es.rudo.firebasechat.data.model.result.ResultUserChat
 import es.rudo.firebasechat.data.repository.EventsRepository
 import es.rudo.firebasechat.domain.EventsUseCase
 import kotlinx.coroutines.flow.Flow
@@ -13,7 +14,7 @@ import javax.inject.Inject
 class EventsUseCaseImpl @Inject constructor(private val eventsRepository: EventsRepository) :
     EventsUseCase {
 
-    override fun initUser(): Flow<ResultInfo> {
+    override fun initUser(): Flow<ResultUserChat> {
         return eventsRepository.initUser()
     }
 

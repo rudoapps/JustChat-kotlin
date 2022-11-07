@@ -6,6 +6,7 @@ import es.rudo.firebasechat.data.model.chats.ChatInfo
 import es.rudo.firebasechat.data.model.chats.Group
 import es.rudo.firebasechat.data.model.chats.Message
 import es.rudo.firebasechat.data.model.result.ResultInfo
+import es.rudo.firebasechat.data.model.result.ResultUserChat
 import es.rudo.firebasechat.data.repository.EventsRepository
 import es.rudo.firebasechat.data.source.local.EventsLocalDataSource
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
@@ -19,7 +20,7 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsLocalDataSource: EventsLocalDataSource
 ) : EventsRepository {
 
-    override fun initUser(): Flow<ResultInfo> {
+    override fun initUser(): Flow<ResultUserChat> {
         return if (context.isNetworkAvailable) {
             eventsRemoteDataSource.initUser()
         } else {

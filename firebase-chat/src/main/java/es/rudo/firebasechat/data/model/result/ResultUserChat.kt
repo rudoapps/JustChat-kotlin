@@ -1,6 +1,7 @@
 package es.rudo.firebasechat.data.model.result
 
-class ResultInfo {
+class ResultUserChat {
     var success: Boolean? = null
+    var exists: Boolean? = null
     var error: Exception? = null
 }

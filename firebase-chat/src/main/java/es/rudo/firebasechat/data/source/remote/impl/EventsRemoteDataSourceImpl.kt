@@ -8,6 +8,7 @@ import es.rudo.firebasechat.data.model.chats.Message
 import es.rudo.firebasechat.data.model.chats.firebase_chat.EmptyChat
 import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
 import es.rudo.firebasechat.data.model.result.ResultInfo
+import es.rudo.firebasechat.data.model.result.ResultUserChat
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
@@ -23,11 +24,9 @@ import kotlin.collections.ArrayList
 class EventsRemoteDataSourceImpl @Inject constructor(
     private val databaseReference: DatabaseReference,
     private val type: BasicConfiguration.Type
-) :
-    EventsRemoteDataSource {
+) : EventsRemoteDataSource {
 
-    // TODO RETURN DIFFERENT OBJECT THAN RESULTINFO
-    override fun initUser(): Flow<ResultInfo> {
+    override fun initUser(): Flow<ResultUserChat> {
         return callbackFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
@@ -52,13 +51,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                             .child("profilePhoto")
                                             .setValue(DEFAULT_USER_PHOTO)
                                             .addOnCompleteListener {
-                                                val result = ResultInfo().apply {
+                                                val result = ResultUserChat().apply {
                                                     success = true
                                                 }
                                                 trySend(result).isSuccess
                                             }
                                             .addOnFailureListener {
-                                                val result = ResultInfo().apply {
+                                                val result = ResultUserChat().apply {
                                                     success = false
                                                     error = it
                                                 }
@@ -66,14 +65,14 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                             }
                                     }
                                     .addOnFailureListener {
-                                        val result = ResultInfo().apply {
+                                        val result = ResultUserChat().apply {
                                             success = false
                                             error = it
                                         }
                                         trySend(result).isSuccess
                                     }
                             } else {
-                                val result = ResultInfo().apply {
+                                val result = ResultUserChat().apply {
                                     success = true
                                     exists = true
                                 }
