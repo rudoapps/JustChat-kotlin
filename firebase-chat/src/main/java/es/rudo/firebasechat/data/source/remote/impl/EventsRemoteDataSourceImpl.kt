@@ -164,6 +164,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             override fun onDataChange(chats: DataSnapshot) {
                                 val chatList = mutableListOf<Chat>()
                                 for (chat in chats.children) {
+                                    val messagesList = mutableListOf<Message>()
                                     val userChat = Chat().apply {
                                         id = chat.key
                                         name = chat.child("name").value.toString()
@@ -171,6 +172,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         otherUserImage =
                                             chat.child("otherUserImage").value.toString()
                                         lastMessage = chat.child("lastMessage").value.toString()
+                                        messages = messagesList
                                     }
 
                                     val messages = chat.child("messages")
@@ -180,7 +182,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         } else {
                                             messages.childrenCount
                                         }
-                                    val messagesList = mutableListOf<Message>()
+
                                     var count = 0
                                     for (message in messages.children) {
                                         if (count == maxMessages) {
