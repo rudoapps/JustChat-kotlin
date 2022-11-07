@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.data.model.chats.Message
+import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.databinding.ItemChatBinding
 
 class ChatListAdapter(

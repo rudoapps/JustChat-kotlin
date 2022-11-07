@@ -16,7 +16,7 @@ import es.rudo.androidbaseproject.BuildConfig
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
 import es.rudo.androidbaseproject.ui.base.BaseActivity
-import es.rudo.firebasechat.data.model.configuration.FirebaseConfiguration
+import es.rudo.firebasechat.domain.models.configuration.FirebaseConfiguration
 import es.rudo.firebasechat.main.instance.RudoChatInstance
 
 @AndroidEntryPoint

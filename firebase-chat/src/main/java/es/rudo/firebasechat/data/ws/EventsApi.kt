@@ -1,8 +1,8 @@
 package es.rudo.firebasechat.data.ws
 
-import es.rudo.firebasechat.data.model.chats.Chat
-import es.rudo.firebasechat.data.model.chats.Group
-import es.rudo.firebasechat.data.model.chats.Message
+import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.domain.models.Group
+import es.rudo.firebasechat.domain.models.Message
 
 interface EventsApi {
 

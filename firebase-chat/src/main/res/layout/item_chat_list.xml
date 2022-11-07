@@ -7,7 +7,7 @@
 
         <variable
             name="chat"
-            type="es.rudo.firebasechat.data.model.chats.Chat" />
+            type="es.rudo.firebasechat.domain.models.Chat" />
 
     </data>
 

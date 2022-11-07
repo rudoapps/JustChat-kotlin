@@ -5,11 +5,10 @@ import android.content.Intent
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.qualifiers.ApplicationContext
-import es.rudo.firebasechat.data.model.configuration.BackConfiguration
-import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
-import es.rudo.firebasechat.data.model.configuration.FirebaseConfiguration
-import es.rudo.firebasechat.data.model.configuration.MixConfiguration
-import es.rudo.firebasechat.ui.chat.ChatActivity
+import es.rudo.firebasechat.domain.models.configuration.BackConfiguration
+import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
+import es.rudo.firebasechat.domain.models.configuration.FirebaseConfiguration
+import es.rudo.firebasechat.domain.models.configuration.MixConfiguration
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import javax.inject.Inject
 

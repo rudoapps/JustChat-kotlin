@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.data.model.chats.Chat
+import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.databinding.ItemChatListBinding
 
 class ChatHistoryAdapter(

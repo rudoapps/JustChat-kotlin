@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.data.model.chats.firebase_chat
+package es.rudo.firebasechat.data.dto
 
 class EmptyChat {
     var lastMessage: String? = null

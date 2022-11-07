@@ -1,11 +1,11 @@
 package es.rudo.firebasechat.data.source.remote
 
-import es.rudo.firebasechat.data.model.chats.Chat
-import es.rudo.firebasechat.data.model.chats.ChatInfo
-import es.rudo.firebasechat.data.model.chats.Group
-import es.rudo.firebasechat.data.model.chats.Message
-import es.rudo.firebasechat.data.model.result.ResultInfo
-import es.rudo.firebasechat.data.model.result.ResultUserChat
+import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.domain.models.ChatInfo
+import es.rudo.firebasechat.domain.models.Group
+import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.data.dto.results.ResultInfo
+import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import kotlinx.coroutines.flow.Flow
 
 interface EventsRemoteDataSource {

@@ -5,7 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
+import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
 import es.rudo.firebasechat.data.source.remote.impl.EventsRemoteDataSourceImpl
 import es.rudo.firebasechat.main.instance.RudoChatInstance

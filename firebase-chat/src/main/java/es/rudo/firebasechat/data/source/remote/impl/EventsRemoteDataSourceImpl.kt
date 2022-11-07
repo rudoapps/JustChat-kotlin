@@ -1,20 +1,22 @@
 package es.rudo.firebasechat.data.source.remote.impl
 
 import com.google.firebase.database.*
-import es.rudo.firebasechat.data.model.chats.Chat
-import es.rudo.firebasechat.data.model.chats.ChatInfo
-import es.rudo.firebasechat.data.model.chats.Group
-import es.rudo.firebasechat.data.model.chats.Message
-import es.rudo.firebasechat.data.model.chats.firebase_chat.EmptyChat
-import es.rudo.firebasechat.data.model.configuration.BasicConfiguration
-import es.rudo.firebasechat.data.model.result.ResultInfo
-import es.rudo.firebasechat.data.model.result.ResultUserChat
+import es.rudo.firebasechat.data.dto.EmptyChat
+import es.rudo.firebasechat.data.dto.results.ResultInfo
+import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
+import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.domain.models.ChatInfo
+import es.rudo.firebasechat.domain.models.Group
+import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.firebasechat.main.instance.RudoChatInstance
 import es.rudo.firebasechat.utils.generateId
 import es.rudo.firebasechat.utils.getPair
+import es.rudo.firebasechat.utils.getResult
+import es.rudo.firebasechat.utils.getResultUserChat
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -51,32 +53,24 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                             .child("profilePhoto")
                                             .setValue(DEFAULT_USER_PHOTO)
                                             .addOnCompleteListener {
-                                                val result = ResultUserChat().apply {
-                                                    success = true
-                                                }
-                                                trySend(result).isSuccess
+                                                trySend(getResultUserChat(isSuccess = true)).isSuccess
                                             }
                                             .addOnFailureListener {
-                                                val result = ResultUserChat().apply {
-                                                    success = false
-                                                    error = it
-                                                }
-                                                trySend(result).isSuccess
+                                                trySend(
+                                                    getResultUserChat(
+                                                        isSuccess = true,
+                                                        exception = it
+                                                    )
+                                                ).isSuccess
                                             }
                                     }
                                     .addOnFailureListener {
-                                        val result = ResultUserChat().apply {
-                                            success = false
-                                            error = it
-                                        }
-                                        trySend(result).isSuccess
+                                        trySend(
+                                            getResultUserChat(isSuccess = true, exception = it)
+                                        ).isSuccess
                                     }
                             } else {
-                                val result = ResultUserChat().apply {
-                                    success = true
-                                    exists = true
-                                }
-                                trySend(result).isSuccess
+                                trySend(getResultUserChat(isSuccess = true, exist = true)).isSuccess
                             }
                         }
 
@@ -103,7 +97,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
                         if (user.key != RudoChatInstance.getFirebaseAuth()?.uid) {
-                            val chatId = generateId()
+                            val chatId = "${System.currentTimeMillis()}-${generateId()}"
                             listChatId.add(Pair(user.key.toString(), chatId))
                             val chat = EmptyChat().apply {
                                 lastMessage = ""
@@ -149,10 +143,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             }
                         }
                     }
-                    val resultInfo = ResultInfo().apply {
-                        success = true
-                    }
-                    trySend(resultInfo).isSuccess
+                    trySend(getResult(true)).isSuccess
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -294,59 +285,45 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         return callbackFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
+                    val messageId = "${System.currentTimeMillis()}-${generateId()}"
+
                     val currentUserChat = databaseReference.child(chatInfo.userId.toString())
                         .child("chats")
                         .child(chatInfo.chatId.toString())
+
                     val otherUserChat = databaseReference.child(chatInfo.otherUserId.toString())
                         .child("chats")
                         .child(chatInfo.chatId.toString())
+
                     // Current user chat
                     currentUserChat.child("messages")
-                        .push().setValue(message).addOnCompleteListener {
+                        .child(messageId).setValue(message)
+                        .addOnCompleteListener {
                             // Other user chat
                             otherUserChat.child("messages")
-                                .push().setValue(message)
+                                .child(messageId).setValue(message)
                                 .addOnCompleteListener {
                                     // Update last message of both users
                                     currentUserChat.updateChildren(mapOf("lastMessage" to message.text))
                                         .addOnCompleteListener {
                                             otherUserChat.updateChildren(mapOf("lastMessage" to message.text))
                                                 .addOnCompleteListener {
-                                                    val result = ResultInfo().apply {
-                                                        success = true
-                                                    }
-                                                    trySend(result).isSuccess
+                                                    trySend(getResult(true)).isSuccess
                                                 }
                                                 .addOnFailureListener {
-                                                    val result = ResultInfo().apply {
-                                                        success = false
-                                                        error = it
-                                                    }
-                                                    trySend(result).isSuccess
+                                                    trySend(getResult(false, it)).isSuccess
                                                 }
                                         }
                                         .addOnFailureListener {
-                                            val result = ResultInfo().apply {
-                                                success = false
-                                                error = it
-                                            }
-                                            trySend(result).isSuccess
+                                            trySend(getResult(false, it)).isSuccess
                                         }
                                 }
                                 .addOnFailureListener {
-                                    val result = ResultInfo().apply {
-                                        success = false
-                                        error = it
-                                    }
-                                    trySend(result).isSuccess
+                                    trySend(getResult(false, it)).isSuccess
                                 }
                         }
                         .addOnFailureListener {
-                            val result = ResultInfo().apply {
-                                success = false
-                                error = it
-                            }
-                            trySend(result).isSuccess
+                            trySend(getResult(false, it)).isSuccess
                         }
                     awaitClose {}
                 }

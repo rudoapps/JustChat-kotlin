@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.data.model.chats
+package es.rudo.firebasechat.domain.models
 
 open class Group {
     var users: MutableList<UserData>? = null
