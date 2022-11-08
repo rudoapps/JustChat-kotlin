@@ -71,6 +71,7 @@ class ChatListAdapter(
         private fun setOutgoingMessageGravity() {
             binding.layout.updateLayoutParams<RecyclerView.LayoutParams> {
                 marginStart = binding.root.context.dpToPx(outMsgPaddingDp)
+                marginEnd = 0
             }
             binding.textMessage.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 startToStart = ConstraintLayout.LayoutParams.UNSET
@@ -80,6 +81,7 @@ class ChatListAdapter(
 
         private fun setIncomingMessageGravity() {
             binding.layout.updateLayoutParams<RecyclerView.LayoutParams> {
+                marginStart = 0
                 marginEnd = binding.root.context.dpToPx(inMsgPaddingDp)
             }
             binding.textMessage.updateLayoutParams<ConstraintLayout.LayoutParams> {
