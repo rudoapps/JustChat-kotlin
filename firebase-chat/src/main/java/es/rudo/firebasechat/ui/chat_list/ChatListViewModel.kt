@@ -8,14 +8,16 @@ import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.domain.EventsUseCase
+import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.main.instance.RudoChatInstance
+import es.rudo.firebasechat.main.instance.JustChat
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val eventsUseCase: EventsUseCase
+    private val eventsUseCase: EventsUseCase,
+    private val notificationsUseCase: NotificationsUseCase
 ) : ViewModel() {
 
     val chats = MutableLiveData<MutableList<Chat>>()
@@ -25,41 +27,44 @@ class ChatListViewModel @Inject constructor(
 
     fun sendNotification(notification: Notification) {
         viewModelScope.launch {
-            val response = eventsUseCase.sendNotification(
-                RudoChatInstance.getFirebaseAuth()?.uid.toString(),
+            val response = notificationsUseCase.sendNotification(
+                JustChat.getFirebaseAuth()?.uid.toString(),
                 notification
             )
             response
         }
     }
 
-    fun getChats() {
+    fun getChats(isNetworkAvailable: Boolean) {
         viewModelScope.launch {
-            eventsUseCase.getChats().collect {
+            eventsUseCase.getChats(isNetworkAvailable).collect {
                 chats.postValue(it)
             }
         }
     }
 
-    fun initUser() {
+    fun initUser(isNetworkAvailable: Boolean) {
         viewModelScope.launch {
-            eventsUseCase.initUser().collect {
+            eventsUseCase.initUser(isNetworkAvailable).collect {
                 userInitialized.value = it
             }
         }
     }
 
-    fun initCurrentUserChats() {
+    fun initCurrentUserChats(isNetworkAvailable: Boolean) {
         viewModelScope.launch {
-            eventsUseCase.initCurrentUserChats().collect {
+            eventsUseCase.initCurrentUserChats(isNetworkAvailable).collect {
                 listChatId.value = it
             }
         }
     }
 
-    fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>) {
+    fun initOtherUsersChats(
+        isNetworkAvailable: Boolean,
+        listChatId: MutableList<Pair<String, String>>
+    ) {
         viewModelScope.launch {
-            eventsUseCase.initOtherUsersChats(listChatId).collect {
+            eventsUseCase.initOtherUsersChats(isNetworkAvailable, listChatId).collect {
                 chatsInitialized.value = it
             }
         }

@@ -6,7 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Path
 
-interface EventsApi {
+interface NotificationsApi {
 
     @POST("topics/{notificationUserId}")
     fun sendNotification(

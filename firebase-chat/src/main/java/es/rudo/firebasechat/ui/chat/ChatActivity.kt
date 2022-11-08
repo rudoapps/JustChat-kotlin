@@ -10,12 +10,13 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.adapters.ChatListAdapter
+import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
-import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.main.instance.RudoChatInstance
+import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
+import es.rudo.firebasechat.main.instance.JustChat
 
 @AndroidEntryPoint
 class ChatActivity : AppCompatActivity() {
@@ -54,7 +55,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupAdapter() {
         adapter = ChatListAdapter(
-            RudoChatInstance.getFirebaseAuth()?.uid,
+            JustChat.getFirebaseAuth()?.uid,
             object : ChatListAdapter.MessageClickListener {
                 override fun onClick(item: Message) {
                     // TODO
@@ -114,7 +115,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun initListeners() {
         binding.imageSend.setOnClickListener {
-            RudoChatInstance.getFirebaseAuth()?.uid?.let { userId ->
+            JustChat.getFirebaseAuth()?.uid?.let { userId ->
                 if (binding.editText.text.toString().isNotEmpty()) {
                     val message = Message()
                     message.userId = userId
@@ -124,7 +125,7 @@ class ChatActivity : AppCompatActivity() {
                     chatInfo.chatId = chat.id
                     chatInfo.userId = userId
                     chatInfo.otherUserId = chat.otherUserId
-                    viewModel.sendMessage(chatInfo, message)
+                    viewModel.sendMessage(isNetworkAvailable, chatInfo, message)
                 }
             }
         }
@@ -134,7 +135,7 @@ class ChatActivity : AppCompatActivity() {
         binding.textUser.text = chat.name
         Glide.with(this).load(chat.otherUserImage).into(binding.imageUser)
         adapter.submitList(chat.messages)
-        viewModel.getMessages(chat)
+        viewModel.getMessages(isNetworkAvailable, chat)
     }
 
     override fun onBackPressed() {

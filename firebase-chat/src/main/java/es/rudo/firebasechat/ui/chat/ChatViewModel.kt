@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.rudo.firebasechat.data.dto.results.ResultInfo
+import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
-import es.rudo.firebasechat.data.dto.results.ResultInfo
-import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.models.Participant
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -39,17 +39,17 @@ class ChatViewModel @Inject constructor(
     private val _messageListHistoryUpdateFinished = MutableLiveData<Boolean>()
     val messageListHistoryUpdateFinished: LiveData<Boolean> = _messageListHistoryUpdateFinished
 
-    fun getMessages(chat: Chat) {
+    fun getMessages(isNetworkAvailable: Boolean, chat: Chat) {
         viewModelScope.launch {
-            eventsUseCase.getMessagesIndividual(chat, 0).collect {
+            eventsUseCase.getMessagesIndividual(isNetworkAvailable, chat, 0).collect {
                 messages.postValue(it)
             }
         }
     }
 
-    fun sendMessage(chatInfo: ChatInfo, message: Message) {
+    fun sendMessage(isNetworkAvailable: Boolean, chatInfo: ChatInfo, message: Message) {
         viewModelScope.launch {
-            eventsUseCase.sendMessage(chatInfo, message).collect {
+            eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
                 messageSent.postValue(it)
             }
         }
