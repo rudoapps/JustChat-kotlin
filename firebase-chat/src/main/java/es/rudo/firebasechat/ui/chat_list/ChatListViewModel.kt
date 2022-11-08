@@ -11,6 +11,7 @@ import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.main.instance.JustChat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +27,7 @@ class ChatListViewModel @Inject constructor(
     val chatsInitialized = MutableLiveData<ResultInfo>()
 
     fun sendNotification(notification: Notification) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val response = notificationsUseCase.sendNotification(
                 JustChat.getFirebaseAuth()?.uid.toString(),
                 notification

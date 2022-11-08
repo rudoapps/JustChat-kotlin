@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.data.ws
+package es.rudo.firebasechat.data.ws.api
 
 import es.rudo.firebasechat.data.dto.Notification
 import retrofit2.Call

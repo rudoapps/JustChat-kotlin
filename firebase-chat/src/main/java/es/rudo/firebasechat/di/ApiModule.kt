@@ -4,8 +4,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import es.rudo.firebasechat.BuildConfig
-import es.rudo.firebasechat.data.ws.NotificationsApi
+import es.rudo.firebasechat.data.ws.api.Config
+import es.rudo.firebasechat.data.ws.api.NotificationsApi
+import es.rudo.firebasechat.data.ws.interceptor.NotificationsInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -27,6 +28,7 @@ object ApiModule {
     fun providesOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
         OkHttpClient
             .Builder()
+            .addInterceptor(NotificationsInterceptor())
             .addInterceptor(httpLoggingInterceptor)
             .build()
 
@@ -34,7 +36,7 @@ object ApiModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(BuildConfig.API_BASE_URL)
+        .baseUrl(Config.API_URL)
         .client(okHttpClient)
         .build()
 

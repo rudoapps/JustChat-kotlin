@@ -9,7 +9,7 @@ import javax.inject.Inject
 class NotificationsUseCaseImpl @Inject constructor(private val notificationsRepository: NotificationsRepository) :
     NotificationsUseCase {
 
-    override suspend fun sendNotification(
+    override fun sendNotification(
         userId: String,
         notification: Notification
     ): Response<Void> {

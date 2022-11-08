@@ -9,9 +9,8 @@ import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Group
 import es.rudo.firebasechat.domain.models.Message
-import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
-import es.rudo.firebasechat.utils.getResult
-import es.rudo.firebasechat.utils.getResultUserChat
+import getResult
+import getResultUserChat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject

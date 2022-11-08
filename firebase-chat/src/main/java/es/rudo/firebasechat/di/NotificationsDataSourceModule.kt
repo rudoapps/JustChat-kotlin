@@ -6,7 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import es.rudo.firebasechat.data.source.remote.NotificationsDataSource
 import es.rudo.firebasechat.data.source.remote.impl.NotificationsDataSourceImpl
-import es.rudo.firebasechat.data.ws.NotificationsApi
+import es.rudo.firebasechat.data.ws.api.NotificationsApi
 import javax.inject.Singleton
 
 @Module

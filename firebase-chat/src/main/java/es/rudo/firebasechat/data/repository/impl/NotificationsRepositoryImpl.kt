@@ -10,7 +10,7 @@ class NotificationsRepositoryImpl @Inject constructor(
     private val notificationsDataSource: NotificationsDataSource
 ) : NotificationsRepository {
 
-    override suspend fun sendNotification(
+    override fun sendNotification(
         userId: String,
         notification: Notification
     ): Response<Void> {

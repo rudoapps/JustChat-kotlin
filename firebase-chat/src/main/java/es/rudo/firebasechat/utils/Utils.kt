@@ -1,5 +1,3 @@
-package es.rudo.firebasechat.utils
-
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 

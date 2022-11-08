@@ -1,6 +1,6 @@
 package es.rudo.firebasechat.data.source.remote.impl
 
-import com.google.firebase.database.*
+import com.google.firebase.database.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.data.dto.EmptyChat
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
@@ -13,7 +13,10 @@ import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.firebasechat.main.instance.JustChat
-import es.rudo.firebasechat.utils.*
+import generateId
+import getPair
+import getResult
+import getResultUserChat
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -23,7 +26,7 @@ import kotlin.collections.ArrayList
 class EventsRemoteDataSourceImpl @Inject constructor(
     private val databaseReference: DatabaseReference,
     private val type: BasicConfiguration.Type
-) : EventsRemoteDataSource, CoroutineAppRepository() {
+) : EventsRemoteDataSource {
 
     override fun initUser(): Flow<ResultUserChat> {
         return callbackFlow {
