@@ -35,7 +35,7 @@
                     android:id="@+id/image_user"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="12dp"
                     android:src="@color/purple_700"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -83,6 +83,8 @@
                 android:id="@+id/edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+                android:maxLines="5"
                 android:text="@={viewModel.newMessageText}"
                 tools:hint="Mensaje" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -92,8 +94,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:clickable="true"
-            android:contentDescription="@null"
             android:focusable="true"
+            android:onClick="@{() -> viewModel.prepareMessageForSending()}"
             android:src="@drawable/ic_send"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

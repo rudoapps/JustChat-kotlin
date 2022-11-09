@@ -10,6 +10,7 @@ import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.domain.EventsUseCase
+import es.rudo.firebasechat.main.instance.RudoChatInstance
 import es.rudo.firebasechat.models.Participant
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,19 +20,21 @@ class ChatViewModel @Inject constructor(
     private val eventsUseCase: EventsUseCase
 ) : ViewModel() {
 
-    var participantList: List<Participant>? = null
+    var chat: Chat? = null
 
-    val messageList = mutableListOf<Message>()
     val newMessageText = MutableLiveData<String>()
 
-    val messages = MutableLiveData<MutableList<Message>>()
-    val messageSent = MutableLiveData<ResultInfo>()
+    private val _messageList = MutableLiveData<MutableList<Message>>()
+    val messageList: LiveData<MutableList<Message>> = _messageList
+
+    private val _sendMessageAttempt = MutableLiveData<Boolean>()
+    val sendMessageAttempt: LiveData<Boolean> = _sendMessageAttempt
+
+    private val _sendMessageSuccess = MutableLiveData<ResultInfo>()
+    val sendMessageSuccess: LiveData<ResultInfo> = _sendMessageSuccess
 
     private val _initialMessageListLoaded = MutableLiveData<Boolean>()
     val initialMessageListLoaded: LiveData<Boolean> = _initialMessageListLoaded
-
-    private val _newMessageAddedToList = MutableLiveData<Boolean>()
-    val newMessageAddedToList: LiveData<Boolean> = _newMessageAddedToList
 
     private val _messageListHistoryUpdateStarted = MutableLiveData<Boolean>()
     val messageListHistoryUpdateStarted: LiveData<Boolean> = _messageListHistoryUpdateStarted
@@ -39,55 +42,47 @@ class ChatViewModel @Inject constructor(
     private val _messageListHistoryUpdateFinished = MutableLiveData<Boolean>()
     val messageListHistoryUpdateFinished: LiveData<Boolean> = _messageListHistoryUpdateFinished
 
-    fun getMessages(chat: Chat) {
+    fun getMessages() {
         viewModelScope.launch {
-            eventsUseCase.getMessagesIndividual(chat, 0).collect {
-                messages.postValue(it)
+            chat?.let {
+                eventsUseCase.getMessagesIndividual(it, 0).collect { messages ->
+                    _messageList.postValue(messages)
+                }
             }
         }
     }
 
-    fun sendMessage(chatInfo: ChatInfo, message: Message) {
+    fun prepareMessageForSending() {
         viewModelScope.launch {
-            eventsUseCase.sendMessage(chatInfo, message).collect {
-                messageSent.postValue(it)
+            RudoChatInstance.getFirebaseAuth()?.uid?.let { userId ->
+                if (!newMessageText.value.isNullOrBlank() && chat != null) {
+                    val message = Message()
+                    message.userId = userId
+                    message.text = newMessageText.value
+                    message.timestamp = System.currentTimeMillis()
+
+                    val chatInfo = ChatInfo()
+                    chatInfo.chatId = chat?.id
+                    chatInfo.userId = userId
+                    chatInfo.otherUserId = chat?.otherUserId
+
+                    newMessageText.value = ""
+                    _messageList.value?.add(message)
+                    _messageList.value = _messageList.value
+                    _sendMessageAttempt.value = true
+
+                    eventsUseCase.sendMessage(chatInfo, message).collect {
+                        _sendMessageSuccess.postValue(it)
+                    }
+//                    sendMessage(message, chatInfo)
+                }
             }
         }
     }
 
-    fun loadMessageList() {
-        val list = mutableListOf<Message>()
-
-        for (i in 1..20) {
-            list.add(
-                Message().apply {
-                    userId = if (i % 7 == 0) "2" else "1"
-                    text = "ChatMessage $i"
-                    timestamp = 23423424
-                }
-            )
+    private suspend fun sendMessage(message: Message, chatInfo: ChatInfo) {
+        eventsUseCase.sendMessage(chatInfo, message).collect {
+            _sendMessageSuccess.postValue(it)
         }
-
-        messageList.addAll(list)
-        _initialMessageListLoaded.value = true
-    }
-
-    // TODO testing
-    fun sendMessage() {
-        if (!newMessageText.value.isNullOrBlank()) {
-            messageList.add(
-                Message().apply {
-                    userId = "1"
-                    text = newMessageText.value
-                    timestamp = 23423432424
-                }
-            )
-            newMessageText.value = null
-            _newMessageAddedToList.value = true
-        }
-    }
-
-    fun receiveMessage() {
-        // TODO
     }
 }

@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.adapters.ChatListAdapter
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
@@ -21,9 +20,9 @@ import es.rudo.firebasechat.main.instance.RudoChatInstance
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatBinding
-    private val viewModel: ChatViewModel by viewModels()
     private lateinit var adapter: ChatListAdapter
-    private lateinit var chat: Chat
+
+    private val viewModel: ChatViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +35,11 @@ class ChatActivity : AppCompatActivity() {
         setupToolbar()
         setupAdapter()
         initObservers()
-        initListeners()
-        checkIntent()
+
+        loadData()
+        viewModel.getMessages()
+
+        setupViews()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -75,32 +77,23 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun initObservers() {
-        // TODO valorar eliminar esta variable y convertir la lista a livedata controlando que la lista del adapter esté vacía
-        viewModel.initialMessageListLoaded.observe(this) {
-            it?.let { listLoaded ->
-                if (listLoaded) {
-                    adapter.submitList(viewModel.messageList)
+        //TODO revisar cuando haya paginación (cambiar al itemRange)
+        viewModel.messageList.observe(this) { messages ->
+            messages?.let {
+                if (adapter.currentList.size < it.size) {
+                    adapter.submitList(it)
+                    binding.recycler.smoothScrollToPosition(it.lastIndex)
+                    adapter.notifyItemInserted(it.lastIndex)
                 }
             }
         }
 
-        viewModel.messages.observe(this) { messages ->
-            adapter.submitList(messages)
+        viewModel.sendMessageAttempt.observe(this) {
+            //TODO revisar si hay que hacer el notify al adapter aquí
         }
 
-        viewModel.messageSent.observe(this) {
-            if (it.success == false) {
-                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
-            }
-            binding.editText.setText("")
-        }
-
-        viewModel.newMessageAddedToList.observe(this) {
-            it?.let { messageAdded ->
-                if (messageAdded) {
-                    adapter.notifyItemInserted(viewModel.messageList.lastIndex)
-                }
-            }
+        viewModel.sendMessageSuccess.observe(this) {
+            //TODO controlar el cambio de estado de los mensajes y/o su siguiente intento de reenvio
         }
 
         viewModel.messageListHistoryUpdateStarted.observe(this) {
@@ -112,43 +105,25 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun initListeners() {
-        binding.imageSend.setOnClickListener {
-            RudoChatInstance.getFirebaseAuth()?.uid?.let { userId ->
-                if (binding.editText.text.toString().isNotEmpty()) {
-                    val message = Message()
-                    message.userId = userId
-                    message.text = binding.editText.text.toString()
-                    message.timestamp = System.currentTimeMillis()
-                    val chatInfo = ChatInfo()
-                    chatInfo.chatId = chat.id
-                    chatInfo.userId = userId
-                    chatInfo.otherUserId = chat.otherUserId
-                    viewModel.sendMessage(chatInfo, message)
-                }
-            }
-        }
-    }
-
-    private fun setupChat(chat: Chat) {
-        binding.textUser.text = chat.name
-        Glide.with(this).load(chat.otherUserImage).into(binding.imageUser)
-        adapter.submitList(chat.messages)
-        viewModel.getMessages(chat)
-    }
-
     override fun onBackPressed() {
         finish()
     }
 
-    private fun checkIntent() {
+    private fun loadData() {
         intent.extras?.let {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
-                    this.chat = chat
-                    setupChat(chat)
+                    viewModel.chat = chat
+                    adapter.submitList(chat.messages)
                 }
             }
         }
+    }
+
+    private fun setupViews() {
+        binding.textUser.text = viewModel.chat?.name
+        Glide.with(this)
+            .load(viewModel.chat?.otherUserImage)
+            .into(binding.imageUser)
     }
 }

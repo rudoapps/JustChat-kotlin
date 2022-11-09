@@ -11,7 +11,7 @@
 
         <variable
             name="clickListener"
-            type="es.rudo.firebasechat.adapters.ChatListAdapter.MessageClickListener" />
+            type="es.rudo.firebasechat.ui.chat.ChatListAdapter.MessageClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,20 +24,33 @@
             android:id="@+id/view_background"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/text"
-            app:layout_constraintEnd_toEndOf="@id/text"
-            app:layout_constraintStart_toStartOf="@id/text"
-            app:layout_constraintTop_toTopOf="@id/text" />
+            app:layout_constraintBottom_toBottomOf="@id/text_message"
+            app:layout_constraintEnd_toEndOf="@id/text_timestamp"
+            app:layout_constraintStart_toStartOf="@id/text_message"
+            app:layout_constraintTop_toTopOf="@id/text_message" />
 
         <TextView
-            android:id="@+id/text"
+            android:id="@+id/text_message"
+            style="@style/text_body_regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="@{message.text}"
+            android:autoLink="all"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Mensaje" />
+            tools:text="Mensaje          " />
+
+        <TextView
+            android:id="@+id/text_timestamp"
+            style="@style/text_body_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="6dp"
+            android:paddingBottom="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/text_message"
+            app:layout_constraintEnd_toEndOf="@id/text_message"
+            tools:text="20:15" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
