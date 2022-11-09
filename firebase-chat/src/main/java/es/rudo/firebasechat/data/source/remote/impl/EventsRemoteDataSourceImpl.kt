@@ -2,6 +2,7 @@ package es.rudo.firebasechat.data.source.remote.impl
 
 import com.google.firebase.database.*
 import es.rudo.firebasechat.data.dto.EmptyChat
+import es.rudo.firebasechat.data.dto.converters.toMessageBack
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
@@ -21,6 +22,7 @@ import es.rudo.firebasechat.utils.getResultUserChat
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -215,7 +217,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     private fun getLastMessages(chatId: String, messageListener: MessagesListener) {
         val query =
             databaseReference.child("${RudoChatInstance.getFirebaseAuth()?.uid}/chats/$chatId/messages")
-                .orderByChild("timestamp")
+                .orderByChild("serverTimestamp")
                 .limitToLast(LIMIT_MESSAGES)
         query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(messages: DataSnapshot) {
@@ -225,7 +227,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     val messageObj = Message().apply {
                         id = message.key
                         text = message.child("text").value.toString()
-                        timestamp = message.child("timestamp").value as? Long
+                        timestamp = message.child("serverTimestamp").value as? Long
                         userId = message.child("userId").value.toString()
                     }
                     messagesList.add(messageObj)
@@ -250,7 +252,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     val newPage = correctPage * LIMIT_MESSAGES
                     val query =
                         databaseReference.child("${RudoChatInstance.getFirebaseAuth()?.uid}/chats/${chat.id}/messages")
-                            .orderByChild("timestamp")
+                            .orderByChild("serverTimestamp")
 //                            .limitToLast(newPage)
                     val databaseListener =
                         query.addValueEventListener(object : ValueEventListener {
@@ -260,7 +262,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                     val messageObj = Message().apply {
                                         id = message.key
                                         text = message.child("text").value.toString()
-                                        timestamp = message.child("timestamp").value as? Long
+                                        timestamp = message.child("serverTimestamp").value as? Long
                                         userId = message.child("userId").value.toString()
                                     }
                                     messagesList.add(messageObj)
@@ -299,6 +301,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 BasicConfiguration.Type.FIREBASE -> {
                     val messageId = "${System.currentTimeMillis()}-${generateId(LIMIT_SIZE_ID)}"
 
+                    val backMessage = message.toMessageBack()
+                    backMessage.serverTimestamp = ServerValue.TIMESTAMP
+
                     val currentUserChat = databaseReference.child(chatInfo.userId.toString())
                         .child("chats")
                         .child(chatInfo.chatId.toString())
@@ -309,16 +314,16 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 
                     // Current user chat
                     currentUserChat.child("messages")
-                        .child(messageId).setValue(message)
+                        .child(messageId).setValue(backMessage)
                         .addOnCompleteListener {
                             // Other user chat
                             otherUserChat.child("messages")
-                                .child(messageId).setValue(message)
+                                .child(messageId).setValue(backMessage)
                                 .addOnCompleteListener {
                                     // Update last message of both users
-                                    currentUserChat.updateChildren(mapOf("lastMessage" to message.text))
+                                    currentUserChat.updateChildren(mapOf("lastMessage" to backMessage.text))
                                         .addOnCompleteListener {
-                                            otherUserChat.updateChildren(mapOf("lastMessage" to message.text))
+                                            otherUserChat.updateChildren(mapOf("lastMessage" to backMessage.text))
                                                 .addOnCompleteListener {
                                                     trySend(getResult(true)).isSuccess
                                                 }

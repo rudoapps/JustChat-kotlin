@@ -5,13 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.rudo.firebasechat.data.dto.results.ResultInfo
+import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
-import es.rudo.firebasechat.data.dto.results.ResultInfo
-import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.main.instance.RudoChatInstance
-import es.rudo.firebasechat.models.Participant
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -59,7 +59,6 @@ class ChatViewModel @Inject constructor(
                     val message = Message()
                     message.userId = userId
                     message.text = newMessageText.value
-                    message.timestamp = System.currentTimeMillis()
 
                     val chatInfo = ChatInfo()
                     chatInfo.chatId = chat?.id
