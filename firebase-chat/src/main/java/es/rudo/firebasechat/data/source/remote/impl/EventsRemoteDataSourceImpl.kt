@@ -251,7 +251,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     val query =
                         databaseReference.child("${RudoChatInstance.getFirebaseAuth()?.uid}/chats/${chat.id}/messages")
                             .orderByChild("timestamp")
-                            .limitToLast(newPage)
+//                            .limitToLast(newPage)
                     val databaseListener =
                         query.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(messages: DataSnapshot) {

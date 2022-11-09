@@ -114,4 +114,11 @@ class ChatListActivity : AppCompatActivity() {
             }
         finish()
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (!viewModel.chats.value.isNullOrEmpty()) {
+            viewModel.getChats()
+        }
+    }
 }
