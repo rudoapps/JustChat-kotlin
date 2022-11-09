@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.data.dto.converters
+package es.rudo.firebasechat.data.dto
 
 class MessageBack {
     var text: String? = null
