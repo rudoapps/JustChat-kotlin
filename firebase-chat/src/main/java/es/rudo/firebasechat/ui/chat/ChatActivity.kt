@@ -1,6 +1,7 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -78,11 +79,15 @@ class ChatActivity : AppCompatActivity() {
         //TODO revisar cuando haya paginación (cambiar al itemRange)
         viewModel.messageList.observe(this) { messages ->
             messages?.let {
-                if (adapter.currentList.size < it.size) {
+                Log.d("TestSize", "Tamaño de la lista adapter ${adapter.currentList.size}")
+                Log.d("TestSize", "Tamaño de la lista firebase ${it.size}")
+//                if (adapter.currentList.size < it.size)  {
+//                    val list = mutableListOf<Message>()
+//                    viewModel.messageList.value?.let { it1 -> list.addAll(it1) }
                     adapter.submitList(it)
-                    binding.recycler.smoothScrollToPosition(it.lastIndex)
-                    adapter.notifyItemInserted(it.lastIndex)
-                }
+//                    binding.recycler.smoothScrollToPosition(it.lastIndex)
+//                    adapter.notifyItemInserted(it.lastIndex)
+//                }
             }
         }
 

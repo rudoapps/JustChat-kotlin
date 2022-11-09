@@ -70,10 +70,7 @@ class ChatViewModel @Inject constructor(
                     _messageList.value = _messageList.value
                     _sendMessageAttempt.value = true
 
-                    eventsUseCase.sendMessage(chatInfo, message).collect {
-                        _sendMessageSuccess.postValue(it)
-                    }
-//                    sendMessage(message, chatInfo)
+                    sendMessage(message, chatInfo)
                 }
             }
         }
