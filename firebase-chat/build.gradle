@@ -18,10 +18,10 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField "String", "API_BASE_URL", '"https://fcm.googleapis.com/fcm/send/"'
+            buildConfigField "String", "API_BASE_URL", '"https://fcm.googleapis.com/v1/projects/"'
         }
         release {
-            buildConfigField "String", "API_BASE_URL", '"https://fcm.googleapis.com/fcm/send/"'
+            buildConfigField "String", "API_BASE_URL", '"https://fcm.googleapis.com/v1/projects/"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

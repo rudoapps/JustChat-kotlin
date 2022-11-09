@@ -42,7 +42,7 @@ class ChatListActivity : AppCompatActivity() {
             Notification(
                 "titleExample",
                 "messageDescription",
-                JustChat.getFirebaseAuth()?.uid.toString()
+                "QZm9kCEoAQaMbycsOjmfZSjGLUm1"
             )
         )
 

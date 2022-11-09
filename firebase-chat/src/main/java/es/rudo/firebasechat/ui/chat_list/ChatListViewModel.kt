@@ -29,7 +29,7 @@ class ChatListViewModel @Inject constructor(
     fun sendNotification(notification: Notification) {
         viewModelScope.launch(Dispatchers.IO) {
             val response = notificationsUseCase.sendNotification(
-                JustChat.getFirebaseAuth()?.uid.toString(),
+                "QZm9kCEoAQaMbycsOjmfZSjGLUm1",
                 notification
             )
             response

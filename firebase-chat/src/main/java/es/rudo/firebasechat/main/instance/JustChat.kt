@@ -53,6 +53,14 @@ class JustChat constructor(
                 null
             }
         }
+
+        fun getProjectName(): String? {
+            return if (this::firebaseConfiguration.isInitialized) {
+                firebaseConfiguration.firebaseProjectName
+            } else {
+                null
+            }
+        }
     }
 
     init {
