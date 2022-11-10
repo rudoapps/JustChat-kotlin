@@ -93,6 +93,13 @@ class ChatActivity : AppCompatActivity() {
 
         viewModel.sendMessageAttempt.observe(this) {
             //TODO revisar si hay que hacer el notify al adapter aquí
+                Log.d("TEST", "Posición del adapter ${adapter.currentList.size}")
+                Log.d("TEST", "Posición de la lista ${viewModel.messageList.value?.size}")
+                if (it.isNotEmpty()) {
+                    adapter.submitList(viewModel.messageList.value)
+//                    binding.recycler.smoothScrollToPosition(it.lastIndex)
+//                    adapter.notifyItemInserted(it.lastIndex)
+                }
         }
 
         viewModel.sendMessageSuccess.observe(this) {

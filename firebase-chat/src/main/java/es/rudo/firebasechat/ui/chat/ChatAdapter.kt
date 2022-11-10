@@ -25,6 +25,18 @@ class ChatAdapter(
 ) :
     ListAdapter<Message, ChatAdapter.ViewHolder>(ListAdapterCallback()) {
 
+    override fun onCurrentListChanged(
+        previousList: MutableList<Message>,
+        currentList: MutableList<Message>
+    ) {
+        val sizeDiff = currentList.size - previousList.size
+
+        if (sizeDiff == 1)
+            notifyItemInserted(currentList.lastIndex)
+        else
+            notifyItemRangeInserted(previousList.lastIndex, sizeDiff)
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), userId, clickListener)
     }
