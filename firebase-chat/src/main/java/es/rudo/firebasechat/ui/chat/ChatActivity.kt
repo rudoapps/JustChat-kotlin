@@ -2,10 +2,12 @@ package es.rudo.firebasechat.ui.chat
 
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewTreeObserver
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
@@ -72,6 +74,7 @@ class ChatActivity : AppCompatActivity() {
             stackFromEnd = true
             reverseLayout = false
         }
+//        binding.recycler.itemAnimator = SimpleItemAnimator()
         binding.recycler.setHasFixedSize(false)
     }
 
@@ -79,27 +82,24 @@ class ChatActivity : AppCompatActivity() {
         //TODO revisar cuando haya paginación (cambiar al itemRange)
         viewModel.messageList.observe(this) { messages ->
             messages?.let {
-                Log.d("TestSize", "Tamaño de la lista adapter ${adapter.currentList.size}")
-                Log.d("TestSize", "Tamaño de la lista firebase ${it.size}")
-//                if (adapter.currentList.size < it.size)  {
-//                    val list = mutableListOf<Message>()
-//                    viewModel.messageList.value?.let { it1 -> list.addAll(it1) }
-                    adapter.submitList(it)
-//                    binding.recycler.smoothScrollToPosition(it.lastIndex)
-//                    adapter.notifyItemInserted(it.lastIndex)
-//                }
+                adapter.submitList(messages)
             }
         }
 
         viewModel.sendMessageAttempt.observe(this) {
-            //TODO revisar si hay que hacer el notify al adapter aquí
-                Log.d("TEST", "Posición del adapter ${adapter.currentList.size}")
-                Log.d("TEST", "Posición de la lista ${viewModel.messageList.value?.size}")
-                if (it.isNotEmpty()) {
-                    adapter.submitList(viewModel.messageList.value)
-//                    binding.recycler.smoothScrollToPosition(it.lastIndex)
-//                    adapter.notifyItemInserted(it.lastIndex)
+            viewModel.messageList.value?.let { messages ->
+                if (messages.isNotEmpty()) {
+                    binding.recycler.viewTreeObserver.addOnGlobalLayoutListener(object :
+                        ViewTreeObserver.OnGlobalLayoutListener {
+                        override fun onGlobalLayout() {
+                            binding.recycler.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                            adapter.itemCount.takeIf { it > 0 }?.let {
+                                binding.recycler.scrollToPosition(it - 1)
+                            }
+                        }
+                    })
                 }
+            }
         }
 
         viewModel.sendMessageSuccess.observe(this) {

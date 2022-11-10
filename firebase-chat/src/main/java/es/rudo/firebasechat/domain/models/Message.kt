@@ -10,4 +10,9 @@ class Message : Serializable {
     var text: String? = null
     var timestamp: Long? = null
     var userId: String? = null
+    var status: String? = null
+
+    override fun equals(other: Any?): Boolean {
+        return other is Message && other.status == this.status
+    }
 }

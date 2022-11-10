@@ -25,18 +25,6 @@ class ChatAdapter(
 ) :
     ListAdapter<Message, ChatAdapter.ViewHolder>(ListAdapterCallback()) {
 
-    override fun onCurrentListChanged(
-        previousList: MutableList<Message>,
-        currentList: MutableList<Message>
-    ) {
-        val sizeDiff = currentList.size - previousList.size
-
-        if (sizeDiff == 1)
-            notifyItemInserted(currentList.lastIndex)
-        else
-            notifyItemRangeInserted(previousList.lastIndex, sizeDiff)
-    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), userId, clickListener)
     }
@@ -148,7 +136,7 @@ class ChatAdapter(
 
     class ListAdapterCallback : DiffUtil.ItemCallback<Message>() {
         override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
-            return oldItem.userId == newItem.userId
+            return oldItem.id == newItem.id
         }
 
         @SuppressLint("DiffUtilEquals")
