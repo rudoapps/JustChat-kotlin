@@ -64,13 +64,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                                         isSuccess = true,
                                                         exception = it
                                                     )
-                                                ).isSuccess
+                                                ).isFailure
                                             }
                                     }
                                     .addOnFailureListener {
                                         trySend(
                                             getResultUserChat(isSuccess = true, exception = it)
-                                        ).isSuccess
+                                        ).isFailure
                                     }
                             } else {
                                 trySend(getResultUserChat(isSuccess = true, exist = true)).isSuccess
@@ -328,19 +328,19 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                                     trySend(getResult(true)).isSuccess
                                                 }
                                                 .addOnFailureListener {
-                                                    trySend(getResult(false, it)).isSuccess
+                                                    trySend(getResult(false, it)).isFailure
                                                 }
                                         }
                                         .addOnFailureListener {
-                                            trySend(getResult(false, it)).isSuccess
+                                            trySend(getResult(false, it)).isFailure
                                         }
                                 }
                                 .addOnFailureListener {
-                                    trySend(getResult(false, it)).isSuccess
+                                    trySend(getResult(false, it)).isFailure
                                 }
                         }
                         .addOnFailureListener {
-                            trySend(getResult(false, it)).isSuccess
+                            trySend(getResult(false, it)).isFailure
                         }
                     awaitClose {}
                 }

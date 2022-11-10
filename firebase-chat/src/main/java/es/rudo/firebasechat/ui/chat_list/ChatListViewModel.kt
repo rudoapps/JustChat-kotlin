@@ -4,10 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.domain.EventsUseCase
+import es.rudo.firebasechat.domain.models.Chat
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

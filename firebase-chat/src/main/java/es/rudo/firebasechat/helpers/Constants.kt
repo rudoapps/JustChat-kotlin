@@ -10,7 +10,7 @@ object Constants {
     const val DATABASE_REFERENCE = "databaseReference"
     const val DEFAULT_NODE_FIREBASE = "users"
     const val LIMIT_MESSAGES = 20
-    const val LIMIT_SIZE_ID = 40
+    const val LIMIT_SIZE_ID = 30
 
     // Bundle extras
     const val LIST_CHATS = "listChats"
