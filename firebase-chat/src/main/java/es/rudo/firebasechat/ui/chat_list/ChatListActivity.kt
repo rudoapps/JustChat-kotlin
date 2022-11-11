@@ -8,6 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
+import es.rudo.firebasechat.data.dto.DataNotification
+import es.rudo.firebasechat.data.dto.MessageNotification
+import es.rudo.firebasechat.data.dto.MessageNotificationBack
 import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.databinding.ActivityChatListBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
@@ -38,15 +41,30 @@ class ChatListActivity : AppCompatActivity() {
         initAdapter()
         setUpObservables()
 
-//        viewModel.sendNotification(
-//            Notification(
-//                "titleExample",
-//                "messageDescription",
-//                "QZm9kCEoAQaMbycsOjmfZSjGLUm1"
-//            )
-//        )
+        viewModel.sendNotification(getNotification())
 
-        viewModel.initUser(isNetworkAvailable)
+//        viewModel.initUser(isNetworkAvailable)
+    }
+
+    private fun getNotification(): MessageNotificationBack {
+        val dataNotification = DataNotification(
+            userId = "X9v91KDsFuONDbnvH44J8TR62Tt2",
+            otherUserId = "QZm9kCEoAQaMbycsOjmfZSjGLUm1",
+            chatId = "3241hjkghjg21k4j"
+        )
+
+        val notification = Notification(
+            title = "Test notification from device",
+            body = System.currentTimeMillis().toString()
+        )
+
+        val messageNotification = MessageNotification(
+            topic = "chat message",
+            notification = notification,
+            data = dataNotification
+        )
+
+        return MessageNotificationBack(messageNotification)
     }
 
     private fun initAdapter() {

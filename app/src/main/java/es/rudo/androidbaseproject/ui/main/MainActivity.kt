@@ -62,7 +62,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         justChat =
             JustChat(
                 this,
-                FirebaseConfiguration("")
+                FirebaseConfiguration("fir-chat-d613e")
             )
         oneTapClient = Identity.getSignInClient(this)
         initListeners()

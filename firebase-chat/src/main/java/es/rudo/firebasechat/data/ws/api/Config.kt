@@ -1,10 +1,9 @@
 package es.rudo.firebasechat.data.ws.api
 
 import es.rudo.firebasechat.BuildConfig
-import es.rudo.firebasechat.main.instance.JustChat
 
 object Config {
-    val API_URL = "${BuildConfig.API_BASE_URL}${JustChat.getProjectName()}/messages:send/"
+    const val API_URL = BuildConfig.API_BASE_URL
     const val TYPE_ITEM_AUTHORIZATION = "Authorization"
     const val HTTP_CLIENT_AUTHORIZATION = "Bearer "
     const val TYPE_ITEM_CONTENT_TYPE = "Content-Type"
