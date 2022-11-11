@@ -2,6 +2,7 @@ package es.rudo.firebasechat.data.source.remote.impl
 
 import com.google.firebase.database.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.data.dto.EmptyChat
+import es.rudo.firebasechat.data.dto.converters.toMessageBack
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
@@ -12,6 +13,7 @@ import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
+import es.rudo.firebasechat.helpers.Constants.LIMIT_SIZE_ID
 import es.rudo.firebasechat.main.instance.JustChat
 import generateId
 import getPair
@@ -97,7 +99,8 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
                         if (user.key != JustChat.getFirebaseAuth()?.uid) {
-                            val chatId = "${System.currentTimeMillis()}-${generateId()}"
+                            val chatId =
+                                "${System.currentTimeMillis()}-${generateId(LIMIT_SIZE_ID)}"
                             listChatId.add(Pair(user.key.toString(), chatId))
                             val chat = EmptyChat().apply {
                                 lastMessage = ""
@@ -110,8 +113,8 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 .child(chatId)
                                 .setValue(chat)
                         }
+                        trySend(listChatId).isSuccess
                     }
-                    trySend(listChatId).isSuccess
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -175,37 +178,19 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         messages = messagesList
                                     }
 
-                                    val messages = chat.child("messages")
-                                    val maxMessages =
-                                        if (messages.childrenCount <= LIMIT_MESSAGES) {
-                                            LIMIT_MESSAGES
-                                        } else {
-                                            messages.childrenCount
+                                    getLastMessages(
+                                        userChat.id.toString(),
+                                        object : MessagesListener {
+                                            override fun listMessages(messages: MutableList<Message>) {
+                                                messagesList.addAll(messages)
+                                                chatList.add(userChat)
+                                                if (chatList.size == chats.children.count()) {
+                                                    trySend(chatList).isSuccess
+                                                }
+                                            }
                                         }
-
-                                    var count = 0
-                                    for (message in messages.children) {
-                                        if (count == maxMessages) {
-                                            break
-                                        }
-                                        val messageObj = Message().apply {
-                                            id = message.key
-                                            text = message.child("text").value.toString()
-                                            timestamp = message.child("timestamp").value as? Long
-                                            userId = message.child("userId").value.toString()
-                                        }
-                                        messagesList.add(messageObj)
-                                        count++
-                                    }
-                                    try {
-                                        userChat.messages =
-                                            messagesList.sorted() as MutableList<Message>
-                                    } catch (ex: Exception) {
-                                        userChat.messages = messagesList
-                                    }
-                                    chatList.add(userChat)
+                                    )
                                 }
-                                trySend(chatList).isSuccess
                             }
 
                             override fun onCancelled(error: DatabaseError) {
@@ -228,6 +213,32 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    private fun getLastMessages(chatId: String, messageListener: MessagesListener) {
+        val query =
+            databaseReference.child("${JustChat.getFirebaseAuth()?.uid}/chats/$chatId/messages")
+                .orderByChild("serverTimestamp")
+                .limitToLast(LIMIT_MESSAGES)
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(messages: DataSnapshot) {
+                databaseReference.removeEventListener(this)
+                val messagesList = mutableListOf<Message>()
+                for (message in messages.children) {
+                    val messageObj = Message().apply {
+                        id = message.key
+                        text = message.child("text").value.toString()
+                        timestamp = message.child("serverTimestamp").value as? Long
+                        userId = message.child("userId").value.toString()
+                    }
+                    messagesList.add(messageObj)
+                }
+                messageListener.listMessages(messagesList)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
     override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>> {
         return callbackFlow {
             when (type) {
@@ -240,8 +251,8 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     val newPage = correctPage * LIMIT_MESSAGES
                     val query =
                         databaseReference.child("${JustChat.getFirebaseAuth()?.uid}/chats/${chat.id}/messages")
-                            .orderByChild("timestamp")
-                            .limitToLast(newPage)
+                            .orderByChild("serverTimestamp")
+//                            .limitToLast(newPage)
                     val databaseListener =
                         query.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(messages: DataSnapshot) {
@@ -250,7 +261,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                     val messageObj = Message().apply {
                                         id = message.key
                                         text = message.child("text").value.toString()
-                                        timestamp = message.child("timestamp").value as? Long
+                                        timestamp = message.child("serverTimestamp").value as? Long
                                         userId = message.child("userId").value.toString()
                                     }
                                     messagesList.add(messageObj)
@@ -287,7 +298,10 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         return callbackFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
-                    val messageId = "${System.currentTimeMillis()}-${generateId()}"
+                    val messageId = "${System.currentTimeMillis()}-${generateId(LIMIT_SIZE_ID)}"
+
+                    val backMessage = message.toMessageBack()
+                    backMessage.serverTimestamp = ServerValue.TIMESTAMP
 
                     val currentUserChat = databaseReference.child(chatInfo.userId.toString())
                         .child("chats")
@@ -299,16 +313,16 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 
                     // Current user chat
                     currentUserChat.child("messages")
-                        .child(messageId).setValue(message)
+                        .child(messageId).setValue(backMessage)
                         .addOnCompleteListener {
                             // Other user chat
                             otherUserChat.child("messages")
-                                .child(messageId).setValue(message)
+                                .child(messageId).setValue(backMessage)
                                 .addOnCompleteListener {
                                     // Update last message of both users
-                                    currentUserChat.updateChildren(mapOf("lastMessage" to message.text))
+                                    currentUserChat.updateChildren(mapOf("lastMessage" to backMessage.text))
                                         .addOnCompleteListener {
-                                            otherUserChat.updateChildren(mapOf("lastMessage" to message.text))
+                                            otherUserChat.updateChildren(mapOf("lastMessage" to backMessage.text))
                                                 .addOnCompleteListener {
                                                     trySend(getResult(true)).isSuccess
                                                 }
@@ -337,5 +351,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    private interface MessagesListener {
+        fun listMessages(messages: MutableList<Message>)
     }
 }

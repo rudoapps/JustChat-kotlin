@@ -10,6 +10,7 @@ object Constants {
     const val DATABASE_REFERENCE = "databaseReference"
     const val DEFAULT_NODE_FIREBASE = "users"
     const val LIMIT_MESSAGES = 20
+    const val LIMIT_SIZE_ID = 30
 
     // Bundle extras
     const val LIST_CHATS = "listChats"
@@ -18,7 +19,7 @@ object Constants {
 
     // Date
     const val SIMPLE_DATE_FORMAT_DATE = "dd/MM/yyyy"
-    const val SIMPLE_DATE_FORMAT_TIME = "HH:mm:ss"
+    const val SIMPLE_DATE_FORMAT_TIME = "HH:mm"
     const val SIMPLE_DATE_FORMAT_COMPLETE = "dd/MM/yyyy HH:mm:ss"
 
     // User info

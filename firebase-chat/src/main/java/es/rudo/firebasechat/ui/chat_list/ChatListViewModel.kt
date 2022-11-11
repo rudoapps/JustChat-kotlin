@@ -10,7 +10,6 @@ import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.main.instance.JustChat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
