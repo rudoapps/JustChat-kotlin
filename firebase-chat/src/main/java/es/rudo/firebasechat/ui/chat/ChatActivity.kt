@@ -1,7 +1,6 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -10,7 +9,6 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
@@ -20,7 +18,7 @@ import es.rudo.firebasechat.main.instance.RudoChatInstance
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatBinding
-    private lateinit var adapter: ChatListAdapter
+    private lateinit var adapter: ChatAdapter
 
     private val viewModel: ChatViewModel by viewModels()
 
@@ -55,9 +53,9 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun setupAdapter() {
-        adapter = ChatListAdapter(
+        adapter = ChatAdapter(
             RudoChatInstance.getFirebaseAuth()?.uid,
-            object : ChatListAdapter.MessageClickListener {
+            object : ChatAdapter.MessageClickListener {
                 override fun onClick(item: Message) {
                     // TODO
                 }
