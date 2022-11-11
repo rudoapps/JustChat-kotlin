@@ -26,14 +26,14 @@ class ChatViewModel @Inject constructor(
     private val _messageList = MutableLiveData<MutableList<Message>>()
     val messageList: LiveData<MutableList<Message>> = _messageList
 
+    private val _newMessageReceived = MutableLiveData<Boolean>()
+    val newMessageReceived: LiveData<Boolean> = _newMessageReceived
+
     private val _sendMessageAttempt = MutableLiveData<Boolean>()
     val sendMessageAttempt: LiveData<Boolean> = _sendMessageAttempt
 
     private val _sendMessageSuccess = MutableLiveData<ResultInfo>()
     val sendMessageSuccess: LiveData<ResultInfo> = _sendMessageSuccess
-
-    private val _initialMessageListLoaded = MutableLiveData<Boolean>()
-    val initialMessageListLoaded: LiveData<Boolean> = _initialMessageListLoaded
 
     private val _messageListHistoryUpdateStarted = MutableLiveData<Boolean>()
     val messageListHistoryUpdateStarted: LiveData<Boolean> = _messageListHistoryUpdateStarted
@@ -41,11 +41,21 @@ class ChatViewModel @Inject constructor(
     private val _messageListHistoryUpdateFinished = MutableLiveData<Boolean>()
     val messageListHistoryUpdateFinished: LiveData<Boolean> = _messageListHistoryUpdateFinished
 
-    fun getMessages() {
+    //TODO esto irá separado en getMessageHistory y getNewMessage
+    private var firstLoad = true
+    fun getMessages(initialMessageList: MutableList<Message>?) {
+        _messageList.value = initialMessageList ?: mutableListOf()
+
         viewModelScope.launch {
             chat?.let {
                 eventsUseCase.getMessagesIndividual(it, 0).collect { messages ->
-                    _messageList.postValue(messages)
+                    if (firstLoad) {
+                        _messageList.postValue(messages)
+                        firstLoad = false
+                    } else if (_messageList.value?.last() != messages.last()) {
+                        _messageList.value?.add(messages.last())
+                        _newMessageReceived.postValue(true)
+                    }
                 }
             }
         }
@@ -53,22 +63,24 @@ class ChatViewModel @Inject constructor(
 
     fun prepareMessageForSending() {
         viewModelScope.launch {
-            RudoChatInstance.getFirebaseAuth()?.uid?.let { userId ->
+            getUserId()?.let { uid ->
                 if (!newMessageText.value.isNullOrBlank() && chat != null) {
-                    val message = Message()
-                    message.userId = userId
-                    message.text = newMessageText.value
-                    message.timestamp = System.currentTimeMillis()
+                    val message = Message().apply {
+                        id = "$uid-${System.currentTimeMillis()}"
+                        userId = uid
+                        text = newMessageText.value
+                        timestamp = System.currentTimeMillis()
+                    }
 
-                    val chatInfo = ChatInfo()
-                    chatInfo.chatId = chat?.id
-                    chatInfo.userId = userId
-                    chatInfo.otherUserId = chat?.otherUserId
+                    val chatInfo = ChatInfo().apply {
+                        chatId = chat?.id
+                        userId = uid
+                        otherUserId = chat?.otherUserId
+                    }
 
                     newMessageText.value = ""
                     _messageList.value?.add(message)
-                    _messageList.value = _messageList.value
-                    _sendMessageAttempt.value = true
+                    _sendMessageAttempt.postValue(true)
 
                     sendMessage(message, chatInfo)
                 }
@@ -80,5 +92,9 @@ class ChatViewModel @Inject constructor(
         eventsUseCase.sendMessage(chatInfo, message).collect {
             _sendMessageSuccess.postValue(it)
         }
+    }
+
+    private fun getUserId(): String? {
+        return RudoChatInstance.getFirebaseAuth()?.uid
     }
 }
