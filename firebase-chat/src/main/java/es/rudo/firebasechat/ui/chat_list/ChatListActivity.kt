@@ -18,7 +18,7 @@ class ChatListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatListBinding
     private val viewModel: ChatListViewModel by viewModels()
-    private lateinit var adapter: ChatHistoryAdapter
+    private lateinit var adapter: ChatListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +40,7 @@ class ChatListActivity : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        adapter = ChatHistoryAdapter(this) {
+        adapter = ChatListAdapter {
             val intent = Intent(this, ChatActivity::class.java)
             intent.putExtra(CHAT, it)
             startActivity(intent)

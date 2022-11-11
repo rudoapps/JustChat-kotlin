@@ -1,19 +1,15 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.graphics.fonts.Font
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
-import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -22,13 +18,12 @@ import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.databinding.ItemChatBinding
 import es.rudo.firebasechat.helpers.extensions.dpToPx
 import es.rudo.firebasechat.helpers.extensions.getTime
-import es.rudo.firebasechat.helpers.extensions.pxToDp
 
-class ChatListAdapter(
+class ChatAdapter(
     private val userId: String?, // TODO valorar setearlo en el companion object del activity y ahorrarse el param
     private val clickListener: MessageClickListener
 ) :
-    ListAdapter<Message, ChatListAdapter.ViewHolder>(ListAdapterCallback()) {
+    ListAdapter<Message, ChatAdapter.ViewHolder>(ListAdapterCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), userId, clickListener)

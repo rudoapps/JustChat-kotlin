@@ -11,7 +11,7 @@
 
         <variable
             name="clickListener"
-            type="es.rudo.firebasechat.ui.chat.ChatListAdapter.MessageClickListener" />
+            type="es.rudo.firebasechat.ui.chat.ChatAdapter.MessageClickListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
