@@ -38,15 +38,15 @@ class ChatListActivity : AppCompatActivity() {
         initAdapter()
         setUpObservables()
 
-        viewModel.sendNotification(
-            Notification(
-                "titleExample",
-                "messageDescription",
-                "QZm9kCEoAQaMbycsOjmfZSjGLUm1"
-            )
-        )
+//        viewModel.sendNotification(
+//            Notification(
+//                "titleExample",
+//                "messageDescription",
+//                "QZm9kCEoAQaMbycsOjmfZSjGLUm1"
+//            )
+//        )
 
-//        viewModel.initUser(isNetworkAvailable)
+        viewModel.initUser(isNetworkAvailable)
     }
 
     private fun initAdapter() {
@@ -129,7 +129,7 @@ class ChatListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (!viewModel.chats.value.isNullOrEmpty()) {
-            viewModel.getChats()
+            viewModel.getChats(isNetworkAvailable)
         }
     }
 }
