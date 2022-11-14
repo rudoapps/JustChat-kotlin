@@ -16,11 +16,8 @@ class NotificationsInterceptor : Interceptor {
     private fun getRequestWithHeaders(chain: Interceptor.Chain): Request {
         val request = chain.request()
         val newRequest = request.newBuilder().apply {
-            addHeader(
-                Config.TYPE_ITEM_AUTHORIZATION,
-                "${Config.HTTP_CLIENT_AUTHORIZATION}${Config.SERVER_KEY}"
-            )
-            addHeader(Config.TYPE_ITEM_CONTENT_TYPE, Config.CONTENT_TYPE)
+            addHeader(Config.TYPE_ITEM_AUTHORIZATION, "key=${Config.FCM_TOKEN}")
+            addHeader(Config.CONTENT_TYPE, Config.CONTENT_VALUE)
         }
 
         return newRequest.build()

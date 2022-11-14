@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.rudo.firebasechat.data.dto.MessageNotificationBack
+import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.domain.EventsUseCase
@@ -25,9 +25,9 @@ class ChatListViewModel @Inject constructor(
     val listChatId = MutableLiveData<MutableList<Pair<String, String>>>()
     val chatsInitialized = MutableLiveData<ResultInfo>()
 
-    fun sendNotification(messageNotificationBack: MessageNotificationBack) {
+    fun sendNotification(notification: Notification) {
         viewModelScope.launch(Dispatchers.IO) {
-            val response = notificationsUseCase.sendNotification(messageNotificationBack)
+            val response = notificationsUseCase.sendNotification(notification)
             response
         }
     }

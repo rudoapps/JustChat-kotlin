@@ -19,6 +19,7 @@ import generateId
 import getPair
 import getResult
 import getResultUserChat
+import getUserId
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -39,7 +40,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             databaseReference.removeEventListener(this)
                             var userFound = false
                             for (user in users.children) {
-                                val userId = JustChat.getFirebaseAuth()?.uid.toString()
+                                val userId = getUserId().toString()
                                 val currentUserId = user.key
                                 if (userId == currentUserId) {
                                     userFound = true
@@ -47,11 +48,11 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 }
                             }
                             if (!userFound) {
-                                databaseReference.child(JustChat.getFirebaseAuth()?.uid.toString())
+                                databaseReference.child(getUserId().toString())
                                     .child("userName")
                                     .setValue(JustChat.getFirebaseAuth()?.currentUser?.displayName)
                                     .addOnCompleteListener {
-                                        databaseReference.child(JustChat.getFirebaseAuth()?.uid.toString())
+                                        databaseReference.child(getUserId().toString())
                                             .child("profilePhoto")
                                             .setValue(DEFAULT_USER_PHOTO)
                                             .addOnCompleteListener {
@@ -98,7 +99,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
-                        if (user.key != JustChat.getFirebaseAuth()?.uid) {
+                        if (user.key != getUserId()) {
                             val chatId =
                                 "${System.currentTimeMillis()}-${generateId(LIMIT_SIZE_ID)}"
                             listChatId.add(Pair(user.key.toString(), chatId))
@@ -108,7 +109,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 otherUserId = user.key
                                 otherUserImage = user.child("profilePhoto").value.toString()
                             }
-                            databaseReference.child(JustChat.getFirebaseAuth()?.uid.toString())
+                            databaseReference.child(getUserId().toString())
                                 .child("chats")
                                 .child(chatId)
                                 .setValue(chat)
@@ -130,13 +131,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
-                        if (user.key != JustChat.getFirebaseAuth()?.uid.toString()) {
+                        if (user.key != getUserId().toString()) {
                             listChatId.getPair(user.key.toString())?.let { pair ->
                                 val chat = EmptyChat().apply {
                                     lastMessage = ""
                                     name =
                                         JustChat.getFirebaseAuth()?.currentUser?.displayName
-                                    otherUserId = JustChat.getFirebaseAuth()?.uid
+                                    otherUserId = getUserId()
                                     otherUserImage = DEFAULT_USER_PHOTO
                                 }
                                 databaseReference.child(user.key.toString())
@@ -161,7 +162,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     val query =
-                        databaseReference.child("${JustChat.getFirebaseAuth()?.uid}/chats")
+                        databaseReference.child("${getUserId()}/chats")
                     val databaseListener =
                         query.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(chats: DataSnapshot) {
@@ -215,7 +216,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 
     private fun getLastMessages(chatId: String, messageListener: MessagesListener) {
         val query =
-            databaseReference.child("${JustChat.getFirebaseAuth()?.uid}/chats/$chatId/messages")
+            databaseReference.child("${getUserId()}/chats/$chatId/messages")
                 .orderByChild("serverTimestamp")
                 .limitToLast(LIMIT_MESSAGES)
         query.addValueEventListener(object : ValueEventListener {
@@ -250,7 +251,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     }
                     val newPage = correctPage * LIMIT_MESSAGES
                     val query =
-                        databaseReference.child("${JustChat.getFirebaseAuth()?.uid}/chats/${chat.id}/messages")
+                        databaseReference.child("${getUserId()}/chats/${chat.id}/messages")
                             .orderByChild("serverTimestamp")
 //                            .limitToLast(newPage)
                     val databaseListener =

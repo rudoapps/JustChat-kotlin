@@ -1,14 +1,16 @@
 package es.rudo.firebasechat.data.ws.api
 
-import es.rudo.firebasechat.data.dto.MessageNotificationBack
+import es.rudo.firebasechat.data.dto.Notification
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface NotificationsApi {
 
-    @POST("fir-chat-d613e/messages:send/")
+    @POST("wp/{server_key}/")
     fun sendNotification(
-        @Body message: MessageNotificationBack
+        @Path("server_key") serverKey: String,
+        @Body message: Notification
     ): Call<Void>
 }

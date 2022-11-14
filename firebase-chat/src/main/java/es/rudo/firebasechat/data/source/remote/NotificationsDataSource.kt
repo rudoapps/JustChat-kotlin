@@ -1,8 +1,8 @@
 package es.rudo.firebasechat.data.source.remote
 
-import es.rudo.firebasechat.data.dto.MessageNotificationBack
+import es.rudo.firebasechat.data.dto.Notification
 import retrofit2.Response
 
 interface NotificationsDataSource {
-    fun sendNotification(messageNotificationBack: MessageNotificationBack): Response<Void>
+    fun sendNotification(notification: Notification): Response<Void>
 }

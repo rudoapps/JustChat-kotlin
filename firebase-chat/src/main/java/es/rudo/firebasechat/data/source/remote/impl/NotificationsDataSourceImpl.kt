@@ -1,8 +1,8 @@
 package es.rudo.firebasechat.data.source.remote.impl
 
-import es.rudo.firebasechat.data.dto.MessageNotificationBack
 import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.source.remote.NotificationsDataSource
+import es.rudo.firebasechat.data.ws.api.Config
 import es.rudo.firebasechat.data.ws.api.NotificationsApi
 import retrofit2.Response
 import javax.inject.Inject
@@ -12,8 +12,8 @@ class NotificationsDataSourceImpl @Inject constructor(
 ) : NotificationsDataSource {
 
     override fun sendNotification(
-        messageNotificationBack: MessageNotificationBack
+        notification: Notification
     ): Response<Void> {
-        return notificationsApi.sendNotification(messageNotificationBack).execute()
+        return notificationsApi.sendNotification(Config.FCM_TOKEN, notification).execute()
     }
 }
