@@ -298,7 +298,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         return callbackFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
-                    val messageId = "${System.currentTimeMillis()}-${generateId(LIMIT_SIZE_ID)}"
+                    val messageId = message.id.toString()
 
                     val backMessage = message.toMessageBack()
                     backMessage.serverTimestamp = ServerValue.TIMESTAMP

@@ -3,8 +3,9 @@ package es.rudo.firebasechat.ui.chat
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil.setContentView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
@@ -25,7 +26,7 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_chat)
+        binding = setContentView(this, R.layout.activity_chat)
 
         binding.lifecycleOwner = this
         binding.activity = this
@@ -37,9 +38,12 @@ class ChatActivity : AppCompatActivity() {
         initListeners()
 
         loadData()
-        viewModel.getMessages(isNetworkAvailable)
 
         setupViews()
+    }
+
+    override fun onBackPressed() {
+        finish()
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -73,6 +77,7 @@ class ChatActivity : AppCompatActivity() {
             stackFromEnd = true
             reverseLayout = false
         }
+        (binding.recycler.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
         binding.recycler.setHasFixedSize(false)
     }
 
@@ -80,16 +85,35 @@ class ChatActivity : AppCompatActivity() {
         // TODO revisar cuando haya paginación (cambiar al itemRange)
         viewModel.messageList.observe(this) { messages ->
             messages?.let {
-                if (adapter.currentList.size < it.size) {
-                    adapter.submitList(it)
-                    binding.recycler.smoothScrollToPosition(it.lastIndex)
-                    adapter.notifyItemInserted(it.lastIndex)
+                adapter.submitList(messages)
+            }
+        }
+
+        viewModel.newMessageReceived.observe(this) {
+            viewModel.messageList.value?.let { messages ->
+                if (messages.isNotEmpty()) {
+                    adapter.submitList(messages)
+
+                    if ((binding.recycler.layoutManager as LinearLayoutManager).findLastVisibleItemPosition() == adapter.itemCount - 2) {
+                        adapter.itemCount.takeIf { it > 0 }?.let {
+                            binding.recycler.scrollToPosition(it - 1)
+                        }
+                    } else {
+                        adapter.notifyItemInserted(adapter.itemCount - 1)
+                    }
                 }
             }
         }
 
         viewModel.sendMessageAttempt.observe(this) {
-            // TODO revisar si hay que hacer el notify al adapter aquí
+            viewModel.messageList.value?.let { messages ->
+                if (messages.isNotEmpty()) {
+                    adapter.submitList(messages)
+                    adapter.itemCount.takeIf { it > 0 }?.let {
+                        binding.recycler.scrollToPosition(it - 1)
+                    }
+                }
+            }
         }
 
         viewModel.sendMessageSuccess.observe(this) {
@@ -105,30 +129,12 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun initListeners() {
-        binding.imageSend.setOnClickListener {
-            viewModel.prepareMessageForSending(isNetworkAvailable)
-        }
-    }
-
-    private fun setupChat(chat: Chat) {
-        binding.textUser.text = chat.name
-        Glide.with(this).load(chat.otherUserImage).into(binding.imageUser)
-        adapter.submitList(chat.messages)
-        viewModel.getMessages(isNetworkAvailable)
-    }
-
-    override fun onBackPressed() {
-        finish()
-    }
-
     private fun loadData() {
         intent.extras?.let {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
-                    setupChat(chat)
-                    adapter.submitList(chat.messages)
+                    viewModel.getMessages(chat.messages)
                 }
             }
         }
