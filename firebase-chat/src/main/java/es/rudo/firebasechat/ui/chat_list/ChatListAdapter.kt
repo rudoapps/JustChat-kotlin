@@ -47,10 +47,10 @@ class ChatListAdapter(
             Glide.with(binding.imageUser.context)
                 .load(item.otherUserImage)
                 .placeholder(
-                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.gray_square)
+                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.shape_gray_rounded_rectangle)
                 )
                 .error(
-                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.gray_square)
+                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.shape_gray_rounded_rectangle)
                 )
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
