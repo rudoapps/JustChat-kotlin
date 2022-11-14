@@ -41,9 +41,9 @@ class ChatListActivity : AppCompatActivity() {
         initAdapter()
         setUpObservables()
 
-        viewModel.sendNotification(getNotification())
+//        viewModel.sendNotification(getNotification())
 
-//        viewModel.initUser(isNetworkAvailable)
+        viewModel.initUser(isNetworkAvailable)
     }
 
     private fun getNotification(): MessageNotificationBack {

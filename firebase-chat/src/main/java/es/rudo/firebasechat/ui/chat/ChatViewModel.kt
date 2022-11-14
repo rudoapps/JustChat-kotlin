@@ -43,12 +43,12 @@ class ChatViewModel @Inject constructor(
 
     //TODO esto irá separado en getMessageHistory y getNewMessage
     private var firstLoad = true
-    fun getMessages(initialMessageList: MutableList<Message>?) {
+    fun getMessages(isNetworkAvailable: Boolean, initialMessageList: MutableList<Message>?) {
         _messageList.value = initialMessageList ?: mutableListOf()
 
         viewModelScope.launch {
             chat?.let {
-                eventsUseCase.getMessagesIndividual(it, 0).collect { messages ->
+                eventsUseCase.getMessagesIndividual(isNetworkAvailable, it, 0).collect { messages ->
                     if (firstLoad) {
                         _messageList.postValue(messages)
                         firstLoad = false
@@ -102,6 +102,6 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getUserId(): String? {
-        return RudoChatInstance.getFirebaseAuth()?.uid
+        return JustChat.getFirebaseAuth()?.uid
     }
 }

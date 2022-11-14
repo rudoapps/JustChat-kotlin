@@ -35,7 +35,6 @@ class ChatActivity : AppCompatActivity() {
         setupToolbar()
         setupAdapter()
         initObservers()
-        initListeners()
 
         loadData()
 
@@ -134,7 +133,7 @@ class ChatActivity : AppCompatActivity() {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
-                    viewModel.getMessages(chat.messages)
+                    viewModel.getMessages(isNetworkAvailable, chat.messages)
                 }
             }
         }
