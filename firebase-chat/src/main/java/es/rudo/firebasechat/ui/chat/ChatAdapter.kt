@@ -136,7 +136,7 @@ class ChatAdapter(
 
     class ListAdapterCallback : DiffUtil.ItemCallback<Message>() {
         override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
-            return oldItem.userId == newItem.userId
+            return oldItem.id == newItem.id
         }
 
         @SuppressLint("DiffUtilEquals")
