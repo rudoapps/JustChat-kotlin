@@ -57,7 +57,8 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                             .setValue(DEFAULT_USER_PHOTO)
                                             .addOnCompleteListener {
                                                 databaseReference.child(getUserId().toString())
-                                                    .setValue(mapOf("deviceToken" to deviceToken))
+                                                    .child("deviceToken")
+                                                    .setValue(deviceToken)
                                                     .addOnCompleteListener {
                                                         trySend(getResultUserChat(isSuccess = true)).isSuccess
                                                     }
