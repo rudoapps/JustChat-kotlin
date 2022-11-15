@@ -9,8 +9,6 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.data.dto.DataNotification
-import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.Message
@@ -140,10 +138,26 @@ class ChatActivity : AppCompatActivity() {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
+                    viewModel.manageChatId(true)
                     viewModel.getMessages(isNetworkAvailable, chat.messages)
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.manageChatId(false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.manageChatId(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.manageChatId(true)
     }
 
     private fun setupViews() {

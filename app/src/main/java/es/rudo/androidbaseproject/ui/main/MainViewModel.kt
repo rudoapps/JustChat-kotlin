@@ -7,7 +7,7 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.rudo.androidbaseproject.data.source.local.preferences.AppPreferences
+import es.rudo.firebasechat.data.source.preferences.AppPreferences
 import es.rudo.androidbaseproject.ui.base.BaseViewModel
 import javax.inject.Inject
 

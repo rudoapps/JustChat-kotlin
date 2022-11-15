@@ -8,12 +8,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import es.rudo.firebasechat.data.dto.DataNotification
 import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.dto.results.ResultInfo
+import es.rudo.firebasechat.data.source.preferences.AppPreferences
 import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
-import es.rudo.firebasechat.main.instance.JustChat
+import getUserId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val eventsUseCase: EventsUseCase,
-    private val notificationsUseCase: NotificationsUseCase
+    private val notificationsUseCase: NotificationsUseCase,
+    private val appPreferences: AppPreferences
 ) : ViewModel() {
 
     var chat: Chat? = null
@@ -114,11 +116,15 @@ class ChatViewModel @Inject constructor(
             val dataNotification = DataNotification(
                 title = chat?.name.toString(),
                 message = message?.text.toString(),
-                chatId = chat?.id.toString()
+                chatId = chat?.id.toString(),
+                chatName = chat?.name.toString(),
+                chatOtherUserId = chat?.otherUserImage.toString(),
+                chatOtherUserImage = chat?.otherUserImage.toString(),
+                userDeviceToken = chat?.userDeviceToken.toString()
             )
-
+            chat?.userDeviceToken.toString()
             val notification = Notification(
-                to = chat?.userDeviceToken.toString(),
+                to = "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
                 data = dataNotification,
                 priority = 10
             )
@@ -127,7 +133,11 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun getUserId(): String? {
-        return JustChat.getFirebaseAuth()?.uid
+    fun manageChatId(save: Boolean) {
+        if (save) {
+            appPreferences.chatId = chat?.id.toString()
+        } else {
+            appPreferences.chatId = ""
+        }
     }
 }
