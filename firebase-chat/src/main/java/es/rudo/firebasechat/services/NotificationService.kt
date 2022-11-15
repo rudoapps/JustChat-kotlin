@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import es.rudo.firebasechat.R
@@ -27,7 +28,13 @@ class NotificationService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        super.onNewToken(token)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if (!it.isSuccessful) {
+                return@addOnCompleteListener
+            }
+            FirebaseMessaging.getInstance().subscribeToTopic(it.result)
+            Log.d("_TAG_", "onTokenRefresh completed with token: $token")
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -49,13 +56,13 @@ class NotificationService : FirebaseMessagingService() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.bell)
+        val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.notification_ichika)
 
         val notificationSoundUri: Uri =
             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.bell)
+                .setSmallIcon(R.drawable.notification_ichika)
                 .setLargeIcon(largeIcon)
                 .setContentTitle(message.data["title"])
                 .setContentText(message.data["message"])
@@ -68,7 +75,7 @@ class NotificationService : FirebaseMessagingService() {
     }
 
     override fun onMessageSent(msgId: String) {
-        super.onMessageSent(msgId)
+        Log.d("_TAG_", "msgId: $msgId")
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
