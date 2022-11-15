@@ -14,8 +14,8 @@ import javax.inject.Inject
 class EventsUseCaseImpl @Inject constructor(private val eventsRepository: EventsRepository) :
     EventsUseCase {
 
-    override fun initUser(isNetworkAvailable: Boolean): Flow<ResultUserChat> {
-        return eventsRepository.initUser(isNetworkAvailable)
+    override fun initUser(isNetworkAvailable: Boolean, deviceToken: String): Flow<ResultUserChat> {
+        return eventsRepository.initUser(isNetworkAvailable, deviceToken)
     }
 
     override fun initCurrentUserChats(isNetworkAvailable: Boolean): Flow<MutableList<Pair<String, String>>> {

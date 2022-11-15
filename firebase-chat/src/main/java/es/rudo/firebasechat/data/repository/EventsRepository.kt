@@ -9,7 +9,7 @@ import es.rudo.firebasechat.domain.models.Message
 import kotlinx.coroutines.flow.Flow
 
 interface EventsRepository {
-    fun initUser(isNetworkAvailable: Boolean): Flow<ResultUserChat>
+    fun initUser(isNetworkAvailable: Boolean, deviceToken: String): Flow<ResultUserChat>
     fun initCurrentUserChats(isNetworkAvailable: Boolean): Flow<MutableList<Pair<String, String>>>
     fun initOtherUsersChats(
         isNetworkAvailable: Boolean,

@@ -20,9 +20,9 @@ class EventsRepositoryImpl @Inject constructor(
     private val eventsLocalDataSource: EventsLocalDataSource
 ) : EventsRepository {
 
-    override fun initUser(isNetworkAvailable: Boolean): Flow<ResultUserChat> {
+    override fun initUser(isNetworkAvailable: Boolean, deviceToken: String): Flow<ResultUserChat> {
         return if (isNetworkAvailable) {
-            eventsRemoteDataSource.initUser()
+            eventsRemoteDataSource.initUser(deviceToken)
         } else {
             flow {
                 emit(getResultUserChat(isSuccess = false, exception = Exception("No connection")))

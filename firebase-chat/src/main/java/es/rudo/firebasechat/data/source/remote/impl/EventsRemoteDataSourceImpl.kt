@@ -31,7 +31,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     private val type: BasicConfiguration.Type
 ) : EventsRemoteDataSource {
 
-    override fun initUser(): Flow<ResultUserChat> {
+    override fun initUser(deviceToken: String): Flow<ResultUserChat> {
         return callbackFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
@@ -56,7 +56,11 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                             .child("profilePhoto")
                                             .setValue(DEFAULT_USER_PHOTO)
                                             .addOnCompleteListener {
-                                                trySend(getResultUserChat(isSuccess = true)).isSuccess
+                                                databaseReference.child(getUserId().toString())
+                                                    .setValue(mapOf("deviceToken" to deviceToken))
+                                                    .addOnCompleteListener {
+                                                        trySend(getResultUserChat(isSuccess = true)).isSuccess
+                                                    }
                                             }
                                             .addOnFailureListener {
                                                 trySend(
@@ -73,7 +77,21 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         ).isFailure
                                     }
                             } else {
-                                trySend(getResultUserChat(isSuccess = true, exist = true)).isSuccess
+                                databaseReference.child(getUserId().toString())
+                                    .updateChildren(mapOf("deviceToken" to deviceToken))
+                                    .addOnCompleteListener {
+                                        trySend(
+                                            getResultUserChat(
+                                                isSuccess = true,
+                                                exist = true
+                                            )
+                                        ).isSuccess
+                                    }
+                                    .addOnFailureListener {
+                                        trySend(
+                                            getResultUserChat(isSuccess = true, exception = it)
+                                        ).isFailure
+                                    }
                             }
                         }
 
@@ -179,15 +197,29 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         messages = messagesList
                                     }
 
-                                    getLastMessages(
-                                        userChat.id.toString(),
-                                        object : MessagesListener {
+                                    getDeviceToken(
+                                        userChat.otherUserId.toString(),
+                                        object : SourceListener {
                                             override fun listMessages(messages: MutableList<Message>) {
-                                                messagesList.addAll(messages)
-                                                chatList.add(userChat)
-                                                if (chatList.size == chats.children.count()) {
-                                                    trySend(chatList).isSuccess
-                                                }
+                                            }
+
+                                            override fun deviceToken(deviceToken: String) {
+                                                userChat.userDeviceToken = deviceToken
+                                                getLastMessages(
+                                                    userChat.id.toString(),
+                                                    object : SourceListener {
+                                                        override fun listMessages(messages: MutableList<Message>) {
+                                                            messagesList.addAll(messages)
+                                                            chatList.add(userChat)
+                                                            if (chatList.size == chats.children.count()) {
+                                                                trySend(chatList).isSuccess
+                                                            }
+                                                        }
+
+                                                        override fun deviceToken(deviceToken: String) {
+                                                        }
+                                                    }
+                                                )
                                             }
                                         }
                                     )
@@ -214,7 +246,20 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    private fun getLastMessages(chatId: String, messageListener: MessagesListener) {
+    private fun getDeviceToken(userId: String, listener: SourceListener) {
+        databaseReference.child(userId).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(user: DataSnapshot) {
+                databaseReference.removeEventListener(this)
+                val deviceToken = user.child("deviceToken").value.toString()
+                listener.deviceToken(deviceToken)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+        })
+    }
+
+    private fun getLastMessages(chatId: String, messageListener: SourceListener) {
         val query =
             databaseReference.child("${getUserId()}/chats/$chatId/messages")
                 .orderByChild("serverTimestamp")
@@ -354,7 +399,8 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    private interface MessagesListener {
+    private interface SourceListener {
         fun listMessages(messages: MutableList<Message>)
+        fun deviceToken(deviceToken: String)
     }
 }

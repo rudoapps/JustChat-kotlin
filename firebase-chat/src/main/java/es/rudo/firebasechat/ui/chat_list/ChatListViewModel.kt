@@ -4,33 +4,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.domain.EventsUseCase
-import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val eventsUseCase: EventsUseCase,
-    private val notificationsUseCase: NotificationsUseCase
+    private val eventsUseCase: EventsUseCase
 ) : ViewModel() {
 
     val chats = MutableLiveData<MutableList<Chat>>()
     val userInitialized = MutableLiveData<ResultUserChat>()
     val listChatId = MutableLiveData<MutableList<Pair<String, String>>>()
     val chatsInitialized = MutableLiveData<ResultInfo>()
-
-    fun sendNotification(notification: Notification) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = notificationsUseCase.sendNotification(notification)
-            response
-        }
-    }
 
     fun getChats(isNetworkAvailable: Boolean) {
         viewModelScope.launch {
@@ -40,9 +29,9 @@ class ChatListViewModel @Inject constructor(
         }
     }
 
-    fun initUser(isNetworkAvailable: Boolean) {
+    fun initUser(isNetworkAvailable: Boolean, deviceToken: String) {
         viewModelScope.launch {
-            eventsUseCase.initUser(isNetworkAvailable).collect {
+            eventsUseCase.initUser(isNetworkAvailable, deviceToken).collect {
                 userInitialized.value = it
             }
         }

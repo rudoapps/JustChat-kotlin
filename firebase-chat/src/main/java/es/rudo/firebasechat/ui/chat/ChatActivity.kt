@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
+import es.rudo.firebasechat.data.dto.DataNotification
+import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.Message
@@ -112,6 +114,7 @@ class ChatActivity : AppCompatActivity() {
                         binding.recycler.scrollToPosition(it - 1)
                     }
                 }
+                viewModel.sendNotification()
             }
         }
 
@@ -125,6 +128,10 @@ class ChatActivity : AppCompatActivity() {
 
         viewModel.messageListHistoryUpdateFinished.observe(this) {
             // TODO controlará el puntero cuando se haya cargado la siguiente página del historial
+        }
+
+        binding.imageSend.setOnClickListener {
+            viewModel.prepareMessageForSending(isNetworkAvailable)
         }
     }
 

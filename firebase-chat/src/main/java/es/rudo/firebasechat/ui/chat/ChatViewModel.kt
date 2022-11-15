@@ -5,18 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import es.rudo.firebasechat.data.dto.DataNotification
+import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.domain.EventsUseCase
+import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.main.instance.JustChat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
-    private val eventsUseCase: EventsUseCase
+    private val eventsUseCase: EventsUseCase,
+    private val notificationsUseCase: NotificationsUseCase
 ) : ViewModel() {
 
     var chat: Chat? = null
@@ -41,7 +46,7 @@ class ChatViewModel @Inject constructor(
     private val _messageListHistoryUpdateFinished = MutableLiveData<Boolean>()
     val messageListHistoryUpdateFinished: LiveData<Boolean> = _messageListHistoryUpdateFinished
 
-    //TODO esto irá separado en getMessageHistory y getNewMessage
+    // TODO esto irá separado en getMessageHistory y getNewMessage
     private var firstLoad = true
     fun getMessages(isNetworkAvailable: Boolean, initialMessageList: MutableList<Message>?) {
         _messageList.value = initialMessageList ?: mutableListOf()
@@ -98,6 +103,23 @@ class ChatViewModel @Inject constructor(
     ) {
         eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
             _sendMessageSuccess.postValue(it)
+        }
+    }
+
+    fun sendNotification() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val dataNotification = DataNotification(
+                title = "ICHIKA",
+                message = "ICHIKA IS THE REAL WAY"
+            )
+
+            val notification = Notification(
+                to = chat?.userDeviceToken.toString(),
+                data = dataNotification,
+                priority = 10
+            )
+//            val response = notificationsUseCase.sendNotification(notification)
+//            response
         }
     }
 

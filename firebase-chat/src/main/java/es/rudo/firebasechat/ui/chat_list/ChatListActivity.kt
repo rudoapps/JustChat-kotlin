@@ -9,8 +9,6 @@ import androidx.databinding.DataBindingUtil
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.data.dto.DataNotification
-import es.rudo.firebasechat.data.dto.Notification
 import es.rudo.firebasechat.databinding.ActivityChatListBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
@@ -48,22 +46,8 @@ class ChatListActivity : AppCompatActivity() {
             if (!it.isSuccessful) {
                 return@addOnCompleteListener
             }
-//            viewModel.initUser(isNetworkAvailable)
-            viewModel.sendNotification(getNotification(it.result))
+            viewModel.initUser(isNetworkAvailable, it.result)
         }
-    }
-
-    private fun getNotification(deviceToken: String): Notification {
-        val dataNotification = DataNotification(
-            title = "ICHIKA",
-            message = "ICHIKA IS THE REAL WAY"
-        )
-
-        return Notification(
-            to = deviceToken,
-            data = dataNotification,
-            priority = 10
-        )
     }
 
     private fun initAdapter() {
