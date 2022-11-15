@@ -18,6 +18,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import es.rudo.firebasechat.R
+import es.rudo.firebasechat.main.instance.JustChat
+import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import kotlin.random.Random
 
@@ -39,7 +41,11 @@ class NotificationService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d("_TAG_", "onMessageReceived: ")
-        val intent = Intent(applicationContext, ChatListActivity::class.java)
+        val intent = if (JustChat.getFirebaseAuth() != null) {
+            Intent(applicationContext, ChatListActivity::class.java)
+        } else {
+            Intent(applicationContext, ChatListActivity::class.java)
+        }
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationId = Random.nextInt(3000)

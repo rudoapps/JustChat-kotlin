@@ -28,6 +28,8 @@ class ChatViewModel @Inject constructor(
 
     val newMessageText = MutableLiveData<String>()
 
+    var message: Message? = null
+
     private val _messageList = MutableLiveData<MutableList<Message>>()
     val messageList: LiveData<MutableList<Message>> = _messageList
 
@@ -87,6 +89,7 @@ class ChatViewModel @Inject constructor(
                     _messageList.value?.add(message)
                     _sendMessageAttempt.postValue(true)
 
+                    this@ChatViewModel.message = message
                     eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
                         _sendMessageSuccess.postValue(it)
                     }
@@ -109,8 +112,9 @@ class ChatViewModel @Inject constructor(
     fun sendNotification() {
         viewModelScope.launch(Dispatchers.IO) {
             val dataNotification = DataNotification(
-                title = "ICHIKA",
-                message = "ICHIKA IS THE REAL WAY"
+                title = chat?.name.toString(),
+                message = message?.text.toString(),
+                chatId = chat?.id.toString()
             )
 
             val notification = Notification(
@@ -118,8 +122,8 @@ class ChatViewModel @Inject constructor(
                 data = dataNotification,
                 priority = 10
             )
-//            val response = notificationsUseCase.sendNotification(notification)
-//            response
+            val response = notificationsUseCase.sendNotification(notification)
+            response
         }
     }
 
