@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.androidbaseproject.BuildConfig
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
+import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
 import es.rudo.firebasechat.domain.models.configuration.FirebaseConfiguration
 import es.rudo.firebasechat.main.instance.JustChat
@@ -69,7 +70,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     }
 
     private fun initListeners() {
-        binding.buttonOpenChat.setOnClickListener {
+        binding.buttonOpenChat.setClickWithDebounce {
             viewModel.oneTapSignInWithGoogle(oneTapClient, signInRequest, signUpRequest)
         }
     }

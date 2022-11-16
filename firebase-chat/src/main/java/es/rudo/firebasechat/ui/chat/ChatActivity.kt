@@ -112,7 +112,7 @@ class ChatActivity : AppCompatActivity() {
                         binding.recycler.scrollToPosition(it - 1)
                     }
                 }
-                viewModel.sendNotification()
+                viewModel.sendNotification(isNetworkAvailable)
             }
         }
 

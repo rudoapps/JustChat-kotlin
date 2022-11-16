@@ -6,6 +6,6 @@ dependencyResolutionManagement {
         jcenter() // Warning: this repository is going to shut down soon
     }
 }
-rootProject.name = "FirebaseChatLibrary"
+rootProject.name = "JustChatLibrary"
 include ':app'
 include ':firebase-chat'

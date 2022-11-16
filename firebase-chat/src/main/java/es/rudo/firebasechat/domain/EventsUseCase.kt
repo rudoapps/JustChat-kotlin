@@ -2,10 +2,7 @@ package es.rudo.firebasechat.domain
 
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatInfo
-import es.rudo.firebasechat.domain.models.Group
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.*
 import kotlinx.coroutines.flow.Flow
 
 interface EventsUseCase {
@@ -23,6 +20,7 @@ interface EventsUseCase {
         page: Int
     ): Flow<MutableList<Message>>
 
+    fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData>
     fun getGroups(isNetworkAvailable: Boolean): Flow<MutableList<Group>>
     fun sendMessage(
         isNetworkAvailable: Boolean,

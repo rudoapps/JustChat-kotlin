@@ -16,6 +16,7 @@ import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
 import getUserId
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -111,26 +112,27 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun sendNotification() {
+    fun sendNotification(isNetworkAvailable: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            val dataNotification = DataNotification(
-                title = chat?.name.toString(),
-                message = message?.text.toString(),
-                chatId = chat?.id.toString(),
-                chatName = chat?.name.toString(),
-                chatOtherUserId = chat?.otherUserImage.toString(),
-                chatOtherUserImage = chat?.otherUserImage.toString(),
-                userDeviceToken = chat?.userDeviceToken.toString()
-            )
+            eventsUseCase.getCurrentUser(isNetworkAvailable).collect {
+                val dataNotification = DataNotification(
+                    chatId = chat?.id.toString(),
+                    chatDestinationUserName = it.userName.toString(),
+                    chatDestinationUserId = it.userId.toString(),
+                    chatDestinationUserImage = it.userPhoto.toString(),
+                    destinationUserDeviceToken = it.userDeviceToken.toString(),
+                    chatMessage = message?.text.toString()
+                )
 //            "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
-
-            val notification = Notification(
-                to = chat?.userDeviceToken.toString(),
-                data = dataNotification,
-                priority = 10
-            )
-            val response = notificationsUseCase.sendNotification(notification)
-            response
+// chat?.userDeviceToken.toString(),
+                val notification = Notification(
+                    to = chat?.userDeviceToken.toString(),
+                    data = dataNotification,
+                    priority = 10
+                )
+                val response = notificationsUseCase.sendNotification(notification)
+                response
+            }
         }
     }
 

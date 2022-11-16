@@ -1,3 +1,4 @@
+
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.main.instance.JustChat
@@ -35,6 +36,12 @@ fun getResultUserChat(
     }
 }
 
-fun getUserId(): String? {
-    return JustChat.getFirebaseAuth()?.uid
+fun getUserId(): String {
+    return JustChat.getFirebaseAuth()?.uid?.let {
+        it
+    } ?: run {
+        ""
+//        val preferences =
+//            app.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+    }
 }

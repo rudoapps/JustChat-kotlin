@@ -4,10 +4,7 @@ import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.repository.EventsRepository
 import es.rudo.firebasechat.domain.EventsUseCase
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatInfo
-import es.rudo.firebasechat.domain.models.Group
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.*
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -39,6 +36,10 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
         page: Int
     ): Flow<MutableList<Message>> {
         return eventsRepository.getMessagesIndividual(isNetworkAvailable, chat, page)
+    }
+
+    override fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData> {
+        return eventsRepository.getCurrentUser(isNetworkAvailable)
     }
 
     override fun getGroups(isNetworkAvailable: Boolean): Flow<MutableList<Group>> {

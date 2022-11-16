@@ -6,10 +6,7 @@ import es.rudo.firebasechat.data.dto.converters.toMessageBack
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatInfo
-import es.rudo.firebasechat.domain.models.Group
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
@@ -99,7 +96,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         override fun onCancelled(error: DatabaseError) {
                         }
                     })
-                    awaitClose {}
+                    awaitClose {
+                        this.close()
+                    }
                 }
                 BasicConfiguration.Type.BACK -> {
                 }
@@ -140,7 +139,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
-            awaitClose {}
+            awaitClose {
+                this.close()
+            }
         }
     }
 
@@ -154,8 +155,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             listChatId.getPair(user.key.toString())?.let { pair ->
                                 val chat = EmptyChat().apply {
                                     lastMessage = ""
-                                    name =
-                                        JustChat.getFirebaseAuth()?.currentUser?.displayName
+                                    name = JustChat.getFirebaseAuth()?.currentUser?.displayName
                                     otherUserId = getUserId()
                                     otherUserImage = DEFAULT_USER_PHOTO
                                 }
@@ -172,7 +172,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
-            awaitClose {}
+            awaitClose {
+                this.close()
+            }
         }
     }
 
@@ -286,6 +288,47 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         })
     }
 
+    override fun getCurrentUser(): Flow<UserData> {
+        return callbackFlow {
+            when (type) {
+                BasicConfiguration.Type.FIREBASE -> {
+                    var count = 0
+                    databaseReference.child("${getUserId()}")
+                        .addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(user: DataSnapshot) {
+                                databaseReference.removeEventListener(this)
+                                if (count == 0) {
+                                    count++
+                                    val userData = UserData().apply {
+                                        userId = user.key
+                                        userName = user.child("userName").value.toString()
+                                        userPhoto = user.child("profilePhoto").value.toString()
+                                        userDeviceToken = user.child("deviceToken").value.toString()
+                                    }
+                                    trySend(userData).isSuccess
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+                        })
+                    awaitClose {
+                        this.close()
+                    }
+                }
+                BasicConfiguration.Type.BACK -> {
+                    trySend(UserData()).isSuccess
+                }
+                BasicConfiguration.Type.MIX -> {
+                    trySend(UserData()).isSuccess
+                }
+                BasicConfiguration.Type.USER_CONF -> {
+                    trySend(UserData()).isSuccess
+                }
+            }
+        }
+    }
+
     override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>> {
         return callbackFlow {
             when (type) {
@@ -388,7 +431,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         .addOnFailureListener {
                             trySend(getResult(false, it)).isFailure
                         }
-                    awaitClose {}
+                    awaitClose {
+                        this.close()
+                    }
                 }
                 BasicConfiguration.Type.BACK -> {
                 }

@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.RingtoneManager
@@ -18,7 +19,13 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import es.rudo.firebasechat.R
+import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.helpers.Constants
 import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
+import es.rudo.firebasechat.helpers.extensions.ImageInterface
+import es.rudo.firebasechat.helpers.extensions.downloadImageFromUrl
+import es.rudo.firebasechat.main.instance.JustChat
+import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import kotlin.random.Random
 
@@ -46,56 +53,80 @@ class NotificationService : FirebaseMessagingService() {
         if (normalizedChatIdPreferences == chatId) { // If user is in the same chat, avoid sending notification
             return
         } else {
-//            val chat = Chat().apply {
-//                id = chatId
-//                name = message.data["chat_name"]
-//                otherUserId = message.data["chat_other_user_id"]
-//                otherUserImage = message.data["chat_other_user_image"]
-//                userDeviceToken = message.data["chat_user_device_token"]
-//            }
-//
-//            val intent = if (JustChat.getFirebaseAuth() == null) {
-//                Intent(applicationContext, ChatListActivity::class.java)
-//            } else {
-//                Intent(applicationContext, ChatActivity::class.java).apply {
-//                    putExtra(Constants.CHAT, chat)
-//                }
-//            }
-            val intent = Intent(applicationContext, ChatListActivity::class.java)
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val notificationId = Random.nextInt(3000)
+            val chatDestinationUserImage = message.data["chat_destination_user_image"]
+            chatDestinationUserImage.downloadImageFromUrl(object : ImageInterface {
+                override fun onImageSuccess(bitmap: Bitmap) {
+                    createNotification(message, bitmap)
+                }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                setupChannels(notificationManager)
-            }
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val pendingIntent = PendingIntent.getActivity(
-                applicationContext,
-                0,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-
-            val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.notification_ichika)
-
-            val notificationSoundUri: Uri =
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            val notificationBuilder: NotificationCompat.Builder =
-                NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.notification_ichika)
-                    .setLargeIcon(largeIcon)
-                    .setContentTitle(message.data["title"])
-                    .setContentText(message.data["message"])
-                    .setAutoCancel(true)
-                    .setSound(notificationSoundUri)
-                    .setContentIntent(pendingIntent)
-
-            notificationBuilder.color =
-                ContextCompat.getColor(applicationContext, R.color.purple_200)
-            notificationManager.notify(notificationId, notificationBuilder.build())
+                override fun onImageError(exception: Exception) {
+                    createNotification(message)
+                }
+            })
         }
+    }
+
+    private fun createNotification(message: RemoteMessage, bitmap: Bitmap? = null) {
+        val chatId = message.data["chat_id"]
+        val chatMessage = message.data["chat_message"]
+        val chatDestinationUserName = message.data["chat_destination_user_name"]
+        val chatDestinationUserId = message.data["chat_destination_user_id"]
+        val chatDestinationUserImage = message.data["chat_destination_user_image"]
+        val chatDestinationUserDeviceToken = message.data["destination_user_device_token"]
+
+        val chat = Chat().apply {
+            id = chatId
+            name = chatDestinationUserName
+            otherUserId = chatDestinationUserId
+            otherUserImage = chatDestinationUserImage
+            userDeviceToken = chatDestinationUserDeviceToken
+        }
+
+        val intent = if (JustChat.getFirebaseAuth() == null) {
+            Intent(applicationContext, ChatListActivity::class.java)
+        } else {
+            Intent(applicationContext, ChatActivity::class.java).apply {
+                putExtra(Constants.CHAT, chat)
+            }
+        }
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationId = Random.nextInt(3000)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            setupChannels(notificationManager)
+        }
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val largeIcon = bitmap?.let {
+            it
+        } ?: kotlin.run {
+            BitmapFactory.decodeResource(resources, R.drawable.notification_ichika)
+        }
+
+        val notificationSoundUri: Uri =
+            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.bell)
+                .setLargeIcon(largeIcon)
+                .setContentTitle(chatDestinationUserName)
+                .setContentText(chatMessage)
+                .setAutoCancel(true)
+                .setSound(notificationSoundUri)
+                .setContentIntent(pendingIntent)
+
+        notificationBuilder.color =
+            ContextCompat.getColor(applicationContext, R.color.purple_200)
+        notificationManager.notify(notificationId, notificationBuilder.build())
     }
 
     override fun onMessageSent(msgId: String) {

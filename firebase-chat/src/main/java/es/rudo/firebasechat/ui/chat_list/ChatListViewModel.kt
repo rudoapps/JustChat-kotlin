@@ -8,7 +8,9 @@ import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.models.Chat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,25 +24,31 @@ class ChatListViewModel @Inject constructor(
     val chatsInitialized = MutableLiveData<ResultInfo>()
 
     fun getChats(isNetworkAvailable: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             eventsUseCase.getChats(isNetworkAvailable).collect {
-                chats.postValue(it)
+                withContext(Dispatchers.Main) {
+                    chats.postValue(it)
+                }
             }
         }
     }
 
     fun initUser(isNetworkAvailable: Boolean, deviceToken: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             eventsUseCase.initUser(isNetworkAvailable, deviceToken).collect {
-                userInitialized.value = it
+                withContext(Dispatchers.Main) {
+                    userInitialized.value = it
+                }
             }
         }
     }
 
     fun initCurrentUserChats(isNetworkAvailable: Boolean) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             eventsUseCase.initCurrentUserChats(isNetworkAvailable).collect {
-                listChatId.value = it
+                withContext(Dispatchers.Main) {
+                    listChatId.value = it
+                }
             }
         }
     }
@@ -49,9 +57,11 @@ class ChatListViewModel @Inject constructor(
         isNetworkAvailable: Boolean,
         listChatId: MutableList<Pair<String, String>>
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             eventsUseCase.initOtherUsersChats(isNetworkAvailable, listChatId).collect {
-                chatsInitialized.value = it
+                withContext(Dispatchers.Main) {
+                    chatsInitialized.value = it
+                }
             }
         }
     }

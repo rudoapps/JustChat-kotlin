@@ -5,10 +5,7 @@ import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.repository.EventsRepository
 import es.rudo.firebasechat.data.source.local.EventsLocalDataSource
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatInfo
-import es.rudo.firebasechat.domain.models.Group
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.*
 import getResult
 import getResultUserChat
 import kotlinx.coroutines.flow.Flow
@@ -58,6 +55,16 @@ class EventsRepositoryImpl @Inject constructor(
             eventsRemoteDataSource.getChats()
         } else {
             eventsLocalDataSource.getChats()
+        }
+    }
+
+    override fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData> {
+        return if (isNetworkAvailable) {
+            eventsRemoteDataSource.getCurrentUser()
+        } else {
+            flow {
+                emit(UserData())
+            }
         }
     }
 
