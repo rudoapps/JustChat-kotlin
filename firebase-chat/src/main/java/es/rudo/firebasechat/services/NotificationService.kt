@@ -18,11 +18,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.Message
-import es.rudo.firebasechat.helpers.Constants
-import es.rudo.firebasechat.main.instance.JustChat
-import es.rudo.firebasechat.ui.chat.ChatActivity
+import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import kotlin.random.Random
 
@@ -45,24 +41,27 @@ class NotificationService : FirebaseMessagingService() {
         val preferences =
             applicationContext.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         val chatId = message.data["chat_id"]
-        if (preferences.getString("KEY_CHATID", "") == chatId) {
+        val chatIdPreferences = preferences.getString(CHAT_ID_PREFERENCES, "")
+        val normalizedChatIdPreferences = chatIdPreferences?.removePrefix("\"")?.removeSuffix("\"")
+        if (normalizedChatIdPreferences == chatId) { // If user is in the same chat, avoid sending notification
             return
         } else {
-            val chat = Chat().apply {
-                id = chatId
-                name = message.data["chat_name"]
-                otherUserId = message.data["chat_other_user_id"]
-                otherUserImage = message.data["chat_other_user_image"]
-                userDeviceToken = message.data["chat_user_device_token"]
-            }
-
-            val intent = if (JustChat.getFirebaseAuth() == null) {
-                Intent(applicationContext, ChatListActivity::class.java)
-            } else {
-                Intent(applicationContext, ChatActivity::class.java).apply {
-                    putExtra(Constants.CHAT, chat)
-                }
-            }
+//            val chat = Chat().apply {
+//                id = chatId
+//                name = message.data["chat_name"]
+//                otherUserId = message.data["chat_other_user_id"]
+//                otherUserImage = message.data["chat_other_user_image"]
+//                userDeviceToken = message.data["chat_user_device_token"]
+//            }
+//
+//            val intent = if (JustChat.getFirebaseAuth() == null) {
+//                Intent(applicationContext, ChatListActivity::class.java)
+//            } else {
+//                Intent(applicationContext, ChatActivity::class.java).apply {
+//                    putExtra(Constants.CHAT, chat)
+//                }
+//            }
+            val intent = Intent(applicationContext, ChatListActivity::class.java)
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val notificationId = Random.nextInt(3000)

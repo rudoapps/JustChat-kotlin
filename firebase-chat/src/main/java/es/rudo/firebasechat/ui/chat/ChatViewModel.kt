@@ -122,9 +122,10 @@ class ChatViewModel @Inject constructor(
                 chatOtherUserImage = chat?.otherUserImage.toString(),
                 userDeviceToken = chat?.userDeviceToken.toString()
             )
-            chat?.userDeviceToken.toString()
+//            "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
+
             val notification = Notification(
-                to = "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
+                to = chat?.userDeviceToken.toString(),
                 data = dataNotification,
                 priority = 10
             )
