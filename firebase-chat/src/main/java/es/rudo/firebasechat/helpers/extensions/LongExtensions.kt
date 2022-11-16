@@ -19,7 +19,7 @@ fun Long?.getAllDate(): String {
 fun Long?.parseDate(format: String): String? {
     return this?.let {
         val date = Date(it)
-        val result = SimpleDateFormat(format, Locale.UK)
+        val result = SimpleDateFormat(format, Locale.getDefault())
         result.format(date)
     } ?: kotlin.run {
         null

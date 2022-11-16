@@ -5,6 +5,9 @@ import es.rudo.firebasechat.data.dto.results.ResultUserChat
 import es.rudo.firebasechat.data.repository.EventsRepository
 import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.models.*
+import es.rudo.firebasechat.domain.models.ChatInfo
+import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.Group
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

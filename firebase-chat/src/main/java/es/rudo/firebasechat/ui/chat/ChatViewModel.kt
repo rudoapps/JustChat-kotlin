@@ -13,8 +13,8 @@ import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
-import es.rudo.firebasechat.domain.models.Message
 import kotlinx.coroutines.Dispatchers
+import es.rudo.firebasechat.domain.models.Message
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +33,8 @@ class ChatViewModel @Inject constructor(
 
     private val _messageList = MutableLiveData<MutableList<Message>>()
     val messageList: LiveData<MutableList<Message>> = _messageList
+
+    var message: Message? = null
 
     private val _newMessageReceived = MutableLiveData<Boolean>()
     val newMessageReceived: LiveData<Boolean> = _newMessageReceived
@@ -67,6 +69,10 @@ class ChatViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun checkLastMessageDate() {
+        _messageList.value?.last()
     }
 
     fun prepareMessageForSending(idUser: String?, isNetworkAvailable: Boolean) {

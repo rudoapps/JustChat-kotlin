@@ -14,26 +14,60 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import es.rudo.firebasechat.R
+import es.rudo.firebasechat.databinding.ItemDateBinding
+import es.rudo.firebasechat.databinding.ItemMessageBinding
 import es.rudo.firebasechat.domain.models.Message
-import es.rudo.firebasechat.databinding.ItemChatBinding
+import es.rudo.firebasechat.helpers.Constants.DATE
+import es.rudo.firebasechat.helpers.Constants.MESSAGE
 import es.rudo.firebasechat.helpers.extensions.dpToPx
+import es.rudo.firebasechat.helpers.extensions.getDate
 import es.rudo.firebasechat.helpers.extensions.getTime
 
 class ChatAdapter(
     private val userId: String?, // TODO valorar setearlo en el companion object del activity y ahorrarse el param
     private val clickListener: MessageClickListener
 ) :
-    ListAdapter<Message, ChatAdapter.ViewHolder>(ListAdapterCallback()) {
+    ListAdapter<Message, RecyclerView.ViewHolder>(ListAdapterCallback()) {
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), userId, clickListener)
+    override fun getItemViewType(position: Int): Int {
+//        return when (getItem(position).type) {
+//            Message.Type.TEXT -> MESSAGE
+//            else -> DATE
+//        }
+        return MESSAGE
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            MESSAGE -> MessageViewHolder.from(parent)
+            else -> DateViewHolder.from(parent)
+        }
     }
 
-    class ViewHolder private constructor(private val binding: ItemChatBinding) :
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        return when (getItemViewType(position)) {
+            MESSAGE -> (holder as MessageViewHolder).bind(getItem(position), userId, clickListener)
+            else -> (holder as DateViewHolder).bind(getItem(position))
+        }
+    }
+
+    class DateViewHolder private constructor(private val binding: ItemDateBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: Message) {
+            binding.textDate.text = item.timestamp.getDate()
+        }
+
+        companion object {
+            fun from(parent: ViewGroup): DateViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ItemDateBinding.inflate(layoutInflater, parent, false)
+                return DateViewHolder(binding)
+            }
+        }
+    }
+
+    class MessageViewHolder private constructor(private val binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         private val textFont: Font? = null
@@ -126,10 +160,10 @@ class ChatAdapter(
         }
 
         companion object {
-            fun from(parent: ViewGroup): ViewHolder {
+            fun from(parent: ViewGroup): MessageViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemChatBinding.inflate(layoutInflater, parent, false)
-                return ViewHolder(binding)
+                val binding = ItemMessageBinding.inflate(layoutInflater, parent, false)
+                return MessageViewHolder(binding)
             }
         }
     }

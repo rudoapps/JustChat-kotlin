@@ -1,14 +1,11 @@
 package es.rudo.firebasechat.domain.models
 
-import java.io.Serializable
-
 /**
  * This class needs to be implemented in your object to send a basic message
  */
-class Message : Serializable {
-    var id: String? = null
+@Suppress("EqualsOrHashCode")
+class Message : ChatItem() {
     var text: String? = null
-    var timestamp: Long? = null
     var userId: String? = null
 
     var status: String? = null
