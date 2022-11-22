@@ -1,6 +1,7 @@
 package es.rudo.firebasechat.data.source.remote.impl
 
 import android.content.Context
+import android.util.Log
 import com.google.firebase.database.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.data.dto.EmptyChat
 import es.rudo.firebasechat.data.dto.converters.toMessageBack
@@ -21,7 +22,9 @@ import getResultUserChat
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.channelFlow
 import javax.inject.Inject
+import kotlin.Exception
 import kotlin.collections.ArrayList
 
 class EventsRemoteDataSourceImpl @Inject constructor(
@@ -31,7 +34,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 ) : EventsRemoteDataSource {
 
     override fun initUser(deviceToken: String): Flow<ResultUserChat> {
-        return callbackFlow {
+        return channelFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     databaseReference.addValueEventListener(object : ValueEventListener {
@@ -100,9 +103,6 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         override fun onCancelled(error: DatabaseError) {
                         }
                     })
-                    awaitClose {
-                        this.close()
-                    }
                 }
                 BasicConfiguration.Type.BACK -> {
                 }
@@ -111,11 +111,14 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 BasicConfiguration.Type.USER_CONF -> {
                 }
             }
+            awaitClose {
+                this.channel.close()
+            }
         }
     }
 
     override fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>> {
-        return callbackFlow {
+        return channelFlow {
             val listChatId = mutableListOf<Pair<String, String>>()
             databaseReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(users: DataSnapshot) {
@@ -144,13 +147,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 }
             })
             awaitClose {
-                this.close()
+                this.channel.close()
             }
         }
     }
 
     override fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo> {
-        return callbackFlow {
+        return channelFlow {
             databaseReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
@@ -177,13 +180,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 }
             })
             awaitClose {
-                this.close()
+                this.channel.close()
             }
         }
     }
 
     override fun getChats(): Flow<MutableList<Chat>> {
-        return callbackFlow {
+        return channelFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     val query =
@@ -236,8 +239,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             override fun onCancelled(error: DatabaseError) {
                             }
                         })
-                    awaitClose {
-                        databaseReference.removeEventListener(databaseListener)
+                    try {
+                        awaitClose {
+                            databaseReference.removeEventListener(databaseListener)
+                            this.channel.close()
+                        }
+                    } catch (ex: Exception) {
+                        Log.e(javaClass.simpleName, ex.toString())
                     }
                 }
                 BasicConfiguration.Type.BACK -> {
@@ -293,7 +301,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     }
 
     override fun getCurrentUser(): Flow<UserData> {
-        return callbackFlow {
+        return channelFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     var count = 0
@@ -316,9 +324,6 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             override fun onCancelled(error: DatabaseError) {
                             }
                         })
-                    awaitClose {
-                        this.close()
-                    }
                 }
                 BasicConfiguration.Type.BACK -> {
                     trySend(UserData()).isSuccess
@@ -330,11 +335,14 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     trySend(UserData()).isSuccess
                 }
             }
+            awaitClose {
+                this.channel.close()
+            }
         }
     }
 
     override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>> {
-        return callbackFlow {
+        return channelFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     val correctPage = if (page >= 0) {
@@ -366,8 +374,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             override fun onCancelled(error: DatabaseError) {
                             }
                         })
-                    awaitClose {
-                        databaseReference.removeEventListener(databaseListener)
+                    try {
+                        awaitClose {
+                            databaseReference.removeEventListener(databaseListener)
+                            this.channel.close()
+                        }
+                    } catch (ex: Exception) {
+                        Log.e(javaClass.simpleName, ex.toString())
                     }
                 }
                 BasicConfiguration.Type.BACK -> {
@@ -389,7 +402,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     }
 
     override fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<ResultInfo> {
-        return callbackFlow {
+        return channelFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     val messageId = message.id.toString()
@@ -435,9 +448,6 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         .addOnFailureListener {
                             trySend(getResult(false, it)).isFailure
                         }
-                    awaitClose {
-                        this.close()
-                    }
                 }
                 BasicConfiguration.Type.BACK -> {
                 }
@@ -445,6 +455,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 }
                 BasicConfiguration.Type.USER_CONF -> {
                 }
+            }
+            awaitClose {
+                this.channel.close()
             }
         }
     }

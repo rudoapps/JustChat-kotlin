@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
 import es.rudo.firebasechat.data.source.remote.impl.EventsRemoteDataSourceImpl
 import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
+import es.rudo.firebasechat.helpers.Constants.DEFAULT_NODE_FIREBASE
 import es.rudo.firebasechat.main.instance.JustChat
 import javax.inject.Singleton
 
@@ -22,11 +23,11 @@ object RemoteDataSourceModule {
     fun provideFirebaseDatabase(@ApplicationContext context: Context): EventsRemoteDataSource {
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val databaseReference =
-            firebaseDatabase.getReference(JustChat.getNodeFirebase().toString())
+            firebaseDatabase.getReference(JustChat.getNodeFirebase() ?: DEFAULT_NODE_FIREBASE)
         val type = JustChat.getType()?.let {
             it
         } ?: kotlin.run {
-            BasicConfiguration.Type.USER_CONF
+            BasicConfiguration.Type.FIREBASE
         }
 
         return EventsRemoteDataSourceImpl(databaseReference, type, context)
