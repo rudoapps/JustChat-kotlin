@@ -14,9 +14,7 @@ import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
 import es.rudo.firebasechat.domain.models.Message
-import getUserId
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -71,9 +69,9 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun prepareMessageForSending(isNetworkAvailable: Boolean) {
+    fun prepareMessageForSending(idUser: String?, isNetworkAvailable: Boolean) {
         viewModelScope.launch {
-            getUserId()?.let { uid ->
+            idUser?.let { uid ->
                 if (!newMessageText.value.isNullOrBlank() && chat != null) {
                     val message = Message().apply {
                         id = "$uid-${System.currentTimeMillis()}"

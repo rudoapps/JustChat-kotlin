@@ -1,9 +1,11 @@
 package es.rudo.firebasechat.di
 
+import android.content.Context
 import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import es.rudo.firebasechat.data.source.remote.EventsRemoteDataSource
 import es.rudo.firebasechat.data.source.remote.impl.EventsRemoteDataSourceImpl
@@ -17,7 +19,7 @@ object RemoteDataSourceModule {
 
     @Provides
     @Singleton
-    fun provideFirebaseDatabase(): EventsRemoteDataSource {
+    fun provideFirebaseDatabase(@ApplicationContext context: Context): EventsRemoteDataSource {
         val firebaseDatabase = FirebaseDatabase.getInstance()
         val databaseReference =
             firebaseDatabase.getReference(JustChat.getNodeFirebase().toString())
@@ -27,6 +29,6 @@ object RemoteDataSourceModule {
             BasicConfiguration.Type.USER_CONF
         }
 
-        return EventsRemoteDataSourceImpl(databaseReference, type)
+        return EventsRemoteDataSourceImpl(databaseReference, type, context)
     }
 }

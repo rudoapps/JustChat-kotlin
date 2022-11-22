@@ -1,5 +1,6 @@
 package es.rudo.firebasechat.data.source.remote.impl
 
+import android.content.Context
 import com.google.firebase.database.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.data.dto.EmptyChat
 import es.rudo.firebasechat.data.dto.converters.toMessageBack
@@ -11,12 +12,12 @@ import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.firebasechat.helpers.Constants.LIMIT_SIZE_ID
+import es.rudo.firebasechat.helpers.extensions.getUserId
 import es.rudo.firebasechat.main.instance.JustChat
 import generateId
 import getPair
 import getResult
 import getResultUserChat
-import getUserId
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -25,7 +26,8 @@ import kotlin.collections.ArrayList
 
 class EventsRemoteDataSourceImpl @Inject constructor(
     private val databaseReference: DatabaseReference,
-    private val type: BasicConfiguration.Type
+    private val type: BasicConfiguration.Type,
+    private val context: Context
 ) : EventsRemoteDataSource {
 
     override fun initUser(deviceToken: String): Flow<ResultUserChat> {
@@ -37,7 +39,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             databaseReference.removeEventListener(this)
                             var userFound = false
                             for (user in users.children) {
-                                val userId = getUserId().toString()
+                                val userId = context.getUserId().toString()
                                 val currentUserId = user.key
                                 if (userId == currentUserId) {
                                     userFound = true
@@ -45,15 +47,17 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 }
                             }
                             if (!userFound) {
-                                databaseReference.child(getUserId().toString())
+                                databaseReference.child(context.getUserId().toString())
                                     .child("userName")
                                     .setValue(JustChat.getFirebaseAuth()?.currentUser?.displayName)
                                     .addOnCompleteListener {
-                                        databaseReference.child(getUserId().toString())
+                                        databaseReference.child(context.getUserId().toString())
                                             .child("profilePhoto")
                                             .setValue(DEFAULT_USER_PHOTO)
                                             .addOnCompleteListener {
-                                                databaseReference.child(getUserId().toString())
+                                                databaseReference.child(
+                                                    context.getUserId().toString()
+                                                )
                                                     .child("deviceToken")
                                                     .setValue(deviceToken)
                                                     .addOnCompleteListener {
@@ -75,7 +79,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                         ).isFailure
                                     }
                             } else {
-                                databaseReference.child(getUserId().toString())
+                                databaseReference.child(context.getUserId().toString())
                                     .updateChildren(mapOf("deviceToken" to deviceToken))
                                     .addOnCompleteListener {
                                         trySend(
@@ -117,7 +121,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
-                        if (user.key != getUserId()) {
+                        if (user.key != context.getUserId()) {
                             val chatId =
                                 "${System.currentTimeMillis()}-${generateId(LIMIT_SIZE_ID)}"
                             listChatId.add(Pair(user.key.toString(), chatId))
@@ -127,7 +131,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 otherUserId = user.key
                                 otherUserImage = user.child("profilePhoto").value.toString()
                             }
-                            databaseReference.child(getUserId().toString())
+                            databaseReference.child(context.getUserId().toString())
                                 .child("chats")
                                 .child(chatId)
                                 .setValue(chat)
@@ -151,12 +155,12 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
-                        if (user.key != getUserId().toString()) {
+                        if (user.key != context.getUserId().toString()) {
                             listChatId.getPair(user.key.toString())?.let { pair ->
                                 val chat = EmptyChat().apply {
                                     lastMessage = ""
                                     name = JustChat.getFirebaseAuth()?.currentUser?.displayName
-                                    otherUserId = getUserId()
+                                    otherUserId = context.getUserId()
                                     otherUserImage = DEFAULT_USER_PHOTO
                                 }
                                 databaseReference.child(user.key.toString())
@@ -183,7 +187,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     val query =
-                        databaseReference.child("${getUserId()}/chats")
+                        databaseReference.child("${context.getUserId()}/chats")
                     val databaseListener =
                         query.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(chats: DataSnapshot) {
@@ -264,7 +268,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 
     private fun getLastMessages(chatId: String, messageListener: SourceListener) {
         val query =
-            databaseReference.child("${getUserId()}/chats/$chatId/messages")
+            databaseReference.child("${context.getUserId()}/chats/$chatId/messages")
                 .orderByChild("serverTimestamp")
                 .limitToLast(LIMIT_MESSAGES)
         query.addValueEventListener(object : ValueEventListener {
@@ -293,7 +297,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
                     var count = 0
-                    databaseReference.child("${getUserId()}")
+                    databaseReference.child("${context.getUserId()}")
                         .addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(user: DataSnapshot) {
                                 databaseReference.removeEventListener(this)
@@ -340,7 +344,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     }
                     val newPage = correctPage * LIMIT_MESSAGES
                     val query =
-                        databaseReference.child("${getUserId()}/chats/${chat.id}/messages")
+                        databaseReference.child("${context.getUserId()}/chats/${chat.id}/messages")
                             .orderByChild("serverTimestamp")
 //                            .limitToLast(newPage)
                     val databaseListener =

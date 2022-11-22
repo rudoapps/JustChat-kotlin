@@ -1,7 +1,5 @@
-
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
-import es.rudo.firebasechat.main.instance.JustChat
 
 fun generateId(length: Int = 20): String { // ex: bwUIoWNCSQvPZh8xaFuz
     val alphaNumeric = ('a'..'z') + ('A'..'Z') + ('0'..'9')
@@ -33,15 +31,5 @@ fun getResultUserChat(
         exists = exist
         success = isSuccess
         error = exception
-    }
-}
-
-fun getUserId(): String {
-    return JustChat.getFirebaseAuth()?.uid?.let {
-        it
-    } ?: run {
-        ""
-//        val preferences =
-//            app.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
     }
 }

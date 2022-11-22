@@ -7,6 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import es.rudo.firebasechat.helpers.Constants.PREFERENCES
 import javax.inject.Singleton
 
 @Module
@@ -16,6 +17,6 @@ object PreferencesModule {
     @Singleton
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences? {
-        return context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
     }
 }

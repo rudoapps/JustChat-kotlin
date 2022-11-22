@@ -15,6 +15,8 @@ class AppPreferences @Inject constructor(
 
     var chatId: String? by preferences()
 
+    var userId: String? by preferences()
+
     fun clear() {
         sharedPreferences?.edit()?.clear()?.apply()
     }

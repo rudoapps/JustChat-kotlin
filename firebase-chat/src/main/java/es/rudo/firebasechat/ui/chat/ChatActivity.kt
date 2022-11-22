@@ -13,6 +13,7 @@ import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.helpers.Constants.CHAT
+import es.rudo.firebasechat.helpers.extensions.getUserId
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import es.rudo.firebasechat.main.instance.JustChat
 
@@ -129,7 +130,7 @@ class ChatActivity : AppCompatActivity() {
         }
 
         binding.imageSend.setOnClickListener {
-            viewModel.prepareMessageForSending(isNetworkAvailable)
+            viewModel.prepareMessageForSending(getUserId(), isNetworkAvailable)
         }
     }
 

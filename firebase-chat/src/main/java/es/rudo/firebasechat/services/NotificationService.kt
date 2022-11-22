@@ -22,6 +22,7 @@ import es.rudo.firebasechat.R
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.helpers.Constants
 import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
+import es.rudo.firebasechat.helpers.Constants.PREFERENCES
 import es.rudo.firebasechat.helpers.extensions.ImageInterface
 import es.rudo.firebasechat.helpers.extensions.downloadImageFromUrl
 import es.rudo.firebasechat.main.instance.JustChat
@@ -46,7 +47,7 @@ class NotificationService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         val preferences =
-            applicationContext.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+            applicationContext.getSharedPreferences(PREFERENCES, MODE_PRIVATE)
         val chatId = message.data["chat_id"]
         val chatIdPreferences = preferences.getString(CHAT_ID_PREFERENCES, "")
         val normalizedChatIdPreferences = chatIdPreferences?.removePrefix("\"")?.removeSuffix("\"")

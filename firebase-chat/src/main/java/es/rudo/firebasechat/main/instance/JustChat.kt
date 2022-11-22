@@ -8,6 +8,7 @@ import es.rudo.firebasechat.domain.models.configuration.BackConfiguration
 import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
 import es.rudo.firebasechat.domain.models.configuration.FirebaseConfiguration
 import es.rudo.firebasechat.domain.models.configuration.MixConfiguration
+import es.rudo.firebasechat.helpers.Constants
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 
 class JustChat constructor(
@@ -70,6 +71,8 @@ class JustChat constructor(
     fun loadChat(client: SignInClient, auth: FirebaseAuth) {
         onTapClient = client
         firebaseAuth = auth
+        val preferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+        preferences.edit()?.putString(Constants.USER_ID_PREFERENCES, auth.currentUser?.uid)?.apply()
         context.startActivity(Intent(context, ChatListActivity::class.java))
     }
 
