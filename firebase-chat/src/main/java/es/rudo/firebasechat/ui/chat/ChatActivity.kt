@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.ChatMessageItem
 import es.rudo.firebasechat.helpers.Constants.CHAT
 import es.rudo.firebasechat.helpers.extensions.getUserId
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
@@ -62,11 +62,11 @@ class ChatActivity : AppCompatActivity() {
         adapter = ChatAdapter(
             JustChat.getFirebaseAuth()?.uid,
             object : ChatAdapter.MessageClickListener {
-                override fun onClick(item: Message) {
+                override fun onClick(item: ChatMessageItem) {
                     // TODO
                 }
 
-                override fun onLongClick(item: Message) {
+                override fun onLongClick(item: ChatMessageItem) {
                     // TODO
                 }
             }

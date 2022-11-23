@@ -11,10 +11,9 @@ import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.source.preferences.AppPreferences
 import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.NotificationsUseCase
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatInfo
+import es.rudo.firebasechat.domain.models.*
+import es.rudo.firebasechat.helpers.extensions.getDate
 import kotlinx.coroutines.Dispatchers
-import es.rudo.firebasechat.domain.models.Message
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,7 +33,7 @@ class ChatViewModel @Inject constructor(
     private val _messageList = MutableLiveData<MutableList<Message>>()
     val messageList: LiveData<MutableList<Message>> = _messageList
 
-    var message: Message? = null
+    var message: ChatMessageItem? = null
 
     private val _newMessageReceived = MutableLiveData<Boolean>()
     val newMessageReceived: LiveData<Boolean> = _newMessageReceived
@@ -54,13 +53,13 @@ class ChatViewModel @Inject constructor(
     // TODO esto irá separado en getMessageHistory y getNewMessage
     private var firstLoad = true
     fun getMessages(isNetworkAvailable: Boolean, initialMessageList: MutableList<Message>?) {
-        _messageList.value = initialMessageList ?: mutableListOf()
+        _messageList.value = addDateChatItems(initialMessageList)
 
         viewModelScope.launch {
             chat?.let {
                 eventsUseCase.getMessagesIndividual(isNetworkAvailable, it, 0).collect { messages ->
                     if (firstLoad) {
-                        _messageList.postValue(messages)
+                        _messageList.postValue(addDateChatItems(messages))
                         firstLoad = false
                     } else if (_messageList.value?.last() != messages.last()) {
                         _messageList.value?.add(messages.last())
@@ -71,6 +70,33 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    //TODO repensar para incluir paginación
+    private fun addDateChatItems(messageList: MutableList<ChatMessageItem>?): MutableList<ChatBaseItem> {
+        val finalList = mutableListOf<ChatBaseItem>()
+
+        messageList?.let { list ->
+            var lastDate = list.first().timestamp.getDate()
+            finalList.add(ChatDateItem().apply {
+                id = lastDate
+                date = lastDate
+            })
+
+            for (message in list) {
+                if (message.timestamp.getDate() != lastDate) {
+                    lastDate = message.timestamp.getDate()
+                    finalList.add(ChatDateItem().apply {
+                        id = lastDate
+                        date = lastDate
+                    })
+                }
+
+                finalList.add(message)
+            }
+        }
+
+        return finalList
+    }
+
     private fun checkLastMessageDate() {
         _messageList.value?.last()
     }
@@ -79,7 +105,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             idUser?.let { uid ->
                 if (!newMessageText.value.isNullOrBlank() && chat != null) {
-                    val message = Message().apply {
+                    val message = ChatMessageItem().apply {
                         id = "$uid-${System.currentTimeMillis()}"
                         userId = uid
                         text = newMessageText.value
@@ -97,10 +123,8 @@ class ChatViewModel @Inject constructor(
                     _sendMessageAttempt.postValue(true)
 
                     this@ChatViewModel.message = message
-                    eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
-                        _sendMessageSuccess.postValue(it)
-                    }
-//                    sendMessage(message, chatInfo)
+                    
+                    sendMessage(message, chatInfo)
                 }
             }
         }

@@ -197,7 +197,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             override fun onDataChange(chats: DataSnapshot) {
                                 val chatList = mutableListOf<Chat>()
                                 for (chat in chats.children) {
-                                    val messagesList = mutableListOf<Message>()
+                                    val messagesList = mutableListOf<ChatMessageItem>()
                                     val userChat = Chat().apply {
                                         id = chat.key
                                         name = chat.child("name").value.toString()
@@ -283,9 +283,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(messages: DataSnapshot) {
                 databaseReference.removeEventListener(this)
-                val messagesList = mutableListOf<Message>()
+                val messagesList = mutableListOf<ChatMessageItem>()
                 for (message in messages.children) {
-                    val messageObj = Message().apply {
+                    val messageObj = ChatMessageItem().apply {
                         id = message.key
                         text = message.child("text").value.toString()
                         timestamp = message.child("serverTimestamp").value as? Long
@@ -342,7 +342,6 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>> {
         return channelFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
@@ -359,9 +358,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                     val databaseListener =
                         query.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(messages: DataSnapshot) {
-                                val messagesList = mutableListOf<Message>()
+                                val messagesList = mutableListOf<ChatMessageItem>()
                                 for (message in messages.children) {
-                                    val messageObj = Message().apply {
+                                    val messageObj = ChatMessageItem().apply {
                                         id = message.key
                                         text = message.child("text").value.toString()
                                         timestamp = message.child("serverTimestamp").value as? Long
@@ -402,7 +401,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<ResultInfo> {
+    override fun sendMessage(chatInfo: ChatInfo, message: ChatMessageItem): Flow<ResultInfo> {
         return channelFlow {
             when (type) {
                 BasicConfiguration.Type.FIREBASE -> {
@@ -464,7 +463,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     }
 
     private interface SourceListener {
-        fun listMessages(messages: MutableList<Message>)
+        fun listMessages(messages: MutableList<ChatMessageItem>)
         fun deviceToken(deviceToken: String)
     }
 }

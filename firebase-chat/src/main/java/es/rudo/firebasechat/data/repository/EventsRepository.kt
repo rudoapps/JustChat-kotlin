@@ -2,7 +2,7 @@ package es.rudo.firebasechat.data.repository
 
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
-import es.rudo.firebasechat.domain.models.Group
+
 import es.rudo.firebasechat.domain.models.*
 import kotlinx.coroutines.flow.Flow
 

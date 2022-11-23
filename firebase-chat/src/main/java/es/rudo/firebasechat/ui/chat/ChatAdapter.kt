@@ -16,7 +16,9 @@ import androidx.recyclerview.widget.RecyclerView
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ItemDateBinding
 import es.rudo.firebasechat.databinding.ItemMessageBinding
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.ChatBaseItem
+import es.rudo.firebasechat.domain.models.ChatDateItem
+import es.rudo.firebasechat.domain.models.ChatMessageItem
 import es.rudo.firebasechat.helpers.Constants.DATE
 import es.rudo.firebasechat.helpers.Constants.MESSAGE
 import es.rudo.firebasechat.helpers.extensions.dpToPx
@@ -27,14 +29,13 @@ class ChatAdapter(
     private val userId: String?, // TODO valorar setearlo en el companion object del activity y ahorrarse el param
     private val clickListener: MessageClickListener
 ) :
-    ListAdapter<Message, RecyclerView.ViewHolder>(ListAdapterCallback()) {
+    ListAdapter<ChatBaseItem, RecyclerView.ViewHolder>(ListAdapterCallback()) {
 
     override fun getItemViewType(position: Int): Int {
-//        return when (getItem(position).type) {
-//            Message.Type.TEXT -> MESSAGE
-//            else -> DATE
-//        }
-        return MESSAGE
+        return when (getItem(position)) {
+            is ChatMessageItem -> MESSAGE
+            else -> DATE
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -46,16 +47,16 @@ class ChatAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         return when (getItemViewType(position)) {
-            MESSAGE -> (holder as MessageViewHolder).bind(getItem(position), userId, clickListener)
-            else -> (holder as DateViewHolder).bind(getItem(position))
+            MESSAGE -> (holder as MessageViewHolder).bind(getItem(position) as ChatMessageItem, userId, clickListener)
+            else -> (holder as DateViewHolder).bind(getItem(position) as ChatDateItem)
         }
     }
 
     class DateViewHolder private constructor(private val binding: ItemDateBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Message) {
-            binding.textDate.text = item.timestamp.getDate()
+        fun bind(item: ChatDateItem) {
+            binding.textDate.text = item.date
         }
 
         companion object {
@@ -81,7 +82,7 @@ class ChatAdapter(
         private val showMsgTime: Boolean = true
 
         fun bind(
-            item: Message,
+            item: ChatMessageItem,
             userId: String?,
             clickListener: MessageClickListener
         ) {
@@ -168,19 +169,19 @@ class ChatAdapter(
         }
     }
 
-    class ListAdapterCallback : DiffUtil.ItemCallback<Message>() {
-        override fun areItemsTheSame(oldItem: Message, newItem: Message): Boolean {
+    class ListAdapterCallback : DiffUtil.ItemCallback<ChatBaseItem>() {
+        override fun areItemsTheSame(oldItem: ChatBaseItem, newItem: ChatBaseItem): Boolean {
             return oldItem.id == newItem.id
         }
 
         @SuppressLint("DiffUtilEquals")
-        override fun areContentsTheSame(oldItem: Message, newItem: Message): Boolean {
+        override fun areContentsTheSame(oldItem: ChatBaseItem, newItem: ChatBaseItem): Boolean {
             return oldItem == newItem
         }
     }
 
     interface MessageClickListener {
-        fun onClick(item: Message)
-        fun onLongClick(item: Message)
+        fun onClick(item: ChatMessageItem)
+        fun onLongClick(item: ChatMessageItem)
     }
 }

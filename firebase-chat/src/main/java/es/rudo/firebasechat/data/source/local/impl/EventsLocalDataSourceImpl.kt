@@ -3,7 +3,7 @@ package es.rudo.firebasechat.data.source.local.impl
 import es.rudo.firebasechat.data.source.local.EventsLocalDataSource
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.ChatInfo
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.ChatMessageItem
 import es.rudo.firebasechat.domain.models.Group
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -16,7 +16,7 @@ class EventsLocalDataSourceImpl : EventsLocalDataSource {
         }
     }
 
-    override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>> {
+    override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>> {
         return flow {
             emit(ArrayList())
         }
