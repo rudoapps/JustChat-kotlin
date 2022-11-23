@@ -13,7 +13,9 @@ import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.domain.models.Chat
 import es.rudo.firebasechat.domain.models.Message
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.main.instance.RudoChatInstance
+import es.rudo.firebasechat.helpers.extensions.getUserId
+import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
+import es.rudo.firebasechat.main.instance.JustChat
 
 @AndroidEntryPoint
 class ChatActivity : AppCompatActivity() {
@@ -58,7 +60,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupAdapter() {
         adapter = ChatAdapter(
-            RudoChatInstance.getFirebaseAuth()?.uid,
+            JustChat.getFirebaseAuth()?.uid,
             object : ChatAdapter.MessageClickListener {
                 override fun onClick(item: Message) {
                     // TODO
@@ -80,7 +82,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun initObservers() {
-        //TODO revisar cuando haya paginación (cambiar al itemRange)
+        // TODO revisar cuando haya paginación (cambiar al itemRange)
         viewModel.messageList.observe(this) { messages ->
             messages?.let {
                 adapter.submitList(messages)
@@ -111,11 +113,12 @@ class ChatActivity : AppCompatActivity() {
                         binding.recycler.scrollToPosition(it - 1)
                     }
                 }
+                viewModel.sendNotification(isNetworkAvailable)
             }
         }
 
         viewModel.sendMessageSuccess.observe(this) {
-            //TODO controlar el cambio de estado de los mensajes y/o su siguiente intento de reenvio
+            // TODO controlar el cambio de estado de los mensajes y/o su siguiente intento de reenvio
         }
 
         viewModel.messageListHistoryUpdateStarted.observe(this) {
@@ -125,6 +128,10 @@ class ChatActivity : AppCompatActivity() {
         viewModel.messageListHistoryUpdateFinished.observe(this) {
             // TODO controlará el puntero cuando se haya cargado la siguiente página del historial
         }
+
+        binding.imageSend.setOnClickListener {
+            viewModel.prepareMessageForSending(getUserId(), isNetworkAvailable)
+        }
     }
 
     private fun loadData() {
@@ -132,10 +139,26 @@ class ChatActivity : AppCompatActivity() {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
-                    viewModel.getMessages(chat.messages)
+                    viewModel.manageChatId(true)
+                    viewModel.getMessages(isNetworkAvailable, chat.messages)
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.manageChatId(false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.manageChatId(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.manageChatId(true)
     }
 
     private fun setupViews() {

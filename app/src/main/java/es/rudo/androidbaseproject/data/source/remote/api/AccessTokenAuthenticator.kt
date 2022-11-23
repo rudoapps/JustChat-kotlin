@@ -1,6 +1,6 @@
 package es.rudo.androidbaseproject.data.source.remote.api
 
-import es.rudo.androidbaseproject.data.source.local.preferences.AppPreferences
+import es.rudo.firebasechat.data.source.preferences.AppPreferences
 import es.rudo.androidbaseproject.data.source.remote.api.Config.HTTP_CLIENT_AUTHORIZATION
 import es.rudo.androidbaseproject.data.source.remote.api.Config.TYPE_ITEM_AUTHORIZATION
 import okhttp3.Authenticator

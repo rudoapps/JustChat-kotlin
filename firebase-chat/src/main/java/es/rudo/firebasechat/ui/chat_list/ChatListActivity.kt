@@ -6,11 +6,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatListBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.main.instance.RudoChatInstance
+import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
+import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.ui.chat.ChatActivity
 
 @AndroidEntryPoint
@@ -36,7 +38,16 @@ class ChatListActivity : AppCompatActivity() {
         initAdapter()
         setUpObservables()
 
-        viewModel.initUser()
+        initUser()
+    }
+
+    private fun initUser() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if (!it.isSuccessful) {
+                return@addOnCompleteListener
+            }
+            viewModel.initUser(isNetworkAvailable, it.result)
+        }
     }
 
     private fun initAdapter() {
@@ -69,16 +80,16 @@ class ChatListActivity : AppCompatActivity() {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
                 if (it.exists == true) {
-                    viewModel.getChats()
+                    viewModel.getChats(isNetworkAvailable)
                 } else {
-                    viewModel.initCurrentUserChats()
+                    viewModel.initCurrentUserChats(isNetworkAvailable)
                 }
             }
         }
 
         viewModel.listChatId.observe(this) {
             if (it.isNotEmpty()) {
-                viewModel.initOtherUsersChats(it)
+                viewModel.initOtherUsersChats(isNetworkAvailable, it)
             }
         }
 
@@ -86,7 +97,7 @@ class ChatListActivity : AppCompatActivity() {
             if (it.success == false) {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
-                viewModel.getChats()
+                viewModel.getChats(isNetworkAvailable)
             }
         }
     }
@@ -97,8 +108,9 @@ class ChatListActivity : AppCompatActivity() {
     }
 
     private fun closeSessionAndFinish() {
-        RudoChatInstance.getOnTapClient()?.signOut()
+        JustChat.getOnTapClient()?.signOut()
             ?.addOnCompleteListener {
+                JustChat.getFirebaseAuth()?.signOut()
                 Toast.makeText(
                     this,
                     getString(R.string.correct),
@@ -118,7 +130,7 @@ class ChatListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         if (!viewModel.chats.value.isNullOrEmpty()) {
-            viewModel.getChats()
+            viewModel.getChats(isNetworkAvailable)
         }
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FirebaseChatLibrary</string>
+    <string name="app_name">JustChatLibrary</string>
     <string name="chat_title">Chat</string>
     <string name="auth_failed">Authentication failed.</string>
     <string name="close_session">Close session</string>

@@ -1,8 +1,6 @@
-package es.rudo.androidbaseproject.data.source.local.preferences
+package es.rudo.firebasechat.data.source.preferences
 
 import com.google.gson.Gson
-import es.rudo.firebasechat.data.source.preferences.AppPreferences
-import es.rudo.firebasechat.data.source.preferences.PreferencesDelegate
 import kotlin.reflect.KProperty
 
 class PreferencesDelegate(val key: String? = null) {

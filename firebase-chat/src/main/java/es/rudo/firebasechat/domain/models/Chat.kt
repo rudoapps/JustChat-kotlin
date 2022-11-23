@@ -8,5 +8,6 @@ class Chat : Serializable {
     var otherUserId: String? = null
     var otherUserImage: String? = null
     var lastMessage: String? = null
+    var userDeviceToken: String? = null
     var messages: MutableList<Message>? = null
 }

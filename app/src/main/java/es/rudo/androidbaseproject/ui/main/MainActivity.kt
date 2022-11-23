@@ -15,9 +15,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.androidbaseproject.BuildConfig
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
+import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
 import es.rudo.firebasechat.domain.models.configuration.FirebaseConfiguration
-import es.rudo.firebasechat.main.instance.RudoChatInstance
+import es.rudo.firebasechat.main.instance.JustChat
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
@@ -27,7 +28,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     private lateinit var oneTapClient: SignInClient
     private lateinit var signInRequest: BeginSignInRequest
     private lateinit var signUpRequest: BeginSignInRequest
-    private lateinit var rudoChatInstance: RudoChatInstance
+    private lateinit var justChat: JustChat
 
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -59,17 +60,17 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     override fun setUpViews() {
         initObservers()
         initRequests()
-        rudoChatInstance =
-            RudoChatInstance(
+        justChat =
+            JustChat(
                 this,
-                FirebaseConfiguration()
+                FirebaseConfiguration("fir-chat-d613e")
             )
         oneTapClient = Identity.getSignInClient(this)
         initListeners()
     }
 
     private fun initListeners() {
-        binding.buttonOpenChat.setOnClickListener {
+        binding.buttonOpenChat.setClickWithDebounce {
             viewModel.oneTapSignInWithGoogle(oneTapClient, signInRequest, signUpRequest)
         }
     }
@@ -115,7 +116,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
                     Toast.makeText(this, "Login correct", Toast.LENGTH_SHORT).show()
-                    rudoChatInstance.loadChat(oneTapClient, firebaseAuth)
+                    justChat.loadChat(oneTapClient, firebaseAuth)
                 }
                 .addOnFailureListener {
                     Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
@@ -128,8 +129,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
     override fun onResume() {
         super.onResume()
-        if (this::rudoChatInstance.isInitialized) {
-            if (RudoChatInstance.getFirebaseAuth() != null) {
+        if (this::justChat.isInitialized) {
+            if (JustChat.getOnTapClient() != null && JustChat.getFirebaseAuth() != null) {
                 logout()
             }
         }
