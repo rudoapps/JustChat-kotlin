@@ -37,7 +37,7 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
         isNetworkAvailable: Boolean,
         chat: Chat,
         page: Int
-    ): Flow<MutableList<Message>> {
+    ): Flow<MutableList<ChatMessageItem>> {
         return eventsRepository.getMessagesIndividual(isNetworkAvailable, chat, page)
     }
 
@@ -52,7 +52,7 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
     override fun sendMessage(
         isNetworkAvailable: Boolean,
         chatInfo: ChatInfo,
-        message: Message
+        message: ChatMessageItem
     ): Flow<ResultInfo> {
         return eventsRepository.sendMessage(isNetworkAvailable, chatInfo, message)
     }

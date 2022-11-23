@@ -28,12 +28,10 @@ class ChatViewModel @Inject constructor(
 
     val newMessageText = MutableLiveData<String>()
 
-    var message: Message? = null
+    var lastMessageSent: ChatMessageItem? = null
 
-    private val _messageList = MutableLiveData<MutableList<Message>>()
-    val messageList: LiveData<MutableList<Message>> = _messageList
-
-    var message: ChatMessageItem? = null
+    private val _messageList = MutableLiveData<MutableList<ChatBaseItem>>()
+    val messageList: LiveData<MutableList<ChatBaseItem>> = _messageList
 
     private val _newMessageReceived = MutableLiveData<Boolean>()
     val newMessageReceived: LiveData<Boolean> = _newMessageReceived
@@ -52,7 +50,7 @@ class ChatViewModel @Inject constructor(
 
     // TODO esto irá separado en getMessageHistory y getNewMessage
     private var firstLoad = true
-    fun getMessages(isNetworkAvailable: Boolean, initialMessageList: MutableList<Message>?) {
+    fun getMessages(isNetworkAvailable: Boolean, initialMessageList: MutableList<ChatMessageItem>?) {
         _messageList.value = addDateChatItems(initialMessageList)
 
         viewModelScope.launch {
@@ -122,9 +120,9 @@ class ChatViewModel @Inject constructor(
                     _messageList.value?.add(message)
                     _sendMessageAttempt.postValue(true)
 
-                    this@ChatViewModel.message = message
+                    this@ChatViewModel.lastMessageSent = message
                     
-                    sendMessage(message, chatInfo)
+                    sendMessage(isNetworkAvailable, message, chatInfo)
                 }
             }
         }
@@ -132,7 +130,7 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun sendMessage(
         isNetworkAvailable: Boolean,
-        message: Message,
+        message: ChatMessageItem,
         chatInfo: ChatInfo
     ) {
         eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
@@ -149,7 +147,7 @@ class ChatViewModel @Inject constructor(
                     chatDestinationUserId = it.userId.toString(),
                     chatDestinationUserImage = it.userPhoto.toString(),
                     destinationUserDeviceToken = it.userDeviceToken.toString(),
-                    chatMessage = message?.text.toString()
+                    chatMessage = lastMessageSent?.text.toString()
                 )
 //            "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
 // chat?.userDeviceToken.toString(),
@@ -159,7 +157,6 @@ class ChatViewModel @Inject constructor(
                     priority = 10
                 )
                 val response = notificationsUseCase.sendNotification(notification)
-                response
             }
         }
     }

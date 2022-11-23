@@ -42,6 +42,21 @@ class ChatActivity : AppCompatActivity() {
         setupViews()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.manageChatId(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.manageChatId(false)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.manageChatId(false)
+    }
+
     override fun onBackPressed() {
         finish()
     }
@@ -144,21 +159,6 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.manageChatId(false)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.manageChatId(false)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.manageChatId(true)
     }
 
     private fun setupViews() {

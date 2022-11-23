@@ -19,13 +19,13 @@ interface EventsRepository {
         isNetworkAvailable: Boolean,
         chat: Chat,
         page: Int
-    ): Flow<MutableList<Message>>
+    ): Flow<MutableList<ChatMessageItem>>
 
     fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData>
     fun getGroups(isNetworkAvailable: Boolean): Flow<MutableList<Group>>
     fun sendMessage(
         isNetworkAvailable: Boolean,
         chatInfo: ChatInfo,
-        message: Message
+        message: ChatMessageItem
     ): Flow<ResultInfo>
 }
