@@ -2,6 +2,7 @@ package es.rudo.firebasechat.data.source.remote
 
 import es.rudo.firebasechat.data.dto.results.ResultInfo
 import es.rudo.firebasechat.data.dto.results.ResultUserChat
+
 import es.rudo.firebasechat.domain.models.*
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +12,7 @@ interface EventsRemoteDataSource {
     fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo>
     fun getChats(): Flow<MutableList<Chat>>
     fun getCurrentUser(): Flow<UserData>
-    fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>>
+    fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>>
     fun getGroups(): Flow<MutableList<Group>>
-    fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<ResultInfo>
+    fun sendMessage(chatInfo: ChatInfo, message: ChatMessageItem): Flow<ResultInfo>
 }

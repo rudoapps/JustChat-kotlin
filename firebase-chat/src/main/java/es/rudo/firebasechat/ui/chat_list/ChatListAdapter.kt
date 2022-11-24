@@ -17,7 +17,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.databinding.ItemChatListBinding
+import es.rudo.firebasechat.databinding.ItemChatBinding
 import es.rudo.firebasechat.domain.models.Chat
 
 class ChatListAdapter(
@@ -32,7 +32,7 @@ class ChatListAdapter(
         holder.bind(getItem(position), clickListener)
     }
 
-    class ViewHolder private constructor(private val binding: ItemChatListBinding) :
+    class ViewHolder private constructor(private val binding: ItemChatBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(
@@ -47,10 +47,10 @@ class ChatListAdapter(
             Glide.with(binding.imageUser.context)
                 .load(item.otherUserImage)
                 .placeholder(
-                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.gray_square)
+                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.shape_gray_rounded_rectangle)
                 )
                 .error(
-                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.gray_square)
+                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.shape_gray_rounded_rectangle)
                 )
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(
@@ -82,7 +82,7 @@ class ChatListAdapter(
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = ItemChatListBinding.inflate(layoutInflater, parent, false)
+                val binding = ItemChatBinding.inflate(layoutInflater, parent, false)
                 return ViewHolder(binding)
             }
         }

@@ -72,7 +72,7 @@ class EventsRepositoryImpl @Inject constructor(
         isNetworkAvailable: Boolean,
         chat: Chat,
         page: Int
-    ): Flow<MutableList<Message>> {
+    ): Flow<MutableList<ChatMessageItem>> {
         return if (isNetworkAvailable) {
             eventsRemoteDataSource.getMessagesIndividual(chat, page)
         } else {
@@ -87,7 +87,7 @@ class EventsRepositoryImpl @Inject constructor(
     override fun sendMessage(
         isNetworkAvailable: Boolean,
         chatInfo: ChatInfo,
-        message: Message
+        message: ChatMessageItem
     ): Flow<ResultInfo> {
         return if (isNetworkAvailable) {
             eventsRemoteDataSource.sendMessage(chatInfo, message)
