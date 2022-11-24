@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.Message
+import es.rudo.firebasechat.domain.models.ChatMessageItem
 import es.rudo.firebasechat.helpers.Constants.CHAT
 import es.rudo.firebasechat.helpers.extensions.getUserId
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
@@ -36,10 +36,26 @@ class ChatActivity : AppCompatActivity() {
         setupToolbar()
         setupAdapter()
         initObservers()
+        initListeners()
 
         loadData()
 
         setupViews()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.manageChatId(true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.manageChatId(false)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.manageChatId(false)
     }
 
     override fun onBackPressed() {
@@ -60,13 +76,13 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupAdapter() {
         adapter = ChatAdapter(
-            JustChat.getFirebaseAuth()?.uid,
+            getUserId(),
             object : ChatAdapter.MessageClickListener {
-                override fun onClick(item: Message) {
+                override fun onClick(item: ChatMessageItem) {
                     // TODO
                 }
 
-                override fun onLongClick(item: Message) {
+                override fun onLongClick(item: ChatMessageItem) {
                     // TODO
                 }
             }
@@ -128,7 +144,9 @@ class ChatActivity : AppCompatActivity() {
         viewModel.messageListHistoryUpdateFinished.observe(this) {
             // TODO controlará el puntero cuando se haya cargado la siguiente página del historial
         }
+    }
 
+    private fun initListeners() {
         binding.imageSend.setOnClickListener {
             viewModel.prepareMessageForSending(getUserId(), isNetworkAvailable)
         }
@@ -144,21 +162,6 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        viewModel.manageChatId(false)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.manageChatId(false)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.manageChatId(true)
     }
 
     private fun setupViews() {
