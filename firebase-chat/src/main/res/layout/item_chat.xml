@@ -7,7 +7,7 @@
 
         <variable
             name="message"
-            type="es.rudo.firebasechat.domain.models.Message" />
+            type="es.rudo.androidbaseproject.domain.models.Message" />
 
         <variable
             name="clickListener"

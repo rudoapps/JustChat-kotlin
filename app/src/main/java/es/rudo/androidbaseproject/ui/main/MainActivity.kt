@@ -17,7 +17,7 @@ import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
 import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
-import es.rudo.firebasechat.domain.models.configuration.FirebaseConfiguration
+import es.rudo.androidbaseproject.domain.models.configuration.FirebaseConfiguration
 import es.rudo.firebasechat.main.instance.JustChat
 
 @AndroidEntryPoint

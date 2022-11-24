@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.DialogSimpleLayoutBinding
 import es.rudo.androidbaseproject.helpers.Constants
+import es.rudo.firebasechat.main.instance.JustChat
 
 val Context.isNetworkAvailable: Boolean
     get() {
@@ -84,4 +85,23 @@ fun Context.showSimpleDialog(
             negative?.invoke()
         }
     }.show()
+}
+
+fun Context.dpToPx(dp: Int): Int {
+    return (dp * resources.displayMetrics.density).toInt()
+}
+
+fun Context.getUserId(): String? {
+    return JustChat.getFirebaseAuth()?.uid ?: run {
+        getUserIdPreferences()
+    }
+}
+
+fun Context.getUserIdPreferences(): String? {
+    val preferences = this.getSharedPreferences(es.rudo.firebasechat.helpers.Constants.PREFERENCES, Context.MODE_PRIVATE)
+    return preferences.getString(es.rudo.firebasechat.helpers.Constants.USER_ID_PREFERENCES, null)
+}
+
+fun Context.pxToDp(px: Int): Int {
+    return (px / resources.displayMetrics.density).toInt()
 }
