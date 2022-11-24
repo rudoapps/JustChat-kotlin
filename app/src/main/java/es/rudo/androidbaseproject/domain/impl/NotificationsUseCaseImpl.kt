@@ -1,7 +1,7 @@
 package es.rudo.androidbaseproject.domain.impl
 
-import es.rudo.androidbaseproject.data.repository.NotificationsRepository
 import es.rudo.androidbaseproject.data.dto.Notification
+import es.rudo.androidbaseproject.data.repository.NotificationsRepository
 import es.rudo.androidbaseproject.domain.NotificationsUseCase
 import retrofit2.Response
 import javax.inject.Inject

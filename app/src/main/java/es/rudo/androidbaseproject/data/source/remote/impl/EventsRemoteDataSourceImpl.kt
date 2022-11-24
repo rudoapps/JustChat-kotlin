@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.database.* // ktlint-disable no-wildcard-imports
 import es.rudo.androidbaseproject.data.dto.EmptyChat
+import es.rudo.androidbaseproject.data.dto.converters.toMessageBack
 import es.rudo.androidbaseproject.data.dto.results.ResultInfo
 import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
 import es.rudo.androidbaseproject.data.source.remote.EventsRemoteDataSource
@@ -13,14 +14,12 @@ import es.rudo.androidbaseproject.domain.models.Group
 import es.rudo.androidbaseproject.domain.models.Message
 import es.rudo.androidbaseproject.domain.models.UserData
 import es.rudo.androidbaseproject.domain.models.configuration.BasicConfiguration
-import es.rudo.firebasechat.domain.models.* // ktlint-disable no-wildcard-imports
-import es.rudo.firebasechat.helpers.Constants.DEFAULT_USER_PHOTO
-import es.rudo.firebasechat.helpers.Constants.LIMIT_MESSAGES
-import es.rudo.firebasechat.helpers.Constants.LIMIT_SIZE_ID
-import es.rudo.firebasechat.helpers.extensions.*
-import es.rudo.firebasechat.helpers.extensions.getUserId
+import es.rudo.androidbaseproject.helpers.Constants.DEFAULT_USER_PHOTO
+import es.rudo.androidbaseproject.helpers.Constants.LIMIT_MESSAGES
+import es.rudo.androidbaseproject.helpers.Constants.LIMIT_SIZE_ID
+import es.rudo.androidbaseproject.helpers.extensions.getUserId
 import es.rudo.firebasechat.main.instance.JustChat
-import es.rudo.firebasechat.utils.*
+import generateId
 import getPair
 import getResult
 import getResultUserChat

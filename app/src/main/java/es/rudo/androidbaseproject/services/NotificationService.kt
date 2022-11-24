@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.services
+package es.rudo.androidbaseproject.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -18,13 +18,13 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import es.rudo.firebasechat.R
 import es.rudo.androidbaseproject.domain.models.Chat
-import es.rudo.firebasechat.helpers.Constants
-import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
-import es.rudo.firebasechat.helpers.Constants.PREFERENCES
-import es.rudo.firebasechat.helpers.extensions.ImageInterface
-import es.rudo.firebasechat.helpers.extensions.downloadImageFromUrl
+import es.rudo.androidbaseproject.helpers.Constants
+import es.rudo.androidbaseproject.helpers.Constants.CHAT_ID_PREFERENCES
+import es.rudo.androidbaseproject.helpers.Constants.PREFERENCES
+import es.rudo.androidbaseproject.helpers.extensions.ImageInterface
+import es.rudo.androidbaseproject.helpers.extensions.downloadImageFromUrl
+import es.rudo.firebasechat.R
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity

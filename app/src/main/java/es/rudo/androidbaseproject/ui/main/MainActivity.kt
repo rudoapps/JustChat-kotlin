@@ -15,9 +15,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.androidbaseproject.BuildConfig
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
+import es.rudo.androidbaseproject.domain.models.configuration.FirebaseConfiguration
 import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
-import es.rudo.androidbaseproject.domain.models.configuration.FirebaseConfiguration
 import es.rudo.firebasechat.main.instance.JustChat
 
 @AndroidEntryPoint
@@ -29,6 +29,27 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     private lateinit var signInRequest: BeginSignInRequest
     private lateinit var signUpRequest: BeginSignInRequest
     private lateinit var justChat: JustChat
+
+    companion object {
+        private lateinit var firebaseAuth: FirebaseAuth
+        private lateinit var onTapClient: SignInClient
+
+        fun getFirebaseAuth(): FirebaseAuth? {
+            return if (this::firebaseAuth.isInitialized) {
+                firebaseAuth
+            } else {
+                null
+            }
+        }
+
+        fun getOnTapClient(): SignInClient? {
+            return if (this::onTapClient.isInitialized) {
+                onTapClient
+            } else {
+                null
+            }
+        }
+    }
 
     private val launcher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
@@ -116,6 +137,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
                     Toast.makeText(this, "Login correct", Toast.LENGTH_SHORT).show()
+                    MainActivity.firebaseAuth = firebaseAuth
+                    onTapClient = oneTapClient
                     justChat.loadChat(oneTapClient, firebaseAuth)
                 }
                 .addOnFailureListener {
@@ -130,7 +153,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     override fun onResume() {
         super.onResume()
         if (this::justChat.isInitialized) {
-            if (JustChat.getOnTapClient() != null && JustChat.getFirebaseAuth() != null) {
+            if (getOnTapClient() != null && getFirebaseAuth() != null) {
                 logout()
             }
         }

@@ -1,14 +1,14 @@
 package es.rudo.androidbaseproject.domain.impl
 
+import es.rudo.androidbaseproject.data.dto.results.ResultInfo
+import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
 import es.rudo.androidbaseproject.data.repository.EventsRepository
+import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.domain.models.Chat
 import es.rudo.androidbaseproject.domain.models.ChatInfo
 import es.rudo.androidbaseproject.domain.models.Group
 import es.rudo.androidbaseproject.domain.models.Message
 import es.rudo.androidbaseproject.domain.models.UserData
-import es.rudo.androidbaseproject.data.dto.results.ResultInfo
-import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
-import es.rudo.androidbaseproject.domain.EventsUseCase
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
