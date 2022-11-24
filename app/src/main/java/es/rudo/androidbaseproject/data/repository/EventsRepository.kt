@@ -1,12 +1,12 @@
 package es.rudo.androidbaseproject.data.repository
 
+import es.rudo.androidbaseproject.data.dto.results.ResultInfo
+import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
 import es.rudo.androidbaseproject.domain.models.Chat
 import es.rudo.androidbaseproject.domain.models.ChatInfo
 import es.rudo.androidbaseproject.domain.models.Group
 import es.rudo.androidbaseproject.domain.models.Message
 import es.rudo.androidbaseproject.domain.models.UserData
-import es.rudo.androidbaseproject.data.dto.results.ResultInfo
-import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
 import kotlinx.coroutines.flow.Flow
 
 interface EventsRepository {
