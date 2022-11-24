@@ -1,5 +1,6 @@
 package es.rudo.firebasechat.helpers.extensions
 
+import android.text.format.DateUtils
 import es.rudo.firebasechat.helpers.Constants
 import java.text.SimpleDateFormat
 import java.util.*
@@ -24,4 +25,15 @@ fun Long?.parseDate(format: String): String? {
     } ?: kotlin.run {
         null
     }
+}
+
+fun Long?.getFormattedDate(): String {
+    return this?.let {
+        DateUtils.getRelativeTimeSpanString(
+            it,
+            System.currentTimeMillis(),
+            DateUtils.DAY_IN_MILLIS,
+            DateUtils.FORMAT_SHOW_YEAR
+        ).toString()
+    } ?: ""
 }

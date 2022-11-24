@@ -36,6 +36,7 @@ class ChatActivity : AppCompatActivity() {
         setupToolbar()
         setupAdapter()
         initObservers()
+        initListeners()
 
         loadData()
 
@@ -75,7 +76,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupAdapter() {
         adapter = ChatAdapter(
-            JustChat.getFirebaseAuth()?.uid,
+            getUserId(),
             object : ChatAdapter.MessageClickListener {
                 override fun onClick(item: ChatMessageItem) {
                     // TODO
@@ -143,7 +144,9 @@ class ChatActivity : AppCompatActivity() {
         viewModel.messageListHistoryUpdateFinished.observe(this) {
             // TODO controlará el puntero cuando se haya cargado la siguiente página del historial
         }
+    }
 
+    private fun initListeners() {
         binding.imageSend.setOnClickListener {
             viewModel.prepareMessageForSending(getUserId(), isNetworkAvailable)
         }

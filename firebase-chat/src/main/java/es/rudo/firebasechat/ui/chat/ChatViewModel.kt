@@ -1,9 +1,11 @@
 package es.rudo.firebasechat.ui.chat
 
+import android.text.format.DateUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.type.DateTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.rudo.firebasechat.data.dto.DataNotification
 import es.rudo.firebasechat.data.dto.Notification
@@ -13,8 +15,10 @@ import es.rudo.firebasechat.domain.EventsUseCase
 import es.rudo.firebasechat.domain.NotificationsUseCase
 import es.rudo.firebasechat.domain.models.*
 import es.rudo.firebasechat.helpers.extensions.getDate
+import es.rudo.firebasechat.helpers.extensions.getFormattedDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -60,7 +64,7 @@ class ChatViewModel @Inject constructor(
                         _messageList.postValue(addDateChatItems(messages))
                         firstLoad = false
                     } else if (_messageList.value?.last() != messages.last()) {
-                        _messageList.value?.add(messages.last())
+                        checkLastMessageDateAndAddMessage(messages.last())
                         _newMessageReceived.postValue(true)
                     }
                 }
@@ -73,18 +77,18 @@ class ChatViewModel @Inject constructor(
         val finalList = mutableListOf<ChatBaseItem>()
 
         messageList?.let { list ->
-            var lastDate = list.first().timestamp.getDate()
+            var lastDate = list.firstOrNull()?.timestamp
             finalList.add(ChatDateItem().apply {
-                id = lastDate
-                date = lastDate
+                id = lastDate.getDate()
+                date = lastDate.getFormattedDate()
             })
 
             for (message in list) {
-                if (message.timestamp.getDate() != lastDate) {
-                    lastDate = message.timestamp.getDate()
+                if (message.timestamp.getDate() != lastDate.getDate()) {
+                    lastDate = message.timestamp
                     finalList.add(ChatDateItem().apply {
-                        id = lastDate
-                        date = lastDate
+                        id = lastDate.getDate()
+                        date = lastDate.getFormattedDate()
                     })
                 }
 
@@ -95,8 +99,22 @@ class ChatViewModel @Inject constructor(
         return finalList
     }
 
-    private fun checkLastMessageDate() {
-        _messageList.value?.last()
+    private fun checkLastMessageDateAndAddMessage(message: ChatMessageItem) {
+        (_messageList.value?.lastOrNull() as? ChatMessageItem)?.let {
+            if (it.timestamp.getDate() != message.timestamp.getDate()) {
+                _messageList.value?.add(ChatDateItem().apply {
+                    id = message.timestamp.getDate()
+                    date = message.timestamp.getFormattedDate()
+                })
+            }
+        } ?: run {
+            _messageList.value?.add(ChatDateItem().apply {
+                id = message.timestamp.getDate()
+                date = message.timestamp.getFormattedDate()
+            })
+        }
+
+        _messageList.value?.add(message)
     }
 
     fun prepareMessageForSending(idUser: String?, isNetworkAvailable: Boolean) {
@@ -117,7 +135,7 @@ class ChatViewModel @Inject constructor(
                     }
 
                     newMessageText.value = ""
-                    _messageList.value?.add(message)
+                    checkLastMessageDateAndAddMessage(message)
                     _sendMessageAttempt.postValue(true)
 
                     this@ChatViewModel.lastMessageSent = message
