@@ -1,5 +1,6 @@
 package es.rudo.androidbaseproject.ui.main
 
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
@@ -11,13 +12,16 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.androidbaseproject.BuildConfig
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
-import es.rudo.androidbaseproject.domain.models.configuration.FirebaseConfiguration
+import es.rudo.androidbaseproject.helpers.Constants.PREFERENCES
+import es.rudo.androidbaseproject.helpers.Constants.USER_ID_PREFERENCES
 import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
+import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import es.rudo.firebasechat.main.instance.JustChat
 
 @AndroidEntryPoint
@@ -79,15 +83,17 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         }
 
     override fun setUpViews() {
+        initListeners()
         initObservers()
         initRequests()
-        justChat =
-            JustChat(
-                this,
-                FirebaseConfiguration("fir-chat-d613e")
-            )
         oneTapClient = Identity.getSignInClient(this)
-        initListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (getOnTapClient() != null && getFirebaseAuth() != null) {
+            logout()
+        }
     }
 
     private fun initListeners() {
@@ -118,47 +124,6 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             ).build()
     }
 
-    private fun initObservers() {
-        viewModel.result.observe(this) {
-            launcher.launch(
-                IntentSenderRequest.Builder(it.pendingIntent.intentSender).build()
-            )
-        }
-
-        viewModel.error.observe(this) {
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun loginWithFirebase(credentials: SignInCredential) {
-        val credential = GoogleAuthProvider.getCredential(credentials.googleIdToken, null)
-
-        FirebaseAuth.getInstance().let { firebaseAuth ->
-            firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener { task ->
-                    Toast.makeText(this, "Login correct", Toast.LENGTH_SHORT).show()
-                    MainActivity.firebaseAuth = firebaseAuth
-                    onTapClient = oneTapClient
-                    justChat.loadChat(oneTapClient, firebaseAuth)
-                }
-                .addOnFailureListener {
-                    Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
-                }
-                .addOnCanceledListener {
-                    Toast.makeText(this, "Login canceled", Toast.LENGTH_SHORT).show()
-                }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (this::justChat.isInitialized) {
-            if (getOnTapClient() != null && getFirebaseAuth() != null) {
-                logout()
-            }
-        }
-    }
-
     private fun logout() {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(BuildConfig.CLIENT_ID)
@@ -181,5 +146,81 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+    }
+
+    private fun initObservers() {
+        viewModel.result.observe(this) {
+            launcher.launch(
+                IntentSenderRequest.Builder(it.pendingIntent.intentSender).build()
+            )
+        }
+
+        viewModel.error.observe(this) {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
+
+        viewModel.userInitialized.observe(this) {
+            if (it.success == false) {
+                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
+            } else {
+                if (it.exists == true) {
+                    viewModel.getChats(isNetworkAvailable)
+//                    justChat.loadChat() // TODO replace with call obtain chats
+                } else {
+                    viewModel.initCurrentUserChats(isNetworkAvailable)
+                }
+            }
+        }
+
+        viewModel.listChatId.observe(this) {
+            if (it.isNotEmpty()) {
+                viewModel.initOtherUsersChats(isNetworkAvailable, it)
+            }
+        }
+
+        viewModel.chatsInitialized.observe(this) {
+            if (it.success == false) {
+                Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
+            } else {
+                viewModel.getChats(isNetworkAvailable)
+//                justChat.loadChat() // TODO replace with call obtain chats
+            }
+        }
+
+        viewModel.chats.observe(this) {
+            it
+        }
+    }
+
+    private fun loginWithFirebase(credentials: SignInCredential) {
+        val credential = GoogleAuthProvider.getCredential(credentials.googleIdToken, null)
+        FirebaseAuth.getInstance().let { firebaseAuth ->
+            firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener { task ->
+                    Toast.makeText(this, "Login correct", Toast.LENGTH_SHORT).show()
+                    justChat = JustChat(this, firebaseAuth.currentUser?.uid)
+                    MainActivity.firebaseAuth = firebaseAuth
+                    onTapClient = oneTapClient
+                    val preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+                    preferences.edit()
+                        ?.putString(USER_ID_PREFERENCES, firebaseAuth.currentUser?.uid)?.apply()
+                    initUser()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
+                }
+                .addOnCanceledListener {
+                    Toast.makeText(this, "Login canceled", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun initUser() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if (!it.isSuccessful) {
+                return@addOnCompleteListener
+            }
+            viewModel.initUser(isNetworkAvailable, it.result)
+        }
     }
 }

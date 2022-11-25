@@ -1,4 +1,4 @@
-package es.rudo.androidbaseproject.domain.models
+package es.rudo.firebasechat.models
 
 open class UserData {
     var userId: String? = null

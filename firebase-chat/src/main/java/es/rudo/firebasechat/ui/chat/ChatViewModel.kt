@@ -1,32 +1,18 @@
 package es.rudo.firebasechat.ui.chat
 
-import android.text.format.DateUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.type.DateTime
-import dagger.hilt.android.lifecycle.HiltViewModel
-import es.rudo.firebasechat.data.dto.DataNotification
-import es.rudo.firebasechat.data.dto.Notification
-import es.rudo.firebasechat.data.dto.results.ResultInfo
-import es.rudo.firebasechat.data.source.preferences.AppPreferences
-import es.rudo.firebasechat.domain.EventsUseCase
-import es.rudo.firebasechat.domain.NotificationsUseCase
-import es.rudo.firebasechat.domain.models.*
 import es.rudo.firebasechat.helpers.extensions.getDate
 import es.rudo.firebasechat.helpers.extensions.getFormattedDate
+import es.rudo.firebasechat.models.*
+import es.rudo.firebasechat.models.results.ResultInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-import javax.inject.Inject
 
-@HiltViewModel
-class ChatViewModel @Inject constructor(
-    private val eventsUseCase: EventsUseCase,
-    private val notificationsUseCase: NotificationsUseCase,
-    private val appPreferences: AppPreferences
-) : ViewModel() {
+class ChatViewModel : ViewModel() {
 
     var chat: Chat? = null
 
@@ -54,42 +40,49 @@ class ChatViewModel @Inject constructor(
 
     // TODO esto irá separado en getMessageHistory y getNewMessage
     private var firstLoad = true
-    fun getMessages(isNetworkAvailable: Boolean, initialMessageList: MutableList<ChatMessageItem>?) {
+    fun getMessages(
+        isNetworkAvailable: Boolean,
+        initialMessageList: MutableList<ChatMessageItem>?
+    ) {
         _messageList.value = addDateChatItems(initialMessageList)
 
         viewModelScope.launch {
             chat?.let {
-                eventsUseCase.getMessagesIndividual(isNetworkAvailable, it, 0).collect { messages ->
-                    if (firstLoad) {
-                        _messageList.postValue(addDateChatItems(messages))
-                        firstLoad = false
-                    } else if (_messageList.value?.last() != messages.last()) {
-                        checkLastMessageDateAndAddMessage(messages.last())
-                        _newMessageReceived.postValue(true)
-                    }
-                }
+//                eventsUseCase.getMessagesIndividual(isNetworkAvailable, it, 0).collect { messages ->
+//                    if (firstLoad) {
+//                        _messageList.postValue(addDateChatItems(messages))
+//                        firstLoad = false
+//                    } else if (_messageList.value?.last() != messages.last()) {
+//                        checkLastMessageDateAndAddMessage(messages.last())
+//                        _newMessageReceived.postValue(true)
+//                    }
+//                }
             }
         }
     }
 
-    //TODO repensar para incluir paginación
+    // TODO repensar para incluir paginación
     private fun addDateChatItems(messageList: MutableList<ChatMessageItem>?): MutableList<ChatBaseItem> {
         val finalList = mutableListOf<ChatBaseItem>()
 
         messageList?.let { list ->
             var lastDate = list.firstOrNull()?.timestamp
-            finalList.add(ChatDateItem().apply {
-                id = lastDate.getDate()
-                date = lastDate.getFormattedDate()
-            })
+            finalList.add(
+                ChatDateItem().apply {
+                    id = lastDate.getDate()
+                    date = lastDate.getFormattedDate()
+                }
+            )
 
             for (message in list) {
                 if (message.timestamp.getDate() != lastDate.getDate()) {
                     lastDate = message.timestamp
-                    finalList.add(ChatDateItem().apply {
-                        id = lastDate.getDate()
-                        date = lastDate.getFormattedDate()
-                    })
+                    finalList.add(
+                        ChatDateItem().apply {
+                            id = lastDate.getDate()
+                            date = lastDate.getFormattedDate()
+                        }
+                    )
                 }
 
                 finalList.add(message)
@@ -102,16 +95,20 @@ class ChatViewModel @Inject constructor(
     private fun checkLastMessageDateAndAddMessage(message: ChatMessageItem) {
         (_messageList.value?.lastOrNull() as? ChatMessageItem)?.let {
             if (it.timestamp.getDate() != message.timestamp.getDate()) {
-                _messageList.value?.add(ChatDateItem().apply {
-                    id = message.timestamp.getDate()
-                    date = message.timestamp.getFormattedDate()
-                })
+                _messageList.value?.add(
+                    ChatDateItem().apply {
+                        id = message.timestamp.getDate()
+                        date = message.timestamp.getFormattedDate()
+                    }
+                )
             }
         } ?: run {
-            _messageList.value?.add(ChatDateItem().apply {
-                id = message.timestamp.getDate()
-                date = message.timestamp.getFormattedDate()
-            })
+            _messageList.value?.add(
+                ChatDateItem().apply {
+                    id = message.timestamp.getDate()
+                    date = message.timestamp.getFormattedDate()
+                }
+            )
         }
 
         _messageList.value?.add(message)
@@ -139,7 +136,7 @@ class ChatViewModel @Inject constructor(
                     _sendMessageAttempt.postValue(true)
 
                     this@ChatViewModel.lastMessageSent = message
-                    
+
                     sendMessage(isNetworkAvailable, message, chatInfo)
                 }
             }
@@ -151,39 +148,39 @@ class ChatViewModel @Inject constructor(
         message: ChatMessageItem,
         chatInfo: ChatInfo
     ) {
-        eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
-            _sendMessageSuccess.postValue(it)
-        }
+//        eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
+//            _sendMessageSuccess.postValue(it)
+//        }
     }
 
     fun sendNotification(isNetworkAvailable: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            eventsUseCase.getCurrentUser(isNetworkAvailable).collect {
-                val dataNotification = DataNotification(
-                    chatId = chat?.id.toString(),
-                    chatDestinationUserName = it.userName.toString(),
-                    chatDestinationUserId = it.userId.toString(),
-                    chatDestinationUserImage = it.userPhoto.toString(),
-                    destinationUserDeviceToken = it.userDeviceToken.toString(),
-                    chatMessage = lastMessageSent?.text.toString()
-                )
-//            "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
-// chat?.userDeviceToken.toString(),
-                val notification = Notification(
-                    to = chat?.userDeviceToken.toString(),
-                    data = dataNotification,
-                    priority = 10
-                )
-                val response = notificationsUseCase.sendNotification(notification)
-            }
+//            eventsUseCase.getCurrentUser(isNetworkAvailable).collect {
+//                val dataNotification = DataNotification(
+//                    chatId = chat?.id.toString(),
+//                    chatDestinationUserName = it.userName.toString(),
+//                    chatDestinationUserId = it.userId.toString(),
+//                    chatDestinationUserImage = it.userPhoto.toString(),
+//                    destinationUserDeviceToken = it.userDeviceToken.toString(),
+//                    chatMessage = lastMessageSent?.text.toString()
+//                )
+//                //            "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
+//                // chat?.userDeviceToken.toString(),
+//                val notification = Notification(
+//                    to = chat?.userDeviceToken.toString(),
+//                    data = dataNotification,
+//                    priority = 10
+//                )
+//                val response = notificationsUseCase.sendNotification(notification)
+//            }
         }
     }
 
     fun manageChatId(save: Boolean) {
-        if (save) {
-            appPreferences.chatId = chat?.id.toString()
-        } else {
-            appPreferences.chatId = ""
-        }
+//        if (save) {
+//            appPreferences.chatId = chat?.id.toString()
+//        } else {
+//            appPreferences.chatId = ""
+//        }
     }
 }

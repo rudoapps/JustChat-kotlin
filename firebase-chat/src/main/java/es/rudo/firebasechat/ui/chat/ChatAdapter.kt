@@ -16,14 +16,13 @@ import androidx.recyclerview.widget.RecyclerView
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ItemDateBinding
 import es.rudo.firebasechat.databinding.ItemMessageBinding
-import es.rudo.firebasechat.domain.models.ChatBaseItem
-import es.rudo.firebasechat.domain.models.ChatDateItem
-import es.rudo.firebasechat.domain.models.ChatMessageItem
 import es.rudo.firebasechat.helpers.Constants.DATE
 import es.rudo.firebasechat.helpers.Constants.MESSAGE
 import es.rudo.firebasechat.helpers.extensions.dpToPx
-import es.rudo.firebasechat.helpers.extensions.getDate
 import es.rudo.firebasechat.helpers.extensions.getTime
+import es.rudo.firebasechat.models.ChatBaseItem
+import es.rudo.firebasechat.models.ChatDateItem
+import es.rudo.firebasechat.models.ChatMessageItem
 
 class ChatAdapter(
     private val userId: String?, // TODO valorar setearlo en el companion object del activity y ahorrarse el param
@@ -47,7 +46,11 @@ class ChatAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         return when (getItemViewType(position)) {
-            MESSAGE -> (holder as MessageViewHolder).bind(getItem(position) as ChatMessageItem, userId, clickListener)
+            MESSAGE -> (holder as MessageViewHolder).bind(
+                getItem(position) as ChatMessageItem,
+                userId,
+                clickListener
+            )
             else -> (holder as DateViewHolder).bind(getItem(position) as ChatDateItem)
         }
     }
@@ -75,7 +78,8 @@ class ChatAdapter(
         private val textSize: Int? = null
         private val outMsgDrawable: Drawable? = null
         private val inMsgDrawable: Drawable? = null
-        private val outMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.purple_200)
+        private val outMsgColor: Int =
+            ContextCompat.getColor(binding.root.context, R.color.purple_200)
         private val inMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.teal_700)
         private val outMsgPaddingDp: Int = 40
         private val inMsgPaddingDp: Int = 40
@@ -147,7 +151,6 @@ class ChatAdapter(
         }
 
         private fun setMessageStyle() {
-
         }
 
         private fun setMessageContent(message: String?, timestamp: Long?) {

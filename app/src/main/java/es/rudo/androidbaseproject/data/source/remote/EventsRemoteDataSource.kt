@@ -1,12 +1,8 @@
 package es.rudo.androidbaseproject.data.source.remote
 
-import es.rudo.androidbaseproject.domain.models.Chat
-import es.rudo.androidbaseproject.domain.models.ChatInfo
-import es.rudo.androidbaseproject.domain.models.Group
-import es.rudo.androidbaseproject.domain.models.Message
-import es.rudo.androidbaseproject.domain.models.UserData
-import es.rudo.androidbaseproject.data.dto.results.ResultInfo
-import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
+import es.rudo.firebasechat.models.*
+import es.rudo.firebasechat.models.results.ResultInfo
+import es.rudo.firebasechat.models.results.ResultUserChat
 import kotlinx.coroutines.flow.Flow
 
 interface EventsRemoteDataSource {
@@ -15,7 +11,7 @@ interface EventsRemoteDataSource {
     fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo>
     fun getChats(): Flow<MutableList<Chat>>
     fun getCurrentUser(): Flow<UserData>
-    fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>>
+    fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>>
     fun getGroups(): Flow<MutableList<Group>>
-    fun sendMessage(chatInfo: ChatInfo, message: Message): Flow<ResultInfo>
+    fun sendMessage(chatInfo: ChatInfo, message: ChatMessageItem): Flow<ResultInfo>
 }

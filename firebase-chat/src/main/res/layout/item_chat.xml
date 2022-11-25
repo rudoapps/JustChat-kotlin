@@ -7,7 +7,7 @@
 
         <variable
             name="chat"
-            type="es.rudo.firebasechat.domain.models.Chat" />
+            type="es.rudo.firebasechat.models.Chat" />
 
     </data>
 
@@ -23,8 +23,8 @@
             android:id="@+id/image_user"
             android:layout_width="@dimen/user_picture_size"
             android:layout_height="@dimen/user_picture_size"
-            android:layout_marginTop="@dimen/margin_regular"
             android:layout_marginStart="@dimen/margin_regular"
+            android:layout_marginTop="@dimen/margin_regular"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/avatars" />
@@ -66,8 +66,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="@dimen/margin_regular"
             android:layout_marginHorizontal="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_regular"
             android:alpha="0.25"
             android:background="@color/soft_black"
             app:layout_constraintTop_toBottomOf="@id/image_user" />

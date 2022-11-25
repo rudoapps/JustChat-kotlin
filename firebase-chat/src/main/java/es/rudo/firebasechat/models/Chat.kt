@@ -1,4 +1,4 @@
-package es.rudo.androidbaseproject.domain.models
+package es.rudo.firebasechat.models
 
 import java.io.Serializable
 
@@ -9,5 +9,5 @@ class Chat : Serializable {
     var otherUserImage: String? = null
     var lastMessage: String? = null
     var userDeviceToken: String? = null
-    var messages: MutableList<Message>? = null
+    var messages: MutableList<ChatMessageItem>? = null
 }

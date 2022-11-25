@@ -7,7 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import es.rudo.firebasechat.helpers.Constants.PREFERENCES
+import es.rudo.androidbaseproject.helpers.Constants.PREFERENCES
 import javax.inject.Singleton
 
 @Module

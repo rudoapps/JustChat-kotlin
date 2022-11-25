@@ -1,12 +1,8 @@
 package es.rudo.androidbaseproject.data.repository
 
-import es.rudo.androidbaseproject.data.dto.results.ResultInfo
-import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
-import es.rudo.androidbaseproject.domain.models.Chat
-import es.rudo.androidbaseproject.domain.models.ChatInfo
-import es.rudo.androidbaseproject.domain.models.Group
-import es.rudo.androidbaseproject.domain.models.Message
-import es.rudo.androidbaseproject.domain.models.UserData
+import es.rudo.firebasechat.models.*
+import es.rudo.firebasechat.models.results.ResultInfo
+import es.rudo.firebasechat.models.results.ResultUserChat
 import kotlinx.coroutines.flow.Flow
 
 interface EventsRepository {
@@ -22,13 +18,13 @@ interface EventsRepository {
         isNetworkAvailable: Boolean,
         chat: Chat,
         page: Int
-    ): Flow<MutableList<Message>>
+    ): Flow<MutableList<ChatMessageItem>>
 
     fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData>
     fun getGroups(isNetworkAvailable: Boolean): Flow<MutableList<Group>>
     fun sendMessage(
         isNetworkAvailable: Boolean,
         chatInfo: ChatInfo,
-        message: Message
+        message: ChatMessageItem
     ): Flow<ResultInfo>
 }

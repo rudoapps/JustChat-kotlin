@@ -6,7 +6,8 @@ import kotlin.reflect.KProperty
 class PreferencesDelegate(val key: String? = null) {
 
     inline operator fun <reified T> getValue(thisRef: AppPreferences, property: KProperty<*>): T? {
-        val json = thisRef.sharedPreferences?.getString(key ?: "KEY_${property.name.uppercase()}", "")
+        val json =
+            thisRef.sharedPreferences?.getString(key ?: "KEY_${property.name.uppercase()}", "")
         return json?.let {
             if (it.isNotEmpty()) {
                 if (it.contains(";;")) {
@@ -24,7 +25,11 @@ class PreferencesDelegate(val key: String? = null) {
         }
     }
 
-    inline operator fun <reified T> setValue(thisRef: AppPreferences, property: KProperty<*>, value: T?) {
+    inline operator fun <reified T> setValue(
+        thisRef: AppPreferences,
+        property: KProperty<*>,
+        value: T?
+    ) {
         value?.let {
             val json =
                 if (it is Iterable<*>) {

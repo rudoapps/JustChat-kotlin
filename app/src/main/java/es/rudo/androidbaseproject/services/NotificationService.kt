@@ -18,14 +18,14 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import es.rudo.androidbaseproject.domain.models.Chat
 import es.rudo.androidbaseproject.helpers.Constants
 import es.rudo.androidbaseproject.helpers.Constants.CHAT_ID_PREFERENCES
 import es.rudo.androidbaseproject.helpers.Constants.PREFERENCES
 import es.rudo.androidbaseproject.helpers.extensions.ImageInterface
 import es.rudo.androidbaseproject.helpers.extensions.downloadImageFromUrl
+import es.rudo.androidbaseproject.ui.main.MainActivity
 import es.rudo.firebasechat.R
-import es.rudo.firebasechat.main.instance.JustChat
+import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import kotlin.random.Random
@@ -83,7 +83,7 @@ class NotificationService : FirebaseMessagingService() {
             userDeviceToken = chatDestinationUserDeviceToken
         }
 
-        val intent = if (JustChat.getFirebaseAuth() == null) {
+        val intent = if (MainActivity.getFirebaseAuth() == null) {
             Intent(applicationContext, ChatListActivity::class.java)
         } else {
             Intent(applicationContext, ChatActivity::class.java).apply {

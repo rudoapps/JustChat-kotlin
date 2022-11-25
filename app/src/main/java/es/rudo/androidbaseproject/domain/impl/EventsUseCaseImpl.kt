@@ -1,14 +1,10 @@
 package es.rudo.androidbaseproject.domain.impl
 
-import es.rudo.androidbaseproject.data.dto.results.ResultInfo
-import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
 import es.rudo.androidbaseproject.data.repository.EventsRepository
 import es.rudo.androidbaseproject.domain.EventsUseCase
-import es.rudo.androidbaseproject.domain.models.Chat
-import es.rudo.androidbaseproject.domain.models.ChatInfo
-import es.rudo.androidbaseproject.domain.models.Group
-import es.rudo.androidbaseproject.domain.models.Message
-import es.rudo.androidbaseproject.domain.models.UserData
+import es.rudo.firebasechat.models.*
+import es.rudo.firebasechat.models.results.ResultInfo
+import es.rudo.firebasechat.models.results.ResultUserChat
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -38,7 +34,7 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
         isNetworkAvailable: Boolean,
         chat: Chat,
         page: Int
-    ): Flow<MutableList<Message>> {
+    ): Flow<MutableList<ChatMessageItem>> {
         return eventsRepository.getMessagesIndividual(isNetworkAvailable, chat, page)
     }
 
@@ -53,7 +49,7 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
     override fun sendMessage(
         isNetworkAvailable: Boolean,
         chatInfo: ChatInfo,
-        message: Message
+        message: ChatMessageItem
     ): Flow<ResultInfo> {
         return eventsRepository.sendMessage(isNetworkAvailable, chatInfo, message)
     }

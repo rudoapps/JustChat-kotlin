@@ -1,9 +1,9 @@
 package es.rudo.androidbaseproject.data.source.local.impl
 
 import es.rudo.androidbaseproject.data.source.local.EventsLocalDataSource
-import es.rudo.androidbaseproject.domain.models.Chat
-import es.rudo.androidbaseproject.domain.models.Group
-import es.rudo.androidbaseproject.domain.models.Message
+import es.rudo.firebasechat.models.Chat
+import es.rudo.firebasechat.models.ChatMessageItem
+import es.rudo.firebasechat.models.Group
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -15,7 +15,7 @@ class EventsLocalDataSourceImpl : EventsLocalDataSource {
         }
     }
 
-    override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<Message>> {
+    override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>> {
         return flow {
             emit(ArrayList())
         }

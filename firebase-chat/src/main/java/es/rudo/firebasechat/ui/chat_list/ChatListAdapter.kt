@@ -18,7 +18,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ItemChatBinding
-import es.rudo.firebasechat.domain.models.Chat
+import es.rudo.firebasechat.models.Chat
 
 class ChatListAdapter(
     private val clickListener: (Chat) -> Unit
@@ -47,10 +47,16 @@ class ChatListAdapter(
             Glide.with(binding.imageUser.context)
                 .load(item.otherUserImage)
                 .placeholder(
-                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.shape_gray_rounded_rectangle)
+                    ContextCompat.getDrawable(
+                        binding.imageUser.context,
+                        R.drawable.shape_gray_rounded_rectangle
+                    )
                 )
                 .error(
-                    ContextCompat.getDrawable(binding.imageUser.context, R.drawable.shape_gray_rounded_rectangle)
+                    ContextCompat.getDrawable(
+                        binding.imageUser.context,
+                        R.drawable.shape_gray_rounded_rectangle
+                    )
                 )
                 .listener(object : RequestListener<Drawable> {
                     override fun onLoadFailed(

@@ -1,15 +1,11 @@
 package es.rudo.androidbaseproject.data.repository.impl
 
-import es.rudo.androidbaseproject.data.dto.results.ResultInfo
-import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
 import es.rudo.androidbaseproject.data.repository.EventsRepository
 import es.rudo.androidbaseproject.data.source.local.EventsLocalDataSource
 import es.rudo.androidbaseproject.data.source.remote.EventsRemoteDataSource
-import es.rudo.androidbaseproject.domain.models.Chat
-import es.rudo.androidbaseproject.domain.models.ChatInfo
-import es.rudo.androidbaseproject.domain.models.Group
-import es.rudo.androidbaseproject.domain.models.Message
-import es.rudo.androidbaseproject.domain.models.UserData
+import es.rudo.firebasechat.models.*
+import es.rudo.firebasechat.models.results.ResultInfo
+import es.rudo.firebasechat.models.results.ResultUserChat
 import getResult
 import getResultUserChat
 import kotlinx.coroutines.flow.Flow
@@ -76,7 +72,7 @@ class EventsRepositoryImpl @Inject constructor(
         isNetworkAvailable: Boolean,
         chat: Chat,
         page: Int
-    ): Flow<MutableList<Message>> {
+    ): Flow<MutableList<ChatMessageItem>> {
         return if (isNetworkAvailable) {
             eventsRemoteDataSource.getMessagesIndividual(chat, page)
         } else {
@@ -91,7 +87,7 @@ class EventsRepositoryImpl @Inject constructor(
     override fun sendMessage(
         isNetworkAvailable: Boolean,
         chatInfo: ChatInfo,
-        message: Message
+        message: ChatMessageItem
     ): Flow<ResultInfo> {
         return if (isNetworkAvailable) {
             eventsRemoteDataSource.sendMessage(chatInfo, message)

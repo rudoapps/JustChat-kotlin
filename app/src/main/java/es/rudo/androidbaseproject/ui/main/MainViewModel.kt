@@ -3,21 +3,34 @@ package es.rudo.androidbaseproject.ui.main
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.rudo.androidbaseproject.data.source.preferences.AppPreferences
+import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.ui.base.BaseViewModel
+import es.rudo.firebasechat.models.Chat
+import es.rudo.firebasechat.models.results.ResultInfo
+import es.rudo.firebasechat.models.results.ResultUserChat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val preferences: AppPreferences
+    val preferences: AppPreferences,
+    private val eventsUseCase: EventsUseCase
 ) : BaseViewModel() {
 
     val result = MutableLiveData<BeginSignInResult>()
     val error = MutableLiveData<String>()
+    val userInitialized = MutableLiveData<ResultUserChat>()
+    val listChatId = MutableLiveData<MutableList<Pair<String, String>>>()
+    val chatsInitialized = MutableLiveData<ResultInfo>()
+    val chats = MutableLiveData<MutableList<Chat>>()
 
     override fun initData(data: Bundle) {
     }
@@ -66,6 +79,49 @@ class MainViewModel @Inject constructor(
         } catch (ex: Exception) {
             Log.e("_TAG_", ex.localizedMessage)
             error.value = ex.localizedMessage
+        }
+    }
+
+    fun initUser(isNetworkAvailable: Boolean, deviceToken: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            eventsUseCase.initUser(isNetworkAvailable, deviceToken).collect {
+                withContext(Dispatchers.Main) {
+                    userInitialized.value = it
+                }
+            }
+        }
+    }
+
+    fun initCurrentUserChats(isNetworkAvailable: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            eventsUseCase.initCurrentUserChats(isNetworkAvailable).collect {
+                withContext(Dispatchers.Main) {
+                    listChatId.value = it
+                }
+            }
+        }
+    }
+
+    fun initOtherUsersChats(
+        isNetworkAvailable: Boolean,
+        listChatId: MutableList<Pair<String, String>>
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            eventsUseCase.initOtherUsersChats(isNetworkAvailable, listChatId).collect {
+                withContext(Dispatchers.Main) {
+                    chatsInitialized.value = it
+                }
+            }
+        }
+    }
+
+    fun getChats(isNetworkAvailable: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            eventsUseCase.getChats(isNetworkAvailable).collect {
+                withContext(Dispatchers.Main) {
+                    chats.postValue(it)
+                }
+            }
         }
     }
 }

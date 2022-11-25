@@ -1,5 +1,5 @@
-import es.rudo.androidbaseproject.data.dto.results.ResultInfo
-import es.rudo.androidbaseproject.data.dto.results.ResultUserChat
+import es.rudo.firebasechat.models.results.ResultInfo
+import es.rudo.firebasechat.models.results.ResultUserChat
 
 fun generateId(length: Int = 20): String { // ex: bwUIoWNCSQvPZh8xaFuz
     val alphaNumeric = ('a'..'z') + ('A'..'Z') + ('0'..'9')

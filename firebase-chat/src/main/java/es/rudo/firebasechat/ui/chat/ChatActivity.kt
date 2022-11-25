@@ -1,33 +1,31 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil.setContentView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
-import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatMessageItem
 import es.rudo.firebasechat.helpers.Constants.CHAT
 import es.rudo.firebasechat.helpers.extensions.getUserId
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
-import es.rudo.firebasechat.main.instance.JustChat
+import es.rudo.firebasechat.models.Chat
+import es.rudo.firebasechat.models.ChatMessageItem
 
-@AndroidEntryPoint
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatBinding
     private lateinit var adapter: ChatAdapter
 
-    private val viewModel: ChatViewModel by viewModels()
+    private lateinit var viewModel: ChatViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = setContentView(this, R.layout.activity_chat)
+        viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
 
         binding.lifecycleOwner = this
         binding.activity = this
