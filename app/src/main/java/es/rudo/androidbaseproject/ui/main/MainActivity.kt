@@ -22,6 +22,7 @@ import es.rudo.androidbaseproject.helpers.Constants.USER_ID_PREFERENCES
 import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
+import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.main.instance.JustChat
 
 @AndroidEntryPoint
@@ -33,6 +34,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     private lateinit var signInRequest: BeginSignInRequest
     private lateinit var signUpRequest: BeginSignInRequest
     private lateinit var justChat: JustChat
+    private lateinit var events: Events
 
     companion object {
         private lateinit var firebaseAuth: FirebaseAuth
@@ -86,6 +88,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         initListeners()
         initObservers()
         initRequests()
+        events = EventsImpl()
+        viewModel.events = events
         oneTapClient = Identity.getSignInClient(this)
     }
 
@@ -164,8 +168,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
                 if (it.exists == true) {
-                    viewModel.getChats(isNetworkAvailable)
-//                    justChat.loadChat() // TODO replace with call obtain chats
+                    justChat.loadChat()
                 } else {
                     viewModel.initCurrentUserChats(isNetworkAvailable)
                 }
@@ -182,13 +185,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             if (it.success == false) {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
-                viewModel.getChats(isNetworkAvailable)
-//                justChat.loadChat() // TODO replace with call obtain chats
+                justChat.loadChat()
             }
-        }
-
-        viewModel.chats.observe(this) {
-            it
         }
     }
 
@@ -198,7 +196,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
                     Toast.makeText(this, "Login correct", Toast.LENGTH_SHORT).show()
-                    justChat = JustChat(this, firebaseAuth.currentUser?.uid)
+                    justChat = JustChat(this, firebaseAuth.currentUser?.uid, events)
                     MainActivity.firebaseAuth = firebaseAuth
                     onTapClient = oneTapClient
                     val preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)

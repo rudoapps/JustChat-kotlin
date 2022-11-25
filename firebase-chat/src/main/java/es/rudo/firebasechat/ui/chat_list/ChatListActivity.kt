@@ -1,17 +1,21 @@
 package es.rudo.firebasechat.ui.chat_list
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatListBinding
+import es.rudo.firebasechat.helpers.Constants.CHAT
+import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
+import es.rudo.firebasechat.ui.chat.ChatActivity
 
 class ChatListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatListBinding
-    private val viewModel: ChatListViewModel by viewModels()
-//    private lateinit var adapter: ChatListAdapter
+    private lateinit var viewModel: ChatListViewModel
+    private lateinit var adapter: ChatListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,38 +26,32 @@ class ChatListActivity : AppCompatActivity() {
             null,
             false
         )
+        viewModel = ViewModelProvider(this)[ChatListViewModel::class.java]
         setContentView(binding.root)
 
         binding.lifecycleOwner = this
 
         initAdapter()
         setUpObservables()
+
+        viewModel.getChats(isNetworkAvailable)
     }
 
     private fun initAdapter() {
-//        adapter = ChatListAdapter {
-// //            val intent = Intent(this, ChatActivity::class.java)
-// //            intent.putExtra(CHAT, it)
-// //            startActivity(intent)
-//        }
-//        binding.recyclerChats.adapter = adapter
+        adapter = ChatListAdapter {
+            val intent = Intent(this, ChatActivity::class.java)
+            intent.putExtra(CHAT, it)
+            startActivity(intent)
+        }
+        binding.recyclerChats.adapter = adapter
     }
 
     private fun setUpObservables() {
-//        viewModel.chats.observe(this) {
-//            adapter.submitList(it)
-//            // TODO mock data
-// //            adapter.submitList(
-// //                listOf(
-// //                    Chat().apply {
-// //                        name = "Las quintillizas"
-// //                        otherUserImage =
-// //                            "https://i.pinimg.com/736x/d6/29/01/d62901573a2f7eebf88da077b086c02b.jpg"
-// //                        lastMessage = "Este es el último mensaje"
-// //                    }
-// //                )
-// //            )
-//        }
+        viewModel.chats.observe(this) {
+            if (!it.isNullOrEmpty()) {
+                adapter.submitList(it)
+            }
+        }
     }
 
     override fun onBackPressed() {
@@ -63,8 +61,8 @@ class ChatListActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         // TODO replace with call obtain  chats
-//        if (!viewModel.chats.value.isNullOrEmpty()) {
-//            viewModel.getChats(isNetworkAvailable)
-//        }
+        if (!viewModel.chats.value.isNullOrEmpty()) {
+            viewModel.getChats(isNetworkAvailable)
+        }
     }
 }

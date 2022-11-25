@@ -11,7 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import es.rudo.androidbaseproject.data.source.preferences.AppPreferences
 import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.ui.base.BaseViewModel
-import es.rudo.firebasechat.models.Chat
+import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.models.results.ResultInfo
 import es.rudo.firebasechat.models.results.ResultUserChat
 import kotlinx.coroutines.Dispatchers
@@ -30,9 +30,14 @@ class MainViewModel @Inject constructor(
     val userInitialized = MutableLiveData<ResultUserChat>()
     val listChatId = MutableLiveData<MutableList<Pair<String, String>>>()
     val chatsInitialized = MutableLiveData<ResultInfo>()
-    val chats = MutableLiveData<MutableList<Chat>>()
+    lateinit var events: Events
+
+    companion object {
+        var eventsUseCase: EventsUseCase? = null
+    }
 
     override fun initData(data: Bundle) {
+        MainViewModel.eventsUseCase = eventsUseCase
     }
 
     fun oneTapSignInWithGoogle(
@@ -110,16 +115,6 @@ class MainViewModel @Inject constructor(
             eventsUseCase.initOtherUsersChats(isNetworkAvailable, listChatId).collect {
                 withContext(Dispatchers.Main) {
                     chatsInitialized.value = it
-                }
-            }
-        }
-    }
-
-    fun getChats(isNetworkAvailable: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            eventsUseCase.getChats(isNetworkAvailable).collect {
-                withContext(Dispatchers.Main) {
-                    chats.postValue(it)
                 }
             }
         }

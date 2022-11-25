@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.rudo.firebasechat.helpers.extensions.getDate
 import es.rudo.firebasechat.helpers.extensions.getFormattedDate
+import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.*
 import es.rudo.firebasechat.models.results.ResultInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 class ChatViewModel : ViewModel() {
 
@@ -48,15 +48,16 @@ class ChatViewModel : ViewModel() {
 
         viewModelScope.launch {
             chat?.let {
-//                eventsUseCase.getMessagesIndividual(isNetworkAvailable, it, 0).collect { messages ->
-//                    if (firstLoad) {
-//                        _messageList.postValue(addDateChatItems(messages))
-//                        firstLoad = false
-//                    } else if (_messageList.value?.last() != messages.last()) {
-//                        checkLastMessageDateAndAddMessage(messages.last())
-//                        _newMessageReceived.postValue(true)
-//                    }
-//                }
+                JustChat.events?.getMessagesIndividual(isNetworkAvailable, it, 0)
+                    ?.collect { messages ->
+                        if (firstLoad) {
+                            _messageList.postValue(addDateChatItems(messages))
+                            firstLoad = false
+                        } else if (_messageList.value?.last() != messages.last()) {
+                            checkLastMessageDateAndAddMessage(messages.last())
+                            _newMessageReceived.postValue(true)
+                        }
+                    }
             }
         }
     }
@@ -148,14 +149,14 @@ class ChatViewModel : ViewModel() {
         message: ChatMessageItem,
         chatInfo: ChatInfo
     ) {
-//        eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message).collect {
-//            _sendMessageSuccess.postValue(it)
-//        }
+        JustChat.events?.sendMessage(isNetworkAvailable, chatInfo, message)?.collect {
+            _sendMessageSuccess.postValue(it)
+        }
     }
 
     fun sendNotification(isNetworkAvailable: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-//            eventsUseCase.getCurrentUser(isNetworkAvailable).collect {
+            JustChat.events?.getCurrentUser(isNetworkAvailable)?.collect {
 //                val dataNotification = DataNotification(
 //                    chatId = chat?.id.toString(),
 //                    chatDestinationUserName = it.userName.toString(),
@@ -172,7 +173,7 @@ class ChatViewModel : ViewModel() {
 //                    priority = 10
 //                )
 //                val response = notificationsUseCase.sendNotification(notification)
-//            }
+            }
         }
     }
 
