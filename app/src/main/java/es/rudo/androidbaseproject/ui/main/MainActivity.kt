@@ -1,6 +1,5 @@
 package es.rudo.androidbaseproject.ui.main
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
@@ -17,8 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.androidbaseproject.BuildConfig
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.ActivityMainBinding
-import es.rudo.androidbaseproject.helpers.Constants.PREFERENCES
-import es.rudo.androidbaseproject.helpers.Constants.USER_ID_PREFERENCES
+import es.rudo.androidbaseproject.helpers.extensions.saveUserId
 import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
@@ -199,9 +197,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     justChat = JustChat(this, firebaseAuth.currentUser?.uid, events)
                     MainActivity.firebaseAuth = firebaseAuth
                     onTapClient = oneTapClient
-                    val preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
-                    preferences.edit()
-                        ?.putString(USER_ID_PREFERENCES, firebaseAuth.currentUser?.uid)?.apply()
+                    saveUserId(firebaseAuth.currentUser?.uid)
                     initUser()
                 }
                 .addOnFailureListener {

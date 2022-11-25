@@ -1,5 +1,6 @@
 package es.rudo.firebasechat.interfaces
 
+import android.content.Context
 import es.rudo.firebasechat.models.*
 import es.rudo.firebasechat.models.results.ResultInfo
 import kotlinx.coroutines.flow.Flow
@@ -19,4 +20,7 @@ interface Events {
         chatInfo: ChatInfo,
         message: ChatMessageItem
     ): Flow<ResultInfo>?
+
+    suspend fun sendNotification(isNetworkAvailable: Boolean, chat: Chat?, message: String?)
+    fun manageChatId(context: Context, save: Boolean, chatId: String)
 }

@@ -156,32 +156,7 @@ class ChatViewModel : ViewModel() {
 
     fun sendNotification(isNetworkAvailable: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            JustChat.events?.getCurrentUser(isNetworkAvailable)?.collect {
-//                val dataNotification = DataNotification(
-//                    chatId = chat?.id.toString(),
-//                    chatDestinationUserName = it.userName.toString(),
-//                    chatDestinationUserId = it.userId.toString(),
-//                    chatDestinationUserImage = it.userPhoto.toString(),
-//                    destinationUserDeviceToken = it.userDeviceToken.toString(),
-//                    chatMessage = lastMessageSent?.text.toString()
-//                )
-//                //            "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
-//                // chat?.userDeviceToken.toString(),
-//                val notification = Notification(
-//                    to = chat?.userDeviceToken.toString(),
-//                    data = dataNotification,
-//                    priority = 10
-//                )
-//                val response = notificationsUseCase.sendNotification(notification)
-            }
+            JustChat.events?.sendNotification(isNetworkAvailable, chat, lastMessageSent?.text)
         }
-    }
-
-    fun manageChatId(save: Boolean) {
-//        if (save) {
-//            appPreferences.chatId = chat?.id.toString()
-//        } else {
-//            appPreferences.chatId = ""
-//        }
     }
 }

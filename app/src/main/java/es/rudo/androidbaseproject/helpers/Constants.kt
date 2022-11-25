@@ -54,11 +54,6 @@ object Constants {
     const val EXTRAS = "extras"
     const val CHAT = "chat"
 
-    // Preferences key
-    const val PREFERENCES = "MyPreferences"
-    const val CHAT_ID_PREFERENCES = "KEY_CHATID"
-    const val USER_ID_PREFERENCES = "KEY_USERID"
-
     // Date
     const val SIMPLE_DATE_FORMAT_DATE = "dd/MM/yyyy"
     const val SIMPLE_DATE_FORMAT_TIME = "HH:mm"

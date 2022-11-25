@@ -19,12 +19,12 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import es.rudo.androidbaseproject.helpers.Constants
-import es.rudo.androidbaseproject.helpers.Constants.CHAT_ID_PREFERENCES
-import es.rudo.androidbaseproject.helpers.Constants.PREFERENCES
 import es.rudo.androidbaseproject.helpers.extensions.ImageInterface
 import es.rudo.androidbaseproject.helpers.extensions.downloadImageFromUrl
 import es.rudo.androidbaseproject.ui.main.MainActivity
 import es.rudo.firebasechat.R
+import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
+import es.rudo.firebasechat.helpers.Constants.PREFERENCES
 import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity

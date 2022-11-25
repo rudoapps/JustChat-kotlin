@@ -22,11 +22,11 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField "String", "API_BASE_URL", '""'
+            buildConfigField "String", "API_BASE_URL", '"https://fcm.googleapis.com/"'
             buildConfigField "String", "CLIENT_ID", '"78244317627-5e59h3ql76kb7mldar6p613844n9nf53.apps.googleusercontent.com"'
         }
         release {
-            buildConfigField "String", "API_BASE_URL", '""'
+            buildConfigField "String", "API_BASE_URL", '"https://fcm.googleapis.com/"'
             buildConfigField "String", "CLIENT_ID", '"78244317627-5e59h3ql76kb7mldar6p613844n9nf53.apps.googleusercontent.com"'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

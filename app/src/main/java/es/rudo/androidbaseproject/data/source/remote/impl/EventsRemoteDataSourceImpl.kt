@@ -9,8 +9,8 @@ import es.rudo.androidbaseproject.data.source.remote.EventsRemoteDataSource
 import es.rudo.androidbaseproject.helpers.Constants.DEFAULT_USER_PHOTO
 import es.rudo.androidbaseproject.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.androidbaseproject.helpers.Constants.LIMIT_SIZE_ID
+import es.rudo.androidbaseproject.helpers.extensions.getUserId
 import es.rudo.androidbaseproject.ui.main.MainActivity
-import es.rudo.firebasechat.helpers.extensions.getUserId
 import es.rudo.firebasechat.models.*
 import es.rudo.firebasechat.models.results.ResultInfo
 import es.rudo.firebasechat.models.results.ResultUserChat

@@ -11,9 +11,10 @@ import androidx.databinding.DataBindingUtil
 import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.databinding.DialogSimpleLayoutBinding
 import es.rudo.androidbaseproject.helpers.Constants
-import es.rudo.androidbaseproject.helpers.Constants.PREFERENCES
-import es.rudo.androidbaseproject.helpers.Constants.USER_ID_PREFERENCES
 import es.rudo.androidbaseproject.ui.main.MainActivity
+import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
+import es.rudo.firebasechat.helpers.Constants.PREFERENCES
+import es.rudo.firebasechat.helpers.Constants.USER_ID_PREFERENCES
 
 val Context.isNetworkAvailable: Boolean
     get() {
@@ -103,6 +104,16 @@ fun Context.getUserId(): String? {
 fun Context.getUserIdPreferences(): String? {
     val preferences = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
     return preferences.getString(USER_ID_PREFERENCES, null)
+}
+
+fun Context.saveUserId(userId: String?) {
+    val preferences = this.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+    preferences.edit()?.putString(USER_ID_PREFERENCES, userId)?.apply()
+}
+
+fun Context.saveChatId(chatId: String) {
+    val preferences = getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+    preferences.edit()?.putString(CHAT_ID_PREFERENCES, chatId)?.apply()
 }
 
 fun Context.pxToDp(px: Int): Int {

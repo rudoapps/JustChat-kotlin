@@ -1,6 +1,6 @@
 package es.rudo.androidbaseproject.data.ws.api
 
-import es.rudo.firebasechat.BuildConfig
+import es.rudo.androidbaseproject.BuildConfig
 
 object Config {
     const val API_URL = BuildConfig.API_BASE_URL
