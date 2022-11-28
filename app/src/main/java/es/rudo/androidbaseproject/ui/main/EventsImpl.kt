@@ -20,6 +20,10 @@ class EventsImpl @Inject constructor(
         return eventsUseCase.getChats(isNetworkAvailable, userId)
     }
 
+    override fun getChat(isNetworkAvailable: Boolean, userId: String, chatId: String): Flow<Chat> {
+        return eventsUseCase.getChat(isNetworkAvailable, userId, chatId)
+    }
+
     override fun getChatMessages(
         isNetworkAvailable: Boolean,
         userId: String,

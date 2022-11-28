@@ -30,6 +30,10 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
         return eventsRepository.getChats(isNetworkAvailable, userId)
     }
 
+    override fun getChat(isNetworkAvailable: Boolean, userId: String, chatId: String): Flow<Chat> {
+        return eventsRepository.getChat(isNetworkAvailable, userId, chatId)
+    }
+
     override fun getChatMessages(
         isNetworkAvailable: Boolean,
         userId: String,

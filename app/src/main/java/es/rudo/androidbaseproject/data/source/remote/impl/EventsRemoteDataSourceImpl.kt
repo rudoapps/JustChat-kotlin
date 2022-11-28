@@ -236,6 +236,65 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun getChat(userId: String, chatId: String): Flow<Chat> {
+        return channelFlow {
+            val query =
+                databaseReference.child("$userId/chats/$chatId")
+            val databaseListener =
+                query.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(chat: DataSnapshot) {
+                        databaseReference.removeEventListener(this)
+                        val messagesList = mutableListOf<ChatMessageItem>()
+                        val userChat = Chat().apply {
+                            id = chat.key
+                            name = chat.child("name").value.toString()
+                            otherUserId = chat.child("otherUserId").value.toString()
+                            otherUserImage =
+                                chat.child("otherUserImage").value.toString()
+                            lastMessage = chat.child("lastMessage").value.toString()
+                            messages = messagesList
+                        }
+
+                        getDeviceToken(
+                            userChat.otherUserId.toString(),
+                            object : SourceListener {
+                                override fun listMessages(messages: MutableList<ChatMessageItem>) {
+                                }
+
+                                override fun deviceToken(deviceToken: String) {
+                                    userChat.userDeviceToken = deviceToken
+                                    getLastMessages(
+                                        userId,
+                                        userChat.id.toString(),
+                                        object : SourceListener {
+                                            override fun listMessages(messages: MutableList<ChatMessageItem>) {
+                                                messagesList.addAll(messages)
+                                                trySend(userChat).isSuccess
+                                            }
+
+                                            override fun deviceToken(deviceToken: String) {
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        )
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
+            try {
+                awaitClose {
+                    databaseReference.removeEventListener(databaseListener)
+                    this.channel.close()
+                }
+            } catch (ex: Exception) {
+                Log.e(javaClass.simpleName, ex.toString())
+            }
+        }
+    }
+
     private fun getDeviceToken(userId: String, listener: SourceListener) {
         databaseReference.child(userId).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(user: DataSnapshot) {

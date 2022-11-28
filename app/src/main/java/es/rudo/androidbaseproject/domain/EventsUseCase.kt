@@ -14,6 +14,7 @@ interface EventsUseCase {
     ): Flow<ResultInfo>
 
     fun getChats(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Chat>>
+    fun getChat(isNetworkAvailable: Boolean, userId: String, chatId: String): Flow<Chat>
     fun getChatMessages(
         isNetworkAvailable: Boolean,
         userId: String,

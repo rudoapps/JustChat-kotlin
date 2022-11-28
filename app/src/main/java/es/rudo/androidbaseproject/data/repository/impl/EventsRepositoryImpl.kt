@@ -58,6 +58,16 @@ class EventsRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getChat(isNetworkAvailable: Boolean, userId: String, chatId: String): Flow<Chat> {
+        return if (isNetworkAvailable) {
+            eventsRemoteDataSource.getChat(userId, chatId)
+        } else {
+            flow {
+                emit(Chat())
+            }
+        }
+    }
+
     override fun getCurrentUser(isNetworkAvailable: Boolean, userId: String): Flow<UserData> {
         return if (isNetworkAvailable) {
             eventsRemoteDataSource.getCurrentUser(userId)

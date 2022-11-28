@@ -166,7 +166,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             } else {
                 if (it.exists == true) {
                     justChat.openChatLists()
-//                    justChat.openChat("1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG")
+//                    justChat.openChat(
+//                        lifecycleScope,
+//                        "1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG"
+//                    )
                 } else {
                     viewModel.initCurrentUserChats(isNetworkAvailable)
                 }
@@ -184,7 +187,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
                 justChat.openChatLists()
-//                justChat.openChat("1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG")
+//                justChat.openChat(lifecycleScope, "1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG")
             }
         }
     }
