@@ -249,7 +249,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         })
     }
 
-    private fun getLastMessages(chatId: String, userId: String, messageListener: SourceListener) {
+    private fun getLastMessages(userId: String, chatId: String, messageListener: SourceListener) {
         val query =
             databaseReference.child("$userId/chats/$chatId/messages")
                 .orderByChild("serverTimestamp")

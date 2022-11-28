@@ -27,7 +27,6 @@ import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
 import es.rudo.firebasechat.helpers.Constants.PREFERENCES
 import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.ui.chat.ChatActivity
-import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import kotlin.random.Random
 
 class NotificationService : FirebaseMessagingService() {
@@ -84,7 +83,7 @@ class NotificationService : FirebaseMessagingService() {
         }
 
         val intent = if (MainActivity.getFirebaseAuth() == null) {
-            Intent(applicationContext, ChatListActivity::class.java)
+            Intent(applicationContext, MainActivity::class.java)
         } else {
             Intent(applicationContext, ChatActivity::class.java).apply {
                 putExtra(Constants.CHAT, chat)
