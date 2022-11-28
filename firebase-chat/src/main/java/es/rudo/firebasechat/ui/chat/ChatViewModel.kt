@@ -7,12 +7,18 @@ import androidx.lifecycle.viewModelScope
 import es.rudo.firebasechat.helpers.extensions.getDate
 import es.rudo.firebasechat.helpers.extensions.getFormattedDate
 import es.rudo.firebasechat.main.instance.JustChat
-import es.rudo.firebasechat.models.*
+import es.rudo.firebasechat.models.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.models.results.ResultInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
+
+    val userId: String?
+        get() =
+            JustChat.userId ?: run {
+                JustChat.appPreferences?.userId
+            }
 
     var chat: Chat? = null
 
@@ -47,8 +53,14 @@ class ChatViewModel : ViewModel() {
         _messageList.value = addDateChatItems(initialMessageList)
 
         viewModelScope.launch {
-            chat?.let {
-                JustChat.events?.getMessagesIndividual(isNetworkAvailable, it, 0)
+            chat?.let { chat ->
+//                initFlowReceiveMessage(isNetworkAvailable, userId.toString(), chat.id.toString())
+                JustChat.events?.getChatMessages(
+                    isNetworkAvailable,
+                    userId.toString(),
+                    chat.id.toString(),
+                    0
+                )
                     ?.collect { messages ->
                         if (firstLoad) {
                             _messageList.postValue(addDateChatItems(messages))
@@ -58,6 +70,18 @@ class ChatViewModel : ViewModel() {
                             _newMessageReceived.postValue(true)
                         }
                     }
+            }
+        }
+    }
+
+    fun initFlowReceiveMessage(isNetworkAvailable: Boolean, userId: String, chatId: String) {
+        viewModelScope.launch {
+            JustChat.events?.initFlowReceiveMessage(
+                isNetworkAvailable,
+                userId,
+                chatId
+            )?.collect {
+                it
             }
         }
     }
@@ -156,7 +180,12 @@ class ChatViewModel : ViewModel() {
 
     fun sendNotification(isNetworkAvailable: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            JustChat.events?.sendNotification(isNetworkAvailable, chat, lastMessageSent?.text)
+            JustChat.events?.sendNotification(
+                isNetworkAvailable,
+                userId.toString(),
+                chat,
+                lastMessageSent?.text
+            )
         }
     }
 }

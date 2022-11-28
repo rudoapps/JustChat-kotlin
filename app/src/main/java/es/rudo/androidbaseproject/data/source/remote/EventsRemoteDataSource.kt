@@ -9,9 +9,15 @@ interface EventsRemoteDataSource {
     fun initUser(deviceToken: String): Flow<ResultUserChat>
     fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>>
     fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo>
-    fun getChats(): Flow<MutableList<Chat>>
-    fun getCurrentUser(): Flow<UserData>
-    fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>>
-    fun getGroups(): Flow<MutableList<Group>>
+    fun getChats(userId: String): Flow<MutableList<Chat>>
+    fun getCurrentUser(userId: String): Flow<UserData>
+    fun getChatMessages(
+        userId: String,
+        chatId: String,
+        page: Int
+    ): Flow<MutableList<ChatMessageItem>>
+
+    fun getGroups(userId: String): Flow<MutableList<Group>>
     fun sendMessage(chatInfo: ChatInfo, message: ChatMessageItem): Flow<ResultInfo>
+    fun initFlowReceiveMessage(userId: String, chatId: String): Flow<ChatMessageItem>
 }

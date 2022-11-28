@@ -8,9 +8,7 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInResult
 import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.rudo.androidbaseproject.data.source.preferences.AppPreferences
 import es.rudo.androidbaseproject.domain.EventsUseCase
-import es.rudo.androidbaseproject.domain.NotificationsUseCase
 import es.rudo.androidbaseproject.ui.base.BaseViewModel
 import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.models.results.ResultInfo
@@ -22,9 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val preferences: AppPreferences,
     private val eventsUseCase: EventsUseCase,
-    private val notificationsUseCase: NotificationsUseCase
+    val events: Events
 ) : BaseViewModel() {
 
     val result = MutableLiveData<BeginSignInResult>()
@@ -32,16 +29,8 @@ class MainViewModel @Inject constructor(
     val userInitialized = MutableLiveData<ResultUserChat>()
     val listChatId = MutableLiveData<MutableList<Pair<String, String>>>()
     val chatsInitialized = MutableLiveData<ResultInfo>()
-    lateinit var events: Events
-
-    companion object {
-        var eventsUseCase: EventsUseCase? = null
-        var notificationsUseCase: NotificationsUseCase? = null
-    }
 
     override fun initData(data: Bundle) {
-        MainViewModel.eventsUseCase = eventsUseCase
-        MainViewModel.notificationsUseCase = notificationsUseCase
     }
 
     fun oneTapSignInWithGoogle(

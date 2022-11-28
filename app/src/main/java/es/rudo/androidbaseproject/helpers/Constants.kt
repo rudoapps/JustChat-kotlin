@@ -46,7 +46,7 @@ object Constants {
     // Firebase database
     const val DATABASE_REFERENCE = "databaseReference"
     const val DEFAULT_NODE_FIREBASE = "users"
-    const val LIMIT_MESSAGES = 20
+    const val LIMIT_MESSAGES = 10
     const val LIMIT_SIZE_ID = 30
 
     // Bundle extras

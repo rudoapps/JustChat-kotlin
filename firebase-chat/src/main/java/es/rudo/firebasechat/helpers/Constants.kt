@@ -8,7 +8,7 @@ object Constants {
     const val CHAT = "chat"
 
     // Preferences key
-    const val PREFERENCES = "MyPreferences"
+    const val PREFERENCES = "JustChatPreferences"
     const val CHAT_ID_PREFERENCES = "KEY_CHATID"
     const val USER_ID_PREFERENCES = "KEY_USERID"
 

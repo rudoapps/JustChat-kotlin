@@ -13,18 +13,25 @@ interface EventsUseCase {
         listChatId: MutableList<Pair<String, String>>
     ): Flow<ResultInfo>
 
-    fun getChats(isNetworkAvailable: Boolean): Flow<MutableList<Chat>>
-    fun getMessagesIndividual(
+    fun getChats(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Chat>>
+    fun getChatMessages(
         isNetworkAvailable: Boolean,
-        chat: Chat,
+        userId: String,
+        chatId: String,
         page: Int
     ): Flow<MutableList<ChatMessageItem>>
 
-    fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData>
-    fun getGroups(isNetworkAvailable: Boolean): Flow<MutableList<Group>>
+    fun getCurrentUser(isNetworkAvailable: Boolean, userId: String): Flow<UserData>
+    fun getGroups(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Group>>
     fun sendMessage(
         isNetworkAvailable: Boolean,
         chatInfo: ChatInfo,
         message: ChatMessageItem
     ): Flow<ResultInfo>
+
+    fun initFlowReceiveMessage(
+        isNetworkAvailable: Boolean,
+        userId: String,
+        chatId: String
+    ): Flow<ChatMessageItem>
 }

@@ -26,24 +26,25 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
         return eventsRepository.initOtherUsersChats(isNetworkAvailable, listChatId)
     }
 
-    override fun getChats(isNetworkAvailable: Boolean): Flow<MutableList<Chat>> {
-        return eventsRepository.getChats(isNetworkAvailable)
+    override fun getChats(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Chat>> {
+        return eventsRepository.getChats(isNetworkAvailable, userId)
     }
 
-    override fun getMessagesIndividual(
+    override fun getChatMessages(
         isNetworkAvailable: Boolean,
-        chat: Chat,
+        userId: String,
+        chatId: String,
         page: Int
     ): Flow<MutableList<ChatMessageItem>> {
-        return eventsRepository.getMessagesIndividual(isNetworkAvailable, chat, page)
+        return eventsRepository.getChatMessages(isNetworkAvailable, userId, chatId, page)
     }
 
-    override fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData> {
-        return eventsRepository.getCurrentUser(isNetworkAvailable)
+    override fun getCurrentUser(isNetworkAvailable: Boolean, userId: String): Flow<UserData> {
+        return eventsRepository.getCurrentUser(isNetworkAvailable, userId)
     }
 
-    override fun getGroups(isNetworkAvailable: Boolean): Flow<MutableList<Group>> {
-        return eventsRepository.getGroups(isNetworkAvailable)
+    override fun getGroups(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Group>> {
+        return eventsRepository.getGroups(isNetworkAvailable, userId)
     }
 
     override fun sendMessage(
@@ -52,5 +53,13 @@ class EventsUseCaseImpl @Inject constructor(private val eventsRepository: Events
         message: ChatMessageItem
     ): Flow<ResultInfo> {
         return eventsRepository.sendMessage(isNetworkAvailable, chatInfo, message)
+    }
+
+    override fun initFlowReceiveMessage(
+        isNetworkAvailable: Boolean,
+        userId: String,
+        chatId: String
+    ): Flow<ChatMessageItem> {
+        return eventsRepository.initFlowReceiveMessage(isNetworkAvailable, userId, chatId)
     }
 }

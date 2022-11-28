@@ -9,19 +9,23 @@ import kotlinx.coroutines.flow.flow
 
 class EventsLocalDataSourceImpl : EventsLocalDataSource {
 
-    override fun getChats(): Flow<MutableList<Chat>> {
+    override fun getChats(userId: String): Flow<MutableList<Chat>> {
         return flow {
             emit(ArrayList())
         }
     }
 
-    override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>> {
+    override fun getChatMessages(
+        userId: String,
+        chatId: String,
+        page: Int
+    ): Flow<MutableList<ChatMessageItem>> {
         return flow {
             emit(ArrayList())
         }
     }
 
-    override fun getGroups(): Flow<MutableList<Group>> {
+    override fun getGroups(userId: String): Flow<MutableList<Group>> {
         return flow {
             emit(ArrayList())
         }

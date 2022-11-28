@@ -10,7 +10,6 @@ import com.bumptech.glide.Glide
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.helpers.extensions.getUserId
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.Chat
@@ -44,17 +43,17 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        JustChat.events?.manageChatId(this, true, chatId = viewModel.chat?.id.toString())
+        JustChat.events?.manageChatId(this, true, viewModel.chat?.id.toString())
     }
 
     override fun onPause() {
         super.onPause()
-        JustChat.events?.manageChatId(this, false, chatId = viewModel.chat?.id.toString())
+        JustChat.events?.manageChatId(this, false, viewModel.chat?.id.toString())
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        JustChat.events?.manageChatId(this, false, chatId = viewModel.chat?.id.toString())
+        JustChat.events?.manageChatId(this, false, viewModel.chat?.id.toString())
     }
 
     override fun onBackPressed() {
@@ -75,7 +74,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupAdapter() {
         adapter = ChatAdapter(
-            getUserId(),
+            viewModel.userId,
             object : ChatAdapter.MessageClickListener {
                 override fun onClick(item: ChatMessageItem) {
                     // TODO
@@ -147,7 +146,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun initListeners() {
         binding.imageSend.setOnClickListener {
-            viewModel.prepareMessageForSending(getUserId(), isNetworkAvailable)
+            viewModel.prepareMessageForSending(viewModel.userId, isNetworkAvailable)
         }
     }
 

@@ -12,9 +12,15 @@ import kotlinx.coroutines.withContext
 class ChatListViewModel : ViewModel() {
     val chats = MutableLiveData<MutableList<Chat>>()
 
+    val userId: String?
+        get() =
+            JustChat.userId ?: run {
+                JustChat.appPreferences?.userId
+            }
+
     fun getChats(isNetworkAvailable: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            JustChat.events?.getChats(isNetworkAvailable)?.collect {
+            JustChat.events?.getChats(isNetworkAvailable, userId.toString())?.collect {
                 withContext(Dispatchers.Main) {
                     chats.value = it
                 }

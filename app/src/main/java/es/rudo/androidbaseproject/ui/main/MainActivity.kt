@@ -86,8 +86,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         initListeners()
         initObservers()
         initRequests()
-        events = EventsImpl()
-        viewModel.events = events
+        events = viewModel.events
         oneTapClient = Identity.getSignInClient(this)
     }
 
@@ -166,7 +165,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
                 if (it.exists == true) {
-                    justChat.loadChat()
+                    justChat.openChatLists()
+//                    justChat.openChat("1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG")
                 } else {
                     viewModel.initCurrentUserChats(isNetworkAvailable)
                 }
@@ -183,7 +183,8 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             if (it.success == false) {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
-                justChat.loadChat()
+                justChat.openChatLists()
+//                justChat.openChat("1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG")
             }
         }
     }

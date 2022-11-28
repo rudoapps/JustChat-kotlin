@@ -50,17 +50,17 @@ class EventsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getChats(isNetworkAvailable: Boolean): Flow<MutableList<Chat>> {
+    override fun getChats(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Chat>> {
         return if (isNetworkAvailable) {
-            eventsRemoteDataSource.getChats()
+            eventsRemoteDataSource.getChats(userId)
         } else {
-            eventsLocalDataSource.getChats()
+            eventsLocalDataSource.getChats(userId)
         }
     }
 
-    override fun getCurrentUser(isNetworkAvailable: Boolean): Flow<UserData> {
+    override fun getCurrentUser(isNetworkAvailable: Boolean, userId: String): Flow<UserData> {
         return if (isNetworkAvailable) {
-            eventsRemoteDataSource.getCurrentUser()
+            eventsRemoteDataSource.getCurrentUser(userId)
         } else {
             flow {
                 emit(UserData())
@@ -68,20 +68,21 @@ class EventsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getMessagesIndividual(
+    override fun getChatMessages(
         isNetworkAvailable: Boolean,
-        chat: Chat,
+        userId: String,
+        chatId: String,
         page: Int
     ): Flow<MutableList<ChatMessageItem>> {
         return if (isNetworkAvailable) {
-            eventsRemoteDataSource.getMessagesIndividual(chat, page)
+            eventsRemoteDataSource.getChatMessages(userId, chatId, page)
         } else {
-            eventsLocalDataSource.getMessagesIndividual(chat, page)
+            eventsLocalDataSource.getChatMessages(userId, chatId, page)
         }
     }
 
-    override fun getGroups(isNetworkAvailable: Boolean): Flow<MutableList<Group>> {
-        return eventsRemoteDataSource.getGroups()
+    override fun getGroups(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Group>> {
+        return eventsRemoteDataSource.getGroups(userId)
     }
 
     override fun sendMessage(
@@ -94,6 +95,20 @@ class EventsRepositoryImpl @Inject constructor(
         } else {
             flow {
                 emit(getResult(isSuccess = false, exception = Exception("No connection")))
+            }
+        }
+    }
+
+    override fun initFlowReceiveMessage(
+        isNetworkAvailable: Boolean,
+        userId: String,
+        chatId: String
+    ): Flow<ChatMessageItem> {
+        return if (isNetworkAvailable) {
+            eventsRemoteDataSource.initFlowReceiveMessage(userId, chatId)
+        } else {
+            flow {
+                emit(ChatMessageItem())
             }
         }
     }

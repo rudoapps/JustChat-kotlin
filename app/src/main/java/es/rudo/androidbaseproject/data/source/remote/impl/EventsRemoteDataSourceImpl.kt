@@ -172,10 +172,10 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getChats(): Flow<MutableList<Chat>> {
+    override fun getChats(userId: String): Flow<MutableList<Chat>> {
         return channelFlow {
             val query =
-                databaseReference.child("${context.getUserId()}/chats")
+                databaseReference.child("$userId/chats")
             val databaseListener =
                 query.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(chats: DataSnapshot) {
@@ -201,6 +201,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                     override fun deviceToken(deviceToken: String) {
                                         userChat.userDeviceToken = deviceToken
                                         getLastMessages(
+                                            userId,
                                             userChat.id.toString(),
                                             object : SourceListener {
                                                 override fun listMessages(messages: MutableList<ChatMessageItem>) {
@@ -248,9 +249,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         })
     }
 
-    private fun getLastMessages(chatId: String, messageListener: SourceListener) {
+    private fun getLastMessages(chatId: String, userId: String, messageListener: SourceListener) {
         val query =
-            databaseReference.child("${context.getUserId()}/chats/$chatId/messages")
+            databaseReference.child("$userId/chats/$chatId/messages")
                 .orderByChild("serverTimestamp")
                 .limitToLast(LIMIT_MESSAGES)
         query.addValueEventListener(object : ValueEventListener {
@@ -262,7 +263,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         id = message.key
                         text = message.child("text").value.toString()
                         timestamp = message.child("serverTimestamp").value as? Long
-                        userId = message.child("userId").value.toString()
+                        this.userId = message.child("userId").value.toString()
                     }
                     messagesList.add(messageObj)
                 }
@@ -274,35 +275,38 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         })
     }
 
-    override fun getCurrentUser(): Flow<UserData> {
+    override fun getCurrentUser(userId: String): Flow<UserData> {
         return channelFlow {
             var count = 0
-            databaseReference.child("${context.getUserId()}")
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(user: DataSnapshot) {
-                        databaseReference.removeEventListener(this)
-                        if (count == 0) {
-                            count++
-                            val userData = UserData().apply {
-                                userId = user.key
-                                userName = user.child("userName").value.toString()
-                                userPhoto = user.child("profilePhoto").value.toString()
-                                userDeviceToken = user.child("deviceToken").value.toString()
-                            }
-                            trySend(userData).isSuccess
+            databaseReference.child(userId).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(user: DataSnapshot) {
+                    databaseReference.removeEventListener(this)
+                    if (count == 0) {
+                        count++
+                        val userData = UserData().apply {
+                            this.userId = user.key
+                            userName = user.child("userName").value.toString()
+                            userPhoto = user.child("profilePhoto").value.toString()
+                            userDeviceToken = user.child("deviceToken").value.toString()
                         }
+                        trySend(userData).isSuccess
                     }
+                }
 
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
             awaitClose {
                 this.channel.close()
             }
         }
     }
 
-    override fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>> {
+    override fun getChatMessages(
+        userId: String,
+        chatId: String,
+        page: Int
+    ): Flow<MutableList<ChatMessageItem>> {
         return channelFlow {
             val correctPage = if (page >= 0) {
                 1
@@ -311,19 +315,20 @@ class EventsRemoteDataSourceImpl @Inject constructor(
             }
             val newPage = correctPage * LIMIT_MESSAGES
             val query =
-                databaseReference.child("${context.getUserId()}/chats/${chat.id}/messages")
+                databaseReference.child("$userId/chats/$chatId/messages")
                     .orderByChild("serverTimestamp")
 //                            .limitToLast(newPage)
             val databaseListener =
                 query.addValueEventListener(object : ValueEventListener {
                     override fun onDataChange(messages: DataSnapshot) {
+                        databaseReference.removeEventListener(this)
                         val messagesList = mutableListOf<ChatMessageItem>()
                         for (message in messages.children) {
                             val messageObj = ChatMessageItem().apply {
                                 id = message.key
                                 text = message.child("text").value.toString()
                                 timestamp = message.child("serverTimestamp").value as? Long
-                                userId = message.child("userId").value.toString()
+                                this.userId = message.child("userId").value.toString()
                             }
                             messagesList.add(messageObj)
                         }
@@ -344,7 +349,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override fun getGroups(): Flow<MutableList<Group>> {
+    override fun getGroups(userId: String): Flow<MutableList<Group>> {
         return callbackFlow {
         }
     }
@@ -394,6 +399,42 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 .addOnFailureListener {
                     trySend(getResult(false, it)).isFailure
                 }
+            awaitClose {
+                this.channel.close()
+            }
+        }
+    }
+
+    override fun initFlowReceiveMessage(
+        userId: String,
+        chatId: String
+    ): Flow<ChatMessageItem> {
+        return channelFlow {
+            val query =
+                databaseReference.child("$userId/chats/$chatId/messages")
+                    .orderByChild("serverTimestamp")
+                    .limitToLast(1)
+            query.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(messages: DataSnapshot) {
+                    val message = messages.children.firstOrNull()
+                    message?.let {
+                        val userMessageId = message.child("userId").value.toString()
+                        if (userMessageId != userId) {
+                            val lastMessage = ChatMessageItem().apply {
+                                id = message.key
+                                text = message.child("text").value.toString()
+                                timestamp = message.child("serverTimestamp").value as? Long
+                                this.userId = userMessageId
+                            }
+
+                            trySend(lastMessage).isSuccess
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
             awaitClose {
                 this.channel.close()
             }

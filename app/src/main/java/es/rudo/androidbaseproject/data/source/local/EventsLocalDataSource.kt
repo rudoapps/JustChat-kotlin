@@ -6,7 +6,12 @@ import es.rudo.firebasechat.models.Group
 import kotlinx.coroutines.flow.Flow
 
 interface EventsLocalDataSource {
-    fun getChats(): Flow<MutableList<Chat>>
-    fun getMessagesIndividual(chat: Chat, page: Int): Flow<MutableList<ChatMessageItem>>
-    fun getGroups(): Flow<MutableList<Group>>
+    fun getChats(userId: String): Flow<MutableList<Chat>>
+    fun getChatMessages(
+        userId: String,
+        chatId: String,
+        page: Int
+    ): Flow<MutableList<ChatMessageItem>>
+
+    fun getGroups(userId: String): Flow<MutableList<Group>>
 }
