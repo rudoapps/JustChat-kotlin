@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -27,8 +28,7 @@ import es.rudo.justchat.models.ChatMessageItem
 class ChatAdapter(
     private val userId: String?, // TODO valorar setearlo en el companion object del activity y ahorrarse el param
     private val clickListener: MessageClickListener
-) :
-    ListAdapter<ChatBaseItem, RecyclerView.ViewHolder>(ListAdapterCallback()) {
+) : ListAdapter<ChatBaseItem, RecyclerView.ViewHolder>(ListAdapterCallback()) {
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -74,10 +74,9 @@ class ChatAdapter(
     class MessageViewHolder private constructor(private val binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val textFont: Font? = null
-        private val textSize: Int? = null
-        private val outMsgDrawable: Drawable? = null
-        private val inMsgDrawable: Drawable? = null
+        private val textAppearance: TextAppearance? = null
+        private val outMsgDrawable: Drawable? = ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat)
+        private val inMsgDrawable: Drawable? = ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left)
         private val outMsgColor: Int =
             ContextCompat.getColor(binding.root.context, R.color.purple_200)
         private val inMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.teal_700)
@@ -111,6 +110,14 @@ class ChatAdapter(
                 startToStart = ConstraintLayout.LayoutParams.UNSET
                 endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
             }
+            binding.textMessage.updatePadding(
+                left = binding.root.context.dpToPx(10),
+                right = binding.root.context.dpToPx(20)
+            )
+            binding.textTimestamp.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                marginStart = 0
+                marginEnd = binding.root.context.dpToPx(10)
+            }
         }
 
         private fun setIncomingMessageGravity() {
@@ -122,32 +129,24 @@ class ChatAdapter(
                 startToStart = ConstraintLayout.LayoutParams.PARENT_ID
                 endToEnd = ConstraintLayout.LayoutParams.UNSET
             }
+            binding.textMessage.updatePadding(
+                left = binding.root.context.dpToPx(20),
+                right = binding.root.context.dpToPx(10)
+            )
+            binding.textTimestamp.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                marginStart = binding.root.context.dpToPx(10)
+                marginEnd = 0
+            }
         }
 
         private fun setOutgoingMessageBackground() {
-            // TODO valorar si es mejor crearla de cero o modificar un recurso ya existente
-            val shape = ShapeDrawable(
-                RoundRectShape(
-                    floatArrayOf(40f, 40f, 40f, 40f, 0f, 0f, 40f, 40f),
-                    null,
-                    null
-                )
-            )
-            shape.paint.color = outMsgColor
-            binding.viewBackground.background = shape
+            outMsgDrawable?.setTint(outMsgColor)
+            binding.viewBackground.background = outMsgDrawable
         }
 
         private fun setIncomingMessageBackground() {
-            // TODO valorar si es mejor crearla de cero o modificar un recurso ya existente
-            val shape = ShapeDrawable(
-                RoundRectShape(
-                    floatArrayOf(40f, 40f, 40f, 40f, 40f, 40f, 0f, 0f),
-                    null,
-                    null
-                )
-            )
-            shape.paint.color = inMsgColor
-            binding.viewBackground.background = shape
+            inMsgDrawable?.setTint(inMsgColor)
+            binding.viewBackground.background = inMsgDrawable
         }
 
         private fun setMessageStyle() {

@@ -8,6 +8,10 @@ class ChatMessageItem : ChatBaseItem() {
     var userId: String? = null
     var timestamp: Long? = null
 
-    var status: String? = null
+    @Transient
     var position: String? = null
+
+    enum class MessagePosition {
+        SINGLE, BOTTOM, MIDDLE, TOP
+    }
 }
