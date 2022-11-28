@@ -4,16 +4,18 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.models.ChatMessageItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ChatActivity : AppCompatActivity() {
 
@@ -43,17 +45,23 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        JustChat.events?.manageChatId(this, true, viewModel.chat?.id.toString())
+        lifecycleScope.launch(Dispatchers.IO) {
+            JustChat.events?.manageChatId(this@ChatActivity, true, viewModel.chat?.id.toString())
+        }
     }
 
     override fun onPause() {
         super.onPause()
-        JustChat.events?.manageChatId(this, false, viewModel.chat?.id.toString())
+        lifecycleScope.launch(Dispatchers.IO) {
+            JustChat.events?.manageChatId(this@ChatActivity, false, viewModel.chat?.id.toString())
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        JustChat.events?.manageChatId(this, false, viewModel.chat?.id.toString())
+        lifecycleScope.launch(Dispatchers.IO) {
+            JustChat.events?.manageChatId(this@ChatActivity, false, viewModel.chat?.id.toString())
+        }
     }
 
     override fun onBackPressed() {
@@ -127,7 +135,7 @@ class ChatActivity : AppCompatActivity() {
                         binding.recycler.scrollToPosition(it - 1)
                     }
                 }
-                viewModel.sendNotification(isNetworkAvailable)
+                viewModel.sendNotification()
             }
         }
 
@@ -146,7 +154,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun initListeners() {
         binding.imageSend.setOnClickListener {
-            viewModel.prepareMessageForSending(viewModel.userId, isNetworkAvailable)
+            viewModel.prepareMessageForSending(viewModel.userId)
         }
     }
 
@@ -156,7 +164,7 @@ class ChatActivity : AppCompatActivity() {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
                     JustChat.events?.manageChatId(this, true, chat.id.toString())
-                    viewModel.getMessages(isNetworkAvailable, chat.messages)
+                    viewModel.getMessages(chat.messages)
                 }
             }
         }

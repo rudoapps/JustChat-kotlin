@@ -5,6 +5,7 @@ import es.rudo.androidbaseproject.data.dto.DataNotification
 import es.rudo.androidbaseproject.data.dto.Notification
 import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.domain.NotificationsUseCase
+import es.rudo.androidbaseproject.helpers.extensions.isNetworkAvailable
 import es.rudo.androidbaseproject.helpers.extensions.saveChatId
 import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.models.* // ktlint-disable no-wildcard-imports
@@ -13,57 +14,54 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class EventsImpl @Inject constructor(
+    private val context: Context,
     private val eventsUseCase: EventsUseCase,
     private val notificationsUseCase: NotificationsUseCase
 ) : Events {
-    override fun getChats(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Chat>> {
-        return eventsUseCase.getChats(isNetworkAvailable, userId)
+    override suspend fun getChats(userId: String): Flow<MutableList<Chat>> {
+        return eventsUseCase.getChats(context.isNetworkAvailable, userId)
     }
 
-    override fun getChat(isNetworkAvailable: Boolean, userId: String, chatId: String): Flow<Chat> {
-        return eventsUseCase.getChat(isNetworkAvailable, userId, chatId)
+    override suspend fun getChat(userId: String, chatId: String): Flow<Chat> {
+        return eventsUseCase.getChat(context.isNetworkAvailable, userId, chatId)
     }
 
-    override fun getChatMessages(
-        isNetworkAvailable: Boolean,
+    override suspend fun getGroups(userId: String): Flow<MutableList<Group>> {
+        return eventsUseCase.getGroups(context.isNetworkAvailable, userId)
+    }
+
+    override suspend fun getChatMessages(
         userId: String,
         chatId: String,
         page: Int
     ): Flow<MutableList<ChatMessageItem>> {
-        return eventsUseCase.getChatMessages(isNetworkAvailable, userId, chatId, page)
+        return eventsUseCase.getChatMessages(context.isNetworkAvailable, userId, chatId, page)
     }
 
-    override fun getCurrentUser(isNetworkAvailable: Boolean, userId: String): Flow<UserData> {
-        return eventsUseCase.getCurrentUser(isNetworkAvailable, userId)
+    override suspend fun getCurrentUser(userId: String): Flow<UserData> {
+        return eventsUseCase.getCurrentUser(context.isNetworkAvailable, userId)
     }
 
-    override fun getGroups(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Group>> {
-        return eventsUseCase.getGroups(isNetworkAvailable, userId)
-    }
-
-    override fun sendMessage(
-        isNetworkAvailable: Boolean,
+    override suspend fun sendMessage(
         chatInfo: ChatInfo,
         message: ChatMessageItem
     ): Flow<ResultInfo> {
-        return eventsUseCase.sendMessage(isNetworkAvailable, chatInfo, message)
+        return eventsUseCase.sendMessage(context.isNetworkAvailable, chatInfo, message)
     }
 
-    override fun initFlowReceiveMessage(
-        isNetworkAvailable: Boolean,
+    override suspend fun initFlowReceiveMessage(
         userId: String,
         chatId: String
     ): Flow<ChatMessageItem> {
-        return eventsUseCase.initFlowReceiveMessage(isNetworkAvailable, userId, chatId)
+        return eventsUseCase.initFlowReceiveMessage(context.isNetworkAvailable, userId, chatId)
     }
 
     override suspend fun sendNotification(
-        isNetworkAvailable: Boolean,
         userId: String,
         chat: Chat?,
         message: String?
     ) {
-        eventsUseCase.getCurrentUser(isNetworkAvailable, userId).collect {
+        eventsUseCase.getCurrentUser(context.isNetworkAvailable, userId).collect {
             val dataNotification = DataNotification(
                 chatId = chat?.id.toString(),
                 chatDestinationUserName = it.userName.toString(),

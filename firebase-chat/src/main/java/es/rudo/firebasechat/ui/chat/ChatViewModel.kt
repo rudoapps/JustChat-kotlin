@@ -46,38 +46,32 @@ class ChatViewModel : ViewModel() {
 
     // TODO esto irá separado en getMessageHistory y getNewMessage
     private var firstLoad = true
-    fun getMessages(
-        isNetworkAvailable: Boolean,
-        initialMessageList: MutableList<ChatMessageItem>?
-    ) {
+    fun getMessages(initialMessageList: MutableList<ChatMessageItem>?) {
         _messageList.value = addDateChatItems(initialMessageList)
 
         viewModelScope.launch {
             chat?.let { chat ->
 //                initFlowReceiveMessage(isNetworkAvailable, userId.toString(), chat.id.toString())
                 JustChat.events?.getChatMessages(
-                    isNetworkAvailable,
                     userId.toString(),
                     chat.id.toString(),
                     0
-                )
-                    ?.collect { messages ->
-                        if (firstLoad) {
-                            _messageList.postValue(addDateChatItems(messages))
-                            firstLoad = false
-                        } else if (_messageList.value?.last() != messages.last()) {
-                            checkLastMessageDateAndAddMessage(messages.last())
-                            _newMessageReceived.postValue(true)
-                        }
+                )?.collect { messages ->
+                    if (firstLoad) {
+                        _messageList.postValue(addDateChatItems(messages))
+                        firstLoad = false
+                    } else if (_messageList.value?.last() != messages.last()) {
+                        checkLastMessageDateAndAddMessage(messages.last())
+                        _newMessageReceived.postValue(true)
                     }
+                }
             }
         }
     }
 
-    fun initFlowReceiveMessage(isNetworkAvailable: Boolean, userId: String, chatId: String) {
+    fun initFlowReceiveMessage(userId: String, chatId: String) {
         viewModelScope.launch {
             JustChat.events?.initFlowReceiveMessage(
-                isNetworkAvailable,
                 userId,
                 chatId
             )?.collect {
@@ -139,7 +133,7 @@ class ChatViewModel : ViewModel() {
         _messageList.value?.add(message)
     }
 
-    fun prepareMessageForSending(idUser: String?, isNetworkAvailable: Boolean) {
+    fun prepareMessageForSending(idUser: String?) {
         viewModelScope.launch {
             idUser?.let { uid ->
                 if (!newMessageText.value.isNullOrBlank() && chat != null) {
@@ -162,26 +156,21 @@ class ChatViewModel : ViewModel() {
 
                     this@ChatViewModel.lastMessageSent = message
 
-                    sendMessage(isNetworkAvailable, message, chatInfo)
+                    sendMessage(message, chatInfo)
                 }
             }
         }
     }
 
-    private suspend fun sendMessage(
-        isNetworkAvailable: Boolean,
-        message: ChatMessageItem,
-        chatInfo: ChatInfo
-    ) {
-        JustChat.events?.sendMessage(isNetworkAvailable, chatInfo, message)?.collect {
+    private suspend fun sendMessage(message: ChatMessageItem, chatInfo: ChatInfo) {
+        JustChat.events?.sendMessage(chatInfo, message)?.collect {
             _sendMessageSuccess.postValue(it)
         }
     }
 
-    fun sendNotification(isNetworkAvailable: Boolean) {
+    fun sendNotification() {
         viewModelScope.launch(Dispatchers.IO) {
             JustChat.events?.sendNotification(
-                isNetworkAvailable,
                 userId.toString(),
                 chat,
                 lastMessageSent?.text

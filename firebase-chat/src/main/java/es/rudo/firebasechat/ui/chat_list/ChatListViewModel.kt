@@ -18,9 +18,9 @@ class ChatListViewModel : ViewModel() {
                 JustChat.appPreferences?.userId
             }
 
-    fun getChats(isNetworkAvailable: Boolean) {
+    fun getChats() {
         viewModelScope.launch(Dispatchers.IO) {
-            JustChat.events?.getChats(isNetworkAvailable, userId.toString())?.collect {
+            JustChat.events?.getChats(userId.toString())?.collect {
                 withContext(Dispatchers.Main) {
                     chats.value = it
                 }

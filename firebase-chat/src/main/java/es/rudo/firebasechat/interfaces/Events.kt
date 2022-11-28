@@ -6,35 +6,18 @@ import es.rudo.firebasechat.models.results.ResultInfo
 import kotlinx.coroutines.flow.Flow
 
 interface Events {
-    fun getChats(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Chat>>
-    fun getChat(isNetworkAvailable: Boolean, userId: String, chatId: String): Flow<Chat>
-    fun getChatMessages(
-        isNetworkAvailable: Boolean,
+    suspend fun getChats(userId: String): Flow<MutableList<Chat>>
+    suspend fun getChat(userId: String, chatId: String): Flow<Chat>
+    suspend fun getGroups(userId: String): Flow<MutableList<Group>>
+    suspend fun getChatMessages(
         userId: String,
         chatId: String,
         page: Int
     ): Flow<MutableList<ChatMessageItem>>
 
-    fun getCurrentUser(isNetworkAvailable: Boolean, userId: String): Flow<UserData>
-    fun getGroups(isNetworkAvailable: Boolean, userId: String): Flow<MutableList<Group>>
-    fun sendMessage(
-        isNetworkAvailable: Boolean,
-        chatInfo: ChatInfo,
-        message: ChatMessageItem
-    ): Flow<ResultInfo>
-
-    fun initFlowReceiveMessage(
-        isNetworkAvailable: Boolean,
-        userId: String,
-        chatId: String
-    ): Flow<ChatMessageItem>
-
-    suspend fun sendNotification(
-        isNetworkAvailable: Boolean,
-        userId: String,
-        chat: Chat?,
-        message: String?
-    )
-
+    suspend fun getCurrentUser(userId: String): Flow<UserData>
+    suspend fun sendMessage(chatInfo: ChatInfo, message: ChatMessageItem): Flow<ResultInfo>
+    suspend fun initFlowReceiveMessage(userId: String, chatId: String): Flow<ChatMessageItem>
+    suspend fun sendNotification(userId: String, chat: Chat?, message: String?)
     fun manageChatId(context: Context, save: Boolean, chatId: String)
 }

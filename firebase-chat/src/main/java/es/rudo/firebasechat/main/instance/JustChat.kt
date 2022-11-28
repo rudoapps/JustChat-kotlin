@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.LifecycleCoroutineScope
 import es.rudo.firebasechat.helpers.Constants
-import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import es.rudo.firebasechat.helpers.preferences.AppPreferences
 import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.ui.chat.ChatActivity
@@ -37,7 +36,7 @@ class JustChat constructor(val context: Context, val userId: String?, events: Ev
 
     fun openChat(lifecycleScope: LifecycleCoroutineScope, chatId: String) {
         lifecycleScope.launch(Dispatchers.IO) {
-            events?.getChat(context.isNetworkAvailable, userId.toString(), chatId)
+            events?.getChat(userId.toString(), chatId)
                 ?.collect { chat ->
                     withContext(Dispatchers.Main) {
                         val intent = Intent(context, ChatActivity::class.java)

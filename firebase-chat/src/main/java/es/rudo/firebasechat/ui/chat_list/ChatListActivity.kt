@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatListBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import es.rudo.firebasechat.ui.chat.ChatActivity
 
 class ChatListActivity : AppCompatActivity() {
@@ -34,7 +33,7 @@ class ChatListActivity : AppCompatActivity() {
         initAdapter()
         setUpObservables()
 
-        viewModel.getChats(isNetworkAvailable)
+        viewModel.getChats()
     }
 
     private fun initAdapter() {
@@ -62,7 +61,7 @@ class ChatListActivity : AppCompatActivity() {
         super.onResume()
         // TODO replace with call obtain  chats
         if (!viewModel.chats.value.isNullOrEmpty()) {
-            viewModel.getChats(isNetworkAvailable)
+            viewModel.getChats()
         }
     }
 }
