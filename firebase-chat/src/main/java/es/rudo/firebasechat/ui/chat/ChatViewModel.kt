@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.rudo.firebasechat.helpers.extensions.getDate
 import es.rudo.firebasechat.helpers.extensions.getFormattedDate
+import es.rudo.firebasechat.helpers.userId
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.models.results.ResultInfo
@@ -13,13 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
-
-    val userId: String?
-        get() =
-            JustChat.userId ?: run {
-                JustChat.appPreferences?.userId
-            }
-
     var chat: Chat? = null
 
     val newMessageText = MutableLiveData<String>()

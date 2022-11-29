@@ -6,7 +6,6 @@ import es.rudo.androidbaseproject.data.dto.Notification
 import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.domain.NotificationsUseCase
 import es.rudo.androidbaseproject.helpers.extensions.isNetworkAvailable
-import es.rudo.androidbaseproject.helpers.extensions.saveChatId
 import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.models.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.models.results.ResultInfo
@@ -70,23 +69,12 @@ class EventsImpl @Inject constructor(
                 destinationUserDeviceToken = it.userDeviceToken.toString(),
                 chatMessage = message.toString()
             )
-            //            "e1ZrKOmgTc6AFtgJYxiXVU:APA91bFYH2pZz9M3DrycsO7ko2awfMICnrxN2BRviS-0oBh01OqBXZDz3qZC-v4LOwQQrK6tV3Vcw7GmYAeoi5AX7zNJ5ugHF1K29MeXvOFVF9duBD-wmG8nTygVejjXzSZ7Fbdf7oim",
-            // chat?.userDeviceToken.toString(),
             val notification = Notification(
                 to = chat?.userDeviceToken.toString(),
                 data = dataNotification,
                 priority = 10
             )
-            val response = notificationsUseCase.sendNotification(notification)
-            response
-        }
-    }
-
-    override fun manageChatId(context: Context, save: Boolean, chatId: String) {
-        if (save) {
-            context.saveChatId(chatId)
-        } else {
-            context.saveChatId("")
+            notificationsUseCase.sendNotification(notification)
         }
     }
 }

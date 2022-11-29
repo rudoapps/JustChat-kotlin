@@ -1,6 +1,5 @@
 package es.rudo.firebasechat.interfaces
 
-import android.content.Context
 import es.rudo.firebasechat.models.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.models.results.ResultInfo
 import kotlinx.coroutines.flow.Flow
@@ -21,5 +20,4 @@ interface Events {
 
     // TODO: will be unavailable in the future
     suspend fun sendNotification(userId: String, chat: Chat?, message: String?)
-    fun manageChatId(context: Context, save: Boolean, chatId: String)
 }

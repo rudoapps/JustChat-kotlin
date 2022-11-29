@@ -8,6 +8,8 @@ class AppPreferences(
 
     var userId: String? by preferences()
 
+    var chatId: String? by preferences()
+
     fun clear() {
         sharedPreferences?.edit()?.clear()?.apply()
     }

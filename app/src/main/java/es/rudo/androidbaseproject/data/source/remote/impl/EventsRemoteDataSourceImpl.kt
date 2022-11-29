@@ -186,11 +186,11 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             val messagesList = mutableListOf<ChatMessageItem>()
                             val userChat = Chat().apply {
                                 id = chat.key
-                                name = chat.child("name").value.toString()
-                                otherUserId = chat.child("otherUserId").value.toString()
+                                name = chat.child("name").value as? String
+                                otherUserId = chat.child("otherUserId").value as? String
                                 otherUserImage =
-                                    chat.child("otherUserImage").value.toString()
-                                lastMessage = chat.child("lastMessage").value.toString()
+                                    chat.child("otherUserImage").value as? String
+                                lastMessage = chat.child("lastMessage").value as? String
                                 messages = messagesList
                             }
 
@@ -200,7 +200,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                     override fun listMessages(messages: MutableList<ChatMessageItem>) {
                                     }
 
-                                    override fun deviceToken(deviceToken: String) {
+                                    override fun deviceToken(deviceToken: String?) {
                                         userChat.userDeviceToken = deviceToken
                                         getLastMessages(
                                             userId,
@@ -214,7 +214,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                                     }
                                                 }
 
-                                                override fun deviceToken(deviceToken: String) {
+                                                override fun deviceToken(deviceToken: String?) {
                                                 }
                                             }
                                         )
@@ -249,11 +249,11 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         val messagesList = mutableListOf<ChatMessageItem>()
                         val userChat = Chat().apply {
                             id = chat.key
-                            name = chat.child("name").value.toString()
-                            otherUserId = chat.child("otherUserId").value.toString()
+                            name = chat.child("name").value as? String
+                            otherUserId = chat.child("otherUserId").value as? String
                             otherUserImage =
-                                chat.child("otherUserImage").value.toString()
-                            lastMessage = chat.child("lastMessage").value.toString()
+                                chat.child("otherUserImage").value as? String
+                            lastMessage = chat.child("lastMessage").value as? String
                             messages = messagesList
                         }
 
@@ -263,7 +263,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                 override fun listMessages(messages: MutableList<ChatMessageItem>) {
                                 }
 
-                                override fun deviceToken(deviceToken: String) {
+                                override fun deviceToken(deviceToken: String?) {
                                     userChat.userDeviceToken = deviceToken
                                     getLastMessages(
                                         userId,
@@ -274,7 +274,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                                                 trySend(userChat).isSuccess
                                             }
 
-                                            override fun deviceToken(deviceToken: String) {
+                                            override fun deviceToken(deviceToken: String?) {
                                             }
                                         }
                                     )
@@ -301,7 +301,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         databaseReference.child(userId).addValueEventListener(object : ValueEventListener {
             override fun onDataChange(user: DataSnapshot) {
                 databaseReference.removeEventListener(this)
-                val deviceToken = user.child("deviceToken").value.toString()
+                val deviceToken = user.child("deviceToken").value as? String
                 listener.deviceToken(deviceToken)
             }
 
@@ -508,6 +508,6 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 
     private interface SourceListener {
         fun listMessages(messages: MutableList<ChatMessageItem>)
-        fun deviceToken(deviceToken: String)
+        fun deviceToken(deviceToken: String?)
     }
 }

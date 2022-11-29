@@ -4,18 +4,16 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
+import es.rudo.firebasechat.helpers.userId
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.models.ChatMessageItem
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class ChatActivity : AppCompatActivity() {
 
@@ -45,23 +43,17 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        lifecycleScope.launch(Dispatchers.IO) {
-            JustChat.events?.manageChatId(this@ChatActivity, true, viewModel.chat?.id.toString())
-        }
+        JustChat.appPreferences?.chatId = viewModel.chat?.id.toString()
     }
 
     override fun onPause() {
         super.onPause()
-        lifecycleScope.launch(Dispatchers.IO) {
-            JustChat.events?.manageChatId(this@ChatActivity, false, viewModel.chat?.id.toString())
-        }
+        JustChat.appPreferences?.chatId = ""
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        lifecycleScope.launch(Dispatchers.IO) {
-            JustChat.events?.manageChatId(this@ChatActivity, false, viewModel.chat?.id.toString())
-        }
+        JustChat.appPreferences?.chatId = ""
     }
 
     override fun onBackPressed() {
@@ -82,7 +74,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupAdapter() {
         adapter = ChatAdapter(
-            viewModel.userId,
+            userId,
             object : ChatAdapter.MessageClickListener {
                 override fun onClick(item: ChatMessageItem) {
                     // TODO
@@ -154,7 +146,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun initListeners() {
         binding.imageSend.setOnClickListener {
-            viewModel.prepareMessageForSending(viewModel.userId)
+            viewModel.prepareMessageForSending(userId)
         }
     }
 
@@ -163,7 +155,7 @@ class ChatActivity : AppCompatActivity() {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
-                    JustChat.events?.manageChatId(this, true, chat.id.toString())
+                    JustChat.appPreferences?.chatId = chat.id.toString()
                     viewModel.initFlowReceiveMessage()
                     viewModel.getMessages(chat.messages)
                 }

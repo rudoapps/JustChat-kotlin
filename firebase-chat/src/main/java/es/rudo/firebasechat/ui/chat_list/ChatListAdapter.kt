@@ -46,6 +46,7 @@ class ChatListAdapter(
 
             Glide.with(binding.imageUser.context)
                 .load(item.otherUserImage)
+                .circleCrop()
                 .placeholder(
                     ContextCompat.getDrawable(
                         binding.imageUser.context,

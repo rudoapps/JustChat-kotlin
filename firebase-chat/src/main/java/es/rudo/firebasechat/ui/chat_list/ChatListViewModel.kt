@@ -3,6 +3,7 @@ package es.rudo.firebasechat.ui.chat_list
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.rudo.firebasechat.helpers.userId
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.Chat
 import kotlinx.coroutines.Dispatchers
@@ -11,12 +12,6 @@ import kotlinx.coroutines.withContext
 
 class ChatListViewModel : ViewModel() {
     val chats = MutableLiveData<MutableList<Chat>>()
-
-    val userId: String?
-        get() =
-            JustChat.userId ?: run {
-                JustChat.appPreferences?.userId
-            }
 
     fun getChats() {
         viewModelScope.launch(Dispatchers.IO) {

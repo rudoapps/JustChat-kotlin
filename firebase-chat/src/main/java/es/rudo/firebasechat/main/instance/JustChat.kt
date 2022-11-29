@@ -5,6 +5,7 @@ import android.content.Intent
 import es.rudo.firebasechat.helpers.Constants
 import es.rudo.firebasechat.helpers.preferences.AppPreferences
 import es.rudo.firebasechat.interfaces.Events
+import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import kotlinx.coroutines.CoroutineScope
@@ -49,12 +50,20 @@ class JustChat(val context: Context?, val userId: String?, events: Events?) {
         CoroutineScope(Dispatchers.IO).launch {
             events?.getChat(userId.toString(), chatId)?.collect { chat ->
                 withContext(Dispatchers.Main) {
-                    val intent = Intent(context, ChatActivity::class.java)
-                    intent.putExtra(Constants.CHAT, chat)
-                    context?.startActivity(intent)
+                    if (chatNoExist(chat)) {
+                        throw Exception("FATAL EXCEPTION: This chat does not exist in the current user")
+                    } else {
+                        val intent = Intent(context, ChatActivity::class.java)
+                        intent.putExtra(Constants.CHAT, chat)
+                        context?.startActivity(intent)
+                    }
                 }
             }
         }
+    }
+
+    private fun chatNoExist(chat: Chat): Boolean {
+        return (chat.name == null && chat.otherUserId == null && chat.otherUserImage == null && chat.userDeviceToken == null)
     }
 
     companion object {
