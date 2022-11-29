@@ -18,6 +18,14 @@ interface Events {
     fun sendMessage(chatInfo: ChatInfo, message: ChatMessageItem): Flow<ResultInfo>
     fun initFlowReceiveMessage(userId: String, chatId: String): Flow<ChatMessageItem>
 
-    // TODO: will be unavailable in the future
+    /**
+     * @param userId current logged user id
+     * @param chat current chat which you want to send notification
+     * @param message message sended to display in the notification
+     *
+     * It's mandatory to pass all parameters to be able to open the notification.
+     * A call to obtain user data, is required in order to give the destination user the correct info.
+     * To get more information, see the implementation example in app module.
+     */
     suspend fun sendNotification(userId: String, chat: Chat?, message: String?)
 }
