@@ -33,6 +33,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
     private lateinit var signUpRequest: BeginSignInRequest
     private lateinit var justChat: JustChat
     private lateinit var events: Events
+    private lateinit var buttonType: ButtonType
+
+    enum class ButtonType {
+        CHAT_LIST, INDIVIDUAL_CHAT
+    }
 
     companion object {
         private lateinit var firebaseAuth: FirebaseAuth
@@ -99,6 +104,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
     private fun initListeners() {
         binding.buttonOpenChat.setClickWithDebounce {
+            buttonType = ButtonType.INDIVIDUAL_CHAT
+            viewModel.oneTapSignInWithGoogle(oneTapClient, signInRequest, signUpRequest)
+        }
+        binding.buttonOpenChatList.setClickWithDebounce {
+            buttonType = ButtonType.CHAT_LIST
             viewModel.oneTapSignInWithGoogle(oneTapClient, signInRequest, signUpRequest)
         }
     }
@@ -165,11 +175,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
                 if (it.exists == true) {
-                    justChat.openChatLists()
-//                    justChat.openChat(
-//                        lifecycleScope,
-//                        "1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG"
-//                    )
+                    if (buttonType == ButtonType.CHAT_LIST) {
+                        justChat.openChatLists()
+                    } else {
+                        justChat.openChat("1669114264311-1s7TQGpc4AZ0DUalBRnXMkvIuPgJ92")
+                    }
                 } else {
                     viewModel.initCurrentUserChats(isNetworkAvailable)
                 }
@@ -186,8 +196,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             if (it.success == false) {
                 Toast.makeText(this, it.error?.message.toString(), Toast.LENGTH_SHORT).show()
             } else {
-                justChat.openChatLists()
-//                justChat.openChat(lifecycleScope, "1669114264338-AfRJVCD8iadBjEbYso7ql4KmzpexnG")
+                if (buttonType == ButtonType.CHAT_LIST) {
+                    justChat.openChatLists()
+                } else {
+                    justChat.openChat("1669114264311-1s7TQGpc4AZ0DUalBRnXMkvIuPgJ92")
+                }
             }
         }
     }
@@ -198,7 +211,11 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
                     Toast.makeText(this, "Login correct", Toast.LENGTH_SHORT).show()
-                    justChat = JustChat(this, firebaseAuth.currentUser?.uid, events)
+                    justChat = JustChat.Builder()
+                        .context(this)
+                        .userId(firebaseAuth.currentUser?.uid)
+                        .events(events)
+                        .build()
                     MainActivity.firebaseAuth = firebaseAuth
                     onTapClient = oneTapClient
                     saveUserId(firebaseAuth.currentUser?.uid)

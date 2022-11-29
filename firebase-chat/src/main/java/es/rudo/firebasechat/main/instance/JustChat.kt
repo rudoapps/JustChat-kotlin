@@ -2,48 +2,64 @@ package es.rudo.firebasechat.main.instance
 
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.LifecycleCoroutineScope
 import es.rudo.firebasechat.helpers.Constants
 import es.rudo.firebasechat.helpers.preferences.AppPreferences
 import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class JustChat constructor(val context: Context, val userId: String?, events: Events) {
+class JustChat(val context: Context?, val userId: String?, events: Events?) {
 
-    companion object {
+    private constructor(builder: Builder) : this(builder.context, builder.userId, builder.events)
+
+    class Builder {
+        var context: Context? = null
+            private set
         var userId: String? = null
+            private set
         var events: Events? = null
-        var appPreferences: AppPreferences? = null
+            private set
+
+        fun context(context: Context) = apply { this.context = context }
+        fun userId(userId: String?) = apply { this.userId = userId }
+        fun events(events: Events) = apply { this.events = events }
+
+        fun build() = JustChat(this)
     }
 
     init {
         JustChat.userId = userId
         JustChat.events = events
         appPreferences = AppPreferences(
-            context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+            context?.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
         )
         appPreferences?.userId = userId
     }
 
     fun openChatLists() {
-        context.startActivity(Intent(context, ChatListActivity::class.java))
+        context?.startActivity(Intent(context, ChatListActivity::class.java))
     }
 
-    fun openChat(lifecycleScope: LifecycleCoroutineScope, chatId: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            events?.getChat(userId.toString(), chatId)
-                ?.collect { chat ->
-                    withContext(Dispatchers.Main) {
-                        val intent = Intent(context, ChatActivity::class.java)
-                        intent.putExtra(Constants.CHAT, chat)
-                        context.startActivity(intent)
-                    }
+    fun openChat(chatId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            events?.getChat(userId.toString(), chatId)?.collect { chat ->
+                withContext(Dispatchers.Main) {
+                    val intent = Intent(context, ChatActivity::class.java)
+                    intent.putExtra(Constants.CHAT, chat)
+                    context?.startActivity(intent)
                 }
+            }
         }
+    }
+
+    companion object {
+        var userId: String? = null
+        var events: Events? = null
+        var appPreferences: AppPreferences? = null
     }
 }

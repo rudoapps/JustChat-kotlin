@@ -164,6 +164,7 @@ class ChatActivity : AppCompatActivity() {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
                     JustChat.events?.manageChatId(this, true, chat.id.toString())
+                    viewModel.initFlowReceiveMessage()
                     viewModel.getMessages(chat.messages)
                 }
             }

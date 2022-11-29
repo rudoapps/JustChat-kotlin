@@ -30,6 +30,8 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     private val context: Context
 ) : EventsRemoteDataSource {
 
+    private var initFlow = true
+
     override fun initUser(deviceToken: String): Flow<ResultUserChat> {
         return channelFlow {
             databaseReference.addValueEventListener(object : ValueEventListener {
@@ -469,31 +471,35 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         chatId: String
     ): Flow<ChatMessageItem> {
         return channelFlow {
-            val query =
-                databaseReference.child("$userId/chats/$chatId/messages")
-                    .orderByChild("serverTimestamp")
-                    .limitToLast(1)
-            query.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(messages: DataSnapshot) {
-                    val message = messages.children.firstOrNull()
-                    message?.let {
-                        val userMessageId = message.child("userId").value.toString()
-                        if (userMessageId != userId) {
-                            val lastMessage = ChatMessageItem().apply {
-                                id = message.key
-                                text = message.child("text").value.toString()
-                                timestamp = message.child("serverTimestamp").value as? Long
-                                this.userId = userMessageId
-                            }
+            if (initFlow) {
+                initFlow = false
+            } else {
+                val query =
+                    databaseReference.child("$userId/chats/$chatId/messages")
+                        .orderByChild("serverTimestamp")
+                        .limitToLast(1)
+                query.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(messages: DataSnapshot) {
+                        val message = messages.children.firstOrNull()
+                        message?.let {
+                            val userMessageId = message.child("userId").value.toString()
+                            if (userMessageId != userId) {
+                                val lastMessage = ChatMessageItem().apply {
+                                    id = message.key
+                                    text = message.child("text").value.toString()
+                                    timestamp = message.child("serverTimestamp").value as? Long
+                                    this.userId = userMessageId
+                                }
 
-                            trySend(lastMessage).isSuccess
+                                trySend(lastMessage).isSuccess
+                            }
                         }
                     }
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
+            }
             awaitClose {
                 this.channel.close()
             }

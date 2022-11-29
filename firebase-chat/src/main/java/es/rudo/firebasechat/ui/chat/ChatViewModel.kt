@@ -51,7 +51,6 @@ class ChatViewModel : ViewModel() {
 
         viewModelScope.launch {
             chat?.let { chat ->
-//                initFlowReceiveMessage(isNetworkAvailable, userId.toString(), chat.id.toString())
                 JustChat.events?.getChatMessages(
                     userId.toString(),
                     chat.id.toString(),
@@ -69,11 +68,11 @@ class ChatViewModel : ViewModel() {
         }
     }
 
-    fun initFlowReceiveMessage(userId: String, chatId: String) {
+    fun initFlowReceiveMessage() {
         viewModelScope.launch {
             JustChat.events?.initFlowReceiveMessage(
-                userId,
-                chatId
+                userId.toString(),
+                chat?.id.toString()
             )?.collect {
                 it
             }

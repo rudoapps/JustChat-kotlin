@@ -18,19 +18,19 @@ class EventsImpl @Inject constructor(
     private val eventsUseCase: EventsUseCase,
     private val notificationsUseCase: NotificationsUseCase
 ) : Events {
-    override suspend fun getChats(userId: String): Flow<MutableList<Chat>> {
+    override fun getChats(userId: String): Flow<MutableList<Chat>> {
         return eventsUseCase.getChats(context.isNetworkAvailable, userId)
     }
 
-    override suspend fun getChat(userId: String, chatId: String): Flow<Chat> {
+    override fun getChat(userId: String, chatId: String): Flow<Chat> {
         return eventsUseCase.getChat(context.isNetworkAvailable, userId, chatId)
     }
 
-    override suspend fun getGroups(userId: String): Flow<MutableList<Group>> {
+    override fun getGroups(userId: String): Flow<MutableList<Group>> {
         return eventsUseCase.getGroups(context.isNetworkAvailable, userId)
     }
 
-    override suspend fun getChatMessages(
+    override fun getChatMessages(
         userId: String,
         chatId: String,
         page: Int
@@ -38,18 +38,18 @@ class EventsImpl @Inject constructor(
         return eventsUseCase.getChatMessages(context.isNetworkAvailable, userId, chatId, page)
     }
 
-    override suspend fun getCurrentUser(userId: String): Flow<UserData> {
+    override fun getCurrentUser(userId: String): Flow<UserData> {
         return eventsUseCase.getCurrentUser(context.isNetworkAvailable, userId)
     }
 
-    override suspend fun sendMessage(
+    override fun sendMessage(
         chatInfo: ChatInfo,
         message: ChatMessageItem
     ): Flow<ResultInfo> {
         return eventsUseCase.sendMessage(context.isNetworkAvailable, chatInfo, message)
     }
 
-    override suspend fun initFlowReceiveMessage(
+    override fun initFlowReceiveMessage(
         userId: String,
         chatId: String
     ): Flow<ChatMessageItem> {
