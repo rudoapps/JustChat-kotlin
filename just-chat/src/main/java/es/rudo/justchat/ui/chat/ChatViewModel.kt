@@ -50,7 +50,13 @@ class ChatViewModel : ViewModel() {
                     chat.id.toString(),
                     0
                 )?.collect { messages ->
-                    _messageList.postValue(addDateChatItems(messages))
+                    if (firstLoad) {
+                        _messageList.postValue(addDateChatItems(messages))
+                        firstLoad = false
+                    } else if (_messageList.value?.last() != messages.last()) {
+                        checkLastMessageDateAndAddMessage(messages.last())
+                        _newMessageReceived.postValue(true)
+                    }
                 }
             }
         }
@@ -62,8 +68,7 @@ class ChatViewModel : ViewModel() {
                 userId.toString(),
                 chat?.id.toString()
             )?.collect {
-                checkLastMessageDateAndAddMessage(it)
-                _newMessageReceived.postValue(true)
+                it
             }
         }
     }

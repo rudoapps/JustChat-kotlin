@@ -11,7 +11,7 @@ import es.rudo.androidbaseproject.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.androidbaseproject.helpers.Constants.LIMIT_SIZE_ID
 import es.rudo.androidbaseproject.helpers.extensions.getUserId
 import es.rudo.androidbaseproject.ui.main.MainActivity
-import es.rudo.justchat.models.*
+import es.rudo.justchat.models.* // ktlint-disable no-wildcard-imports
 import es.rudo.justchat.models.results.ResultInfo
 import es.rudo.justchat.models.results.ResultUserChat
 import generateId
@@ -178,58 +178,57 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         return channelFlow {
             val query =
                 databaseReference.child("$userId/chats")
-            val databaseListener =
-                query.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(chats: DataSnapshot) {
-                        val chatList = mutableListOf<Chat>()
-                        for (chat in chats.children) {
-                            val messagesList = mutableListOf<ChatMessageItem>()
-                            val userChat = Chat().apply {
-                                id = chat.key
-                                name = chat.child("name").value as? String
-                                otherUserId = chat.child("otherUserId").value as? String
-                                otherUserImage =
-                                    chat.child("otherUserImage").value as? String
-                                lastMessage = chat.child("lastMessage").value as? String
-                                messages = messagesList
-                            }
+            query.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(chats: DataSnapshot) {
+                    databaseReference.removeEventListener(this)
+                    val chatList = mutableListOf<Chat>()
+                    for (chat in chats.children) {
+                        val messagesList = mutableListOf<ChatMessageItem>()
+                        val userChat = Chat().apply {
+                            id = chat.key
+                            name = chat.child("name").value as? String
+                            otherUserId = chat.child("otherUserId").value as? String
+                            otherUserImage =
+                                chat.child("otherUserImage").value as? String
+                            lastMessage = chat.child("lastMessage").value as? String
+                            messages = messagesList
+                        }
 
-                            getDeviceToken(
-                                userChat.otherUserId.toString(),
-                                object : SourceListener {
-                                    override fun listMessages(messages: MutableList<ChatMessageItem>) {
-                                    }
+                        getDeviceToken(
+                            userChat.otherUserId.toString(),
+                            object : SourceListener {
+                                override fun listMessages(messages: MutableList<ChatMessageItem>) {
+                                }
 
-                                    override fun deviceToken(deviceToken: String?) {
-                                        userChat.userDeviceToken = deviceToken
-                                        getLastMessages(
-                                            userId,
-                                            userChat.id.toString(),
-                                            object : SourceListener {
-                                                override fun listMessages(messages: MutableList<ChatMessageItem>) {
-                                                    messagesList.addAll(messages)
-                                                    chatList.add(userChat)
-                                                    if (chatList.size == chats.children.count()) {
-                                                        trySend(chatList).isSuccess
-                                                    }
-                                                }
-
-                                                override fun deviceToken(deviceToken: String?) {
+                                override fun deviceToken(deviceToken: String?) {
+                                    userChat.userDeviceToken = deviceToken
+                                    getLastMessages(
+                                        userId,
+                                        userChat.id.toString(),
+                                        object : SourceListener {
+                                            override fun listMessages(messages: MutableList<ChatMessageItem>) {
+                                                messagesList.addAll(messages)
+                                                chatList.add(userChat)
+                                                if (chatList.size == chats.children.count()) {
+                                                    trySend(chatList).isSuccess
                                                 }
                                             }
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    }
 
-                    override fun onCancelled(error: DatabaseError) {
+                                            override fun deviceToken(deviceToken: String?) {
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                        )
                     }
-                })
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
             try {
                 awaitClose {
-                    databaseReference.removeEventListener(databaseListener)
                     this.channel.close()
                 }
             } catch (ex: Exception) {
