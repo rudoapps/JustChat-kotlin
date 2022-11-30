@@ -34,7 +34,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 
     override fun initUser(deviceToken: String): Flow<ResultUserChat> {
         return channelFlow {
-            databaseReference.addValueEventListener(object : ValueEventListener {
+            databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     var userFound = false
@@ -109,7 +109,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     override fun initCurrentUserChats(): Flow<MutableList<Pair<String, String>>> {
         return channelFlow {
             val listChatId = mutableListOf<Pair<String, String>>()
-            databaseReference.addValueEventListener(object : ValueEventListener {
+            databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
@@ -143,7 +143,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
 
     override fun initOtherUsersChats(listChatId: MutableList<Pair<String, String>>): Flow<ResultInfo> {
         return channelFlow {
-            databaseReference.addValueEventListener(object : ValueEventListener {
+            databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(users: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     for (user in users.children) {
@@ -242,53 +242,51 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         return channelFlow {
             val query =
                 databaseReference.child("$userId/chats/$chatId")
-            val databaseListener =
-                query.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(chat: DataSnapshot) {
-                        databaseReference.removeEventListener(this)
-                        val messagesList = mutableListOf<ChatMessageItem>()
-                        val userChat = Chat().apply {
-                            id = chat.key
-                            name = chat.child("name").value as? String
-                            otherUserId = chat.child("otherUserId").value as? String
-                            otherUserImage =
-                                chat.child("otherUserImage").value as? String
-                            lastMessage = chat.child("lastMessage").value as? String
-                            messages = messagesList
-                        }
+            query.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(chat: DataSnapshot) {
+                    databaseReference.removeEventListener(this)
+                    val messagesList = mutableListOf<ChatMessageItem>()
+                    val userChat = Chat().apply {
+                        id = chat.key
+                        name = chat.child("name").value as? String
+                        otherUserId = chat.child("otherUserId").value as? String
+                        otherUserImage =
+                            chat.child("otherUserImage").value as? String
+                        lastMessage = chat.child("lastMessage").value as? String
+                        messages = messagesList
+                    }
 
-                        getDeviceToken(
-                            userChat.otherUserId.toString(),
-                            object : SourceListener {
-                                override fun listMessages(messages: MutableList<ChatMessageItem>) {
-                                }
-
-                                override fun deviceToken(deviceToken: String?) {
-                                    userChat.userDeviceToken = deviceToken
-                                    getLastMessages(
-                                        userId,
-                                        userChat.id.toString(),
-                                        object : SourceListener {
-                                            override fun listMessages(messages: MutableList<ChatMessageItem>) {
-                                                messagesList.addAll(messages)
-                                                trySend(userChat).isSuccess
-                                            }
-
-                                            override fun deviceToken(deviceToken: String?) {
-                                            }
-                                        }
-                                    )
-                                }
+                    getDeviceToken(
+                        userChat.otherUserId.toString(),
+                        object : SourceListener {
+                            override fun listMessages(messages: MutableList<ChatMessageItem>) {
                             }
-                        )
-                    }
 
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
+                            override fun deviceToken(deviceToken: String?) {
+                                userChat.userDeviceToken = deviceToken
+                                getLastMessages(
+                                    userId,
+                                    userChat.id.toString(),
+                                    object : SourceListener {
+                                        override fun listMessages(messages: MutableList<ChatMessageItem>) {
+                                            messagesList.addAll(messages)
+                                            trySend(userChat).isSuccess
+                                        }
+
+                                        override fun deviceToken(deviceToken: String?) {
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
             try {
                 awaitClose {
-                    databaseReference.removeEventListener(databaseListener)
                     this.channel.close()
                 }
             } catch (ex: Exception) {
@@ -298,7 +296,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     }
 
     private fun getDeviceToken(userId: String, listener: SourceListener) {
-        databaseReference.child(userId).addValueEventListener(object : ValueEventListener {
+        databaseReference.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(user: DataSnapshot) {
                 databaseReference.removeEventListener(this)
                 val deviceToken = user.child("deviceToken").value as? String
@@ -315,7 +313,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
             databaseReference.child("$userId/chats/$chatId/messages")
                 .orderByChild("serverTimestamp")
                 .limitToLast(LIMIT_MESSAGES)
-        query.addValueEventListener(object : ValueEventListener {
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(messages: DataSnapshot) {
                 databaseReference.removeEventListener(this)
                 val messagesList = mutableListOf<ChatMessageItem>()
@@ -339,24 +337,25 @@ class EventsRemoteDataSourceImpl @Inject constructor(
     override fun getCurrentUser(userId: String): Flow<UserData> {
         return channelFlow {
             var count = 0
-            databaseReference.child(userId).addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(user: DataSnapshot) {
-                    databaseReference.removeEventListener(this)
-                    if (count == 0) {
-                        count++
-                        val userData = UserData().apply {
-                            this.userId = user.key
-                            userName = user.child("userName").value.toString()
-                            userPhoto = user.child("profilePhoto").value.toString()
-                            userDeviceToken = user.child("deviceToken").value.toString()
+            databaseReference.child(userId)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(user: DataSnapshot) {
+                        databaseReference.removeEventListener(this)
+                        if (count == 0) {
+                            count++
+                            val userData = UserData().apply {
+                                this.userId = user.key
+                                userName = user.child("userName").value.toString()
+                                userPhoto = user.child("profilePhoto").value.toString()
+                                userDeviceToken = user.child("deviceToken").value.toString()
+                            }
+                            trySend(userData).isSuccess
                         }
-                        trySend(userData).isSuccess
                     }
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
             awaitClose {
                 this.channel.close()
             }
@@ -379,29 +378,27 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                 databaseReference.child("$userId/chats/$chatId/messages")
                     .orderByChild("serverTimestamp")
 //                            .limitToLast(newPage)
-            val databaseListener =
-                query.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(messages: DataSnapshot) {
-                        databaseReference.removeEventListener(this)
-                        val messagesList = mutableListOf<ChatMessageItem>()
-                        for (message in messages.children) {
-                            val messageObj = ChatMessageItem().apply {
-                                id = message.key
-                                text = message.child("text").value.toString()
-                                timestamp = message.child("serverTimestamp").value as? Long
-                                this.userId = message.child("userId").value.toString()
-                            }
-                            messagesList.add(messageObj)
+            query.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(messages: DataSnapshot) {
+                    databaseReference.removeEventListener(this)
+                    val messagesList = mutableListOf<ChatMessageItem>()
+                    for (message in messages.children) {
+                        val messageObj = ChatMessageItem().apply {
+                            id = message.key
+                            text = message.child("text").value.toString()
+                            timestamp = message.child("serverTimestamp").value as? Long
+                            this.userId = message.child("userId").value.toString()
                         }
-                        trySend(messagesList).isSuccess
+                        messagesList.add(messageObj)
                     }
+                    trySend(messagesList).isSuccess
+                }
 
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
             try {
                 awaitClose {
-                    databaseReference.removeEventListener(databaseListener)
                     this.channel.close()
                 }
             } catch (ex: Exception) {
