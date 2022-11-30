@@ -1,30 +1,47 @@
 package es.rudo.androidbaseproject.di
 
-// @Module
-// @InstallIn(SingletonComponent::class)
-// object ApiModule {
-//
-//    @Singleton
-//    @Provides
-//    fun providesHttpLoggingInterceptor() =
-//        HttpLoggingInterceptor().apply {
-//            level = HttpLoggingInterceptor.Level.BODY
-//        }
-//
-//    @Singleton
-//    @Provides
-//    fun providesOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
-//        OkHttpClient
-//            .Builder()
-//            .addInterceptor(httpLoggingInterceptor)
-//            .build()
-//
-//    @Singleton
-//    @Provides
-//    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
-//        Retrofit.Builder()
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .baseUrl(BuildConfig.API_BASE_URL)
-//            .client(okHttpClient)
-//            .build()
-// }
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import es.rudo.androidbaseproject.data.ws.api.Config
+import es.rudo.androidbaseproject.data.ws.api.NotificationsApi
+import es.rudo.androidbaseproject.data.ws.interceptor.NotificationsInterceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object ApiModule {
+
+    @Provides
+    @Singleton
+    fun providesHttpLoggingInterceptor() = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    @Provides
+    @Singleton
+    fun providesOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+        OkHttpClient
+            .Builder()
+            .addInterceptor(NotificationsInterceptor())
+            .addInterceptor(httpLoggingInterceptor)
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+        .addConverterFactory(GsonConverterFactory.create())
+        .baseUrl(Config.API_URL)
+        .client(okHttpClient)
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit): NotificationsApi =
+        retrofit.create(NotificationsApi::class.java)
+}

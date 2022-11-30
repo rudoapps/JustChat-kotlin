@@ -2,92 +2,69 @@ package es.rudo.firebasechat.main.instance
 
 import android.content.Context
 import android.content.Intent
-import com.google.android.gms.auth.api.identity.SignInClient
-import com.google.firebase.auth.FirebaseAuth
-import es.rudo.firebasechat.domain.models.configuration.BackConfiguration
-import es.rudo.firebasechat.domain.models.configuration.BasicConfiguration
-import es.rudo.firebasechat.domain.models.configuration.FirebaseConfiguration
-import es.rudo.firebasechat.domain.models.configuration.MixConfiguration
 import es.rudo.firebasechat.helpers.Constants
+import es.rudo.firebasechat.helpers.preferences.AppPreferences
+import es.rudo.firebasechat.interfaces.Events
+import es.rudo.firebasechat.models.Chat
+import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.withContext
 
-class JustChat constructor(
-    val context: Context,
-    basicConf: BasicConfiguration
-) {
-    companion object {
-        private lateinit var firebaseAuth: FirebaseAuth
-        private lateinit var onTapClient: SignInClient
-        private lateinit var basicConfiguration: BasicConfiguration
-        private lateinit var firebaseConfiguration: FirebaseConfiguration
-        private lateinit var backConfiguration: BackConfiguration
-        private lateinit var mixConfiguration: MixConfiguration
+class JustChat(val context: Context?, val userId: String?, events: Events?) {
 
-        fun getFirebaseAuth(): FirebaseAuth? {
-            return if (this::firebaseAuth.isInitialized) {
-                firebaseAuth
-            } else {
-                null
-            }
-        }
+    private constructor(builder: Builder) : this(builder.context, builder.userId, builder.events)
 
-        fun getOnTapClient(): SignInClient? {
-            return if (this::onTapClient.isInitialized) {
-                onTapClient
-            } else {
-                null
-            }
-        }
+    class Builder {
+        var context: Context? = null
+            private set
+        var userId: String? = null
+            private set
+        var events: Events? = null
+            private set
 
-        fun getType(): BasicConfiguration.Type? {
-            return if (this::basicConfiguration.isInitialized) {
-                basicConfiguration.type
-            } else {
-                null
-            }
-        }
+        fun provideContext(context: Context) = apply { this.context = context }
+        fun setUserId(userId: String?) = apply { this.userId = userId }
+        fun setEventsImplementation(events: Events) = apply { this.events = events }
 
-        fun getNodeFirebase(): String? {
-            return if (this::firebaseConfiguration.isInitialized) {
-                firebaseConfiguration.nodeFirebase
-            } else {
-                null
-            }
-        }
-
-        fun getProjectName(): String? {
-            return if (this::firebaseConfiguration.isInitialized) {
-                firebaseConfiguration.firebaseProjectName
-            } else {
-                null
-            }
-        }
+        fun build() = JustChat(this)
     }
 
     init {
-        parseConfiguration(basicConf)
+        JustChat.userId = userId
+        JustChat.events = events
+        appPreferences = AppPreferences(
+            context?.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
+        )
+        appPreferences?.userId = userId
     }
 
-    fun loadChat(client: SignInClient, auth: FirebaseAuth) {
-        onTapClient = client
-        firebaseAuth = auth
-        val preferences = context.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
-        preferences.edit()?.putString(Constants.USER_ID_PREFERENCES, auth.currentUser?.uid)?.apply()
-        context.startActivity(Intent(context, ChatListActivity::class.java))
+    fun openChatLists() {
+        context?.startActivity(Intent(context, ChatListActivity::class.java))
     }
 
-    private fun parseConfiguration(conf: BasicConfiguration) {
-        basicConfiguration = conf
-        when (conf) {
-            is FirebaseConfiguration -> {
-                firebaseConfiguration = conf
-            }
-            is BackConfiguration -> {
-                backConfiguration = conf
-            }
-            is MixConfiguration -> {
-                mixConfiguration = conf
+    suspend fun openChat(chatId: String) {
+        events?.getChat(userId.toString(), chatId)?.collect { chat ->
+            withContext(Dispatchers.Main) {
+                if (chatNoExist(chat)) {
+                    throw Exception("FATAL EXCEPTION: This chat does not exist in the current user")
+                } else {
+                    val intent = Intent(context, ChatActivity::class.java)
+                    intent.putExtra(Constants.CHAT, chat)
+                    context?.startActivity(intent)
+                }
             }
         }
+    }
+
+    private fun chatNoExist(chat: Chat): Boolean {
+        return (chat.name == null && chat.otherUserId == null && chat.otherUserImage == null && chat.userDeviceToken == null)
+    }
+
+    companion object {
+        var userId: String? = null
+        var events: Events? = null
+        var appPreferences: AppPreferences? = null
     }
 }

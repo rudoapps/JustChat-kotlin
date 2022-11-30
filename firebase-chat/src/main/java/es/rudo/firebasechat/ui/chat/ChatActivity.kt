@@ -1,33 +1,31 @@
 package es.rudo.firebasechat.ui.chat
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil.setContentView
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
-import dagger.hilt.android.AndroidEntryPoint
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
-import es.rudo.firebasechat.domain.models.Chat
-import es.rudo.firebasechat.domain.models.ChatMessageItem
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.helpers.extensions.getUserId
-import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
+import es.rudo.firebasechat.helpers.userId
 import es.rudo.firebasechat.main.instance.JustChat
+import es.rudo.firebasechat.models.Chat
+import es.rudo.firebasechat.models.ChatMessageItem
 
-@AndroidEntryPoint
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatBinding
     private lateinit var adapter: ChatAdapter
 
-    private val viewModel: ChatViewModel by viewModels()
+    private lateinit var viewModel: ChatViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = setContentView(this, R.layout.activity_chat)
+        viewModel = ViewModelProvider(this)[ChatViewModel::class.java]
 
         binding.lifecycleOwner = this
         binding.activity = this
@@ -45,17 +43,17 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.manageChatId(true)
+        JustChat.appPreferences?.chatId = viewModel.chat?.id.toString()
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.manageChatId(false)
+        JustChat.appPreferences?.chatId = ""
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        viewModel.manageChatId(false)
+        JustChat.appPreferences?.chatId = ""
     }
 
     override fun onBackPressed() {
@@ -76,7 +74,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun setupAdapter() {
         adapter = ChatAdapter(
-            getUserId(),
+            userId,
             object : ChatAdapter.MessageClickListener {
                 override fun onClick(item: ChatMessageItem) {
                     // TODO
@@ -129,7 +127,7 @@ class ChatActivity : AppCompatActivity() {
                         binding.recycler.scrollToPosition(it - 1)
                     }
                 }
-                viewModel.sendNotification(isNetworkAvailable)
+                viewModel.sendNotification()
             }
         }
 
@@ -148,7 +146,7 @@ class ChatActivity : AppCompatActivity() {
 
     private fun initListeners() {
         binding.imageSend.setOnClickListener {
-            viewModel.prepareMessageForSending(getUserId(), isNetworkAvailable)
+            viewModel.prepareMessageForSending(userId)
         }
     }
 
@@ -157,8 +155,9 @@ class ChatActivity : AppCompatActivity() {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
-                    viewModel.manageChatId(true)
-                    viewModel.getMessages(isNetworkAvailable, chat.messages)
+                    JustChat.appPreferences?.chatId = chat.id.toString()
+                    viewModel.initFlowReceiveMessage()
+                    viewModel.getMessages(chat.messages)
                 }
             }
         }
