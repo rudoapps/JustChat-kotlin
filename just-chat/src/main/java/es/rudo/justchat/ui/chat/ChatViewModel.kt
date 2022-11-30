@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
     var chat: Chat? = null
+    var userId: String? = null
 
     val newMessageText = MutableLiveData<String>()
 
@@ -41,7 +42,7 @@ class ChatViewModel : ViewModel() {
     // TODO esto irá separado en getMessageHistory y getNewMessage
     private var firstLoad = true
     fun getMessages(initialMessageList: MutableList<ChatMessageItem>?) {
-        _messageList.value = addDateChatItems(initialMessageList)
+        _messageList.value = getCompleteMessageList(initialMessageList)
 
         viewModelScope.launch {
             chat?.let { chat ->
@@ -51,7 +52,7 @@ class ChatViewModel : ViewModel() {
                     0
                 )?.collect { messages ->
                     if (firstLoad) {
-                        _messageList.postValue(addDateChatItems(messages))
+                        _messageList.postValue(getCompleteMessageList(messages))
                         firstLoad = false
                     } else if (_messageList.value?.last() != messages.last()) {
                         checkLastMessageDateAndAddMessage(messages.last())
@@ -74,36 +75,58 @@ class ChatViewModel : ViewModel() {
     }
 
     // TODO repensar para incluir paginación
-    private fun addDateChatItems(messageList: MutableList<ChatMessageItem>?): MutableList<ChatBaseItem> {
+    private fun getCompleteMessageList(messageList: MutableList<ChatMessageItem>?): MutableList<ChatBaseItem> {
         val finalList = mutableListOf<ChatBaseItem>()
 
         messageList?.let { list ->
-            var lastDate = list.firstOrNull()?.timestamp
-            finalList.add(
-                ChatDateItem().apply {
-                    id = lastDate.getDate()
-                    date = lastDate.getFormattedDate()
-                }
-            )
+            val listIterator = list.listIterator()
+            var lastMsg: ChatMessageItem? = null
+            var lastDateMsg: ChatMessageItem? = null
 
-            for (message in list) {
-                if (message.timestamp.getDate() != lastDate.getDate()) {
-                    lastDate = message.timestamp
-                    finalList.add(
-                        ChatDateItem().apply {
-                            id = lastDate.getDate()
-                            date = lastDate.getFormattedDate()
+
+            while (listIterator.hasNext()) {
+                val currentMsg = listIterator.next()
+
+                if (currentMsg.timestamp.getDate() != lastDateMsg?.timestamp.getDate()) {
+                    lastDateMsg = currentMsg
+                    finalList.add(ChatDateItem().apply {
+                        id = currentMsg.timestamp.getDate()
+                        date = currentMsg.timestamp.getFormattedDate()
+                    })
+                }
+
+                if (currentMsg.userId == userId && lastMsg?.userId == userId) {
+                    currentMsg.position = when (lastMsg?.position) {
+                        ChatMessageItem.MessagePosition.BOTTOM -> {
+                            if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == userId)
+                                ChatMessageItem.MessagePosition.MIDDLE
+                            else
+                                ChatMessageItem.MessagePosition.TOP
                         }
-                    )
+                        else -> { // ChatMessageItem.MessagePosition.MIDDLE
+                            if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == userId)
+                                ChatMessageItem.MessagePosition.MIDDLE
+                            else
+                                ChatMessageItem.MessagePosition.TOP
+                        }
+                    }
+                } else {
+                    if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == userId)
+                        ChatMessageItem.MessagePosition.BOTTOM
+                    else
+                        ChatMessageItem.MessagePosition.SINGLE
                 }
 
-                finalList.add(message)
+                lastMsg = currentMsg
+
+                finalList.add(currentMsg)
             }
         }
 
         return finalList
     }
 
+    //TODO valorar lanzar una actualización de fechas si se añade una nueva (puede haber pasado de día durante la convo)
     private fun checkLastMessageDateAndAddMessage(message: ChatMessageItem) {
         (_messageList.value?.lastOrNull() as? ChatMessageItem)?.let {
             if (it.timestamp.getDate() != message.timestamp.getDate()) {
@@ -128,7 +151,7 @@ class ChatViewModel : ViewModel() {
 
     fun prepareMessageForSending(idUser: String?) {
         viewModelScope.launch {
-            idUser?.let { uid ->
+            userId?.let { uid ->
                 if (!newMessageText.value.isNullOrBlank() && chat != null) {
                     val message = ChatMessageItem().apply {
                         id = "$uid-${System.currentTimeMillis()}"

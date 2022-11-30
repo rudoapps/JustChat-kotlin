@@ -9,7 +9,7 @@ class ChatMessageItem : ChatBaseItem() {
     var timestamp: Long? = null
 
     @Transient
-    var position: String? = null
+    var position: MessagePosition? = null
 
     enum class MessagePosition {
         SINGLE, BOTTOM, MIDDLE, TOP

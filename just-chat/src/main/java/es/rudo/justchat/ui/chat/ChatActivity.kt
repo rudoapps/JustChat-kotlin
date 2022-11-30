@@ -151,6 +151,7 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
+        viewModel.userId = userId
         intent.extras?.let {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
