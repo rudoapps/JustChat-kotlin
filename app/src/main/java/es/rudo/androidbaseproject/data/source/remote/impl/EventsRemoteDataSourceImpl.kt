@@ -11,9 +11,9 @@ import es.rudo.androidbaseproject.helpers.Constants.LIMIT_MESSAGES
 import es.rudo.androidbaseproject.helpers.Constants.LIMIT_SIZE_ID
 import es.rudo.androidbaseproject.helpers.extensions.getUserId
 import es.rudo.androidbaseproject.ui.main.MainActivity
-import es.rudo.firebasechat.models.*
-import es.rudo.firebasechat.models.results.ResultInfo
-import es.rudo.firebasechat.models.results.ResultUserChat
+import es.rudo.justchat.models.*
+import es.rudo.justchat.models.results.ResultInfo
+import es.rudo.justchat.models.results.ResultUserChat
 import generateId
 import getPair
 import getResult

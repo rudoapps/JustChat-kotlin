@@ -23,10 +23,10 @@ import es.rudo.androidbaseproject.helpers.Constants
 import es.rudo.androidbaseproject.helpers.extensions.ImageInterface
 import es.rudo.androidbaseproject.helpers.extensions.downloadImageFromUrl
 import es.rudo.androidbaseproject.ui.main.MainActivity
-import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
-import es.rudo.firebasechat.helpers.Constants.PREFERENCES
-import es.rudo.firebasechat.models.Chat
-import es.rudo.firebasechat.ui.chat.ChatActivity
+import es.rudo.justchat.helpers.Constants.CHAT_ID_PREFERENCES
+import es.rudo.justchat.helpers.Constants.PREFERENCES
+import es.rudo.justchat.models.Chat
+import es.rudo.justchat.ui.chat.ChatActivity
 import kotlin.random.Random
 
 class NotificationService : FirebaseMessagingService() {

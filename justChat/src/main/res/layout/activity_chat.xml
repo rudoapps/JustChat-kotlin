@@ -7,11 +7,11 @@
 
         <variable
             name="viewModel"
-            type="es.rudo.firebasechat.ui.chat.ChatViewModel" />
+            type="es.rudo.justchat.ui.chat.ChatViewModel" />
 
         <variable
             name="activity"
-            type="es.rudo.firebasechat.ui.chat.ChatActivity" />
+            type="es.rudo.justchat.ui.chat.ChatActivity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

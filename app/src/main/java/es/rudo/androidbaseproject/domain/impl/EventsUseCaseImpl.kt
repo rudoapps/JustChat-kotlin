@@ -2,9 +2,9 @@ package es.rudo.androidbaseproject.domain.impl
 
 import es.rudo.androidbaseproject.data.repository.EventsRepository
 import es.rudo.androidbaseproject.domain.EventsUseCase
-import es.rudo.firebasechat.models.*
-import es.rudo.firebasechat.models.results.ResultInfo
-import es.rudo.firebasechat.models.results.ResultUserChat
+import es.rudo.justchat.models.*
+import es.rudo.justchat.models.results.ResultInfo
+import es.rudo.justchat.models.results.ResultUserChat
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

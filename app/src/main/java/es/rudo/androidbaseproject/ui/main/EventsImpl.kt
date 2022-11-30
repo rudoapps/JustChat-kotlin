@@ -6,9 +6,9 @@ import es.rudo.androidbaseproject.data.dto.Notification
 import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.domain.NotificationsUseCase
 import es.rudo.androidbaseproject.helpers.extensions.isNetworkAvailable
-import es.rudo.firebasechat.interfaces.Events
-import es.rudo.firebasechat.models.* // ktlint-disable no-wildcard-imports
-import es.rudo.firebasechat.models.results.ResultInfo
+import es.rudo.justchat.interfaces.Events
+import es.rudo.justchat.models.* // ktlint-disable no-wildcard-imports
+import es.rudo.justchat.models.results.ResultInfo
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
