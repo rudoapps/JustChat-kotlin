@@ -1,20 +1,19 @@
 package es.rudo.justchat.ui.chat
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.rudo.justchat.helpers.extensions.getDate
 import es.rudo.justchat.helpers.extensions.getFormattedDate
-import es.rudo.justchat.helpers.utils.userId
 import es.rudo.justchat.main.instance.JustChat
-import es.rudo.justchat.models.* // ktlint-disable no-wildcard-imports
+import es.rudo.justchat.models.*
 import es.rudo.justchat.models.results.ResultInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
+
     var chat: Chat? = null
     var userId: String? = null
 
@@ -93,9 +92,6 @@ class ChatViewModel : ViewModel() {
                     if (listIterator.hasNext() &&
                             (list[listIterator.nextIndex()].timestamp.getDate() != currentMsg.timestamp.getDate() ||
                             (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > 300000)) {
-
-                        Log.d("CRACKHEAD", "${lastMsg?.position?.name} - ${currentMsg.text}")
-
                         if (lastMsg?.position == ChatMessageItem.MessagePosition.SINGLE)
                             ChatMessageItem.MessagePosition.SINGLE
                         else
@@ -144,8 +140,8 @@ class ChatViewModel : ViewModel() {
 
     //TODO valorar lanzar una actualización de fechas si se añade una nueva (puede haber pasado de día durante la convo)
     private fun checkLastMessageDateAndAddMessage(message: ChatMessageItem) {
-        (_messageList.value?.lastOrNull() as? ChatMessageItem)?.let {
-            if (it.timestamp.getDate() != message.timestamp.getDate()) {
+        (_messageList.value?.lastOrNull() as? ChatMessageItem)?.let { lastMessage ->
+            if (lastMessage.timestamp.getDate() != message.timestamp.getDate()) {
                 _messageList.value?.add(
                     ChatDateItem().apply {
                         id = message.timestamp.getDate()
@@ -153,6 +149,31 @@ class ChatViewModel : ViewModel() {
                         date = message.timestamp.getFormattedDate()
                     }
                 )
+
+                _messageList.value?.add(message.apply {
+                    position = ChatMessageItem.MessagePosition.SINGLE
+                })
+            } else {
+                if ((message.timestamp?.minus(lastMessage.timestamp ?: 0) ?: 0) > 300000) {
+                    _messageList.value?.add(message.apply {
+                        position = ChatMessageItem.MessagePosition.SINGLE
+                    })
+                } else {
+                    when (lastMessage.position) {
+                        ChatMessageItem.MessagePosition.SINGLE -> {
+                            lastMessage.position = ChatMessageItem.MessagePosition.TOP
+                            _messageList.value?.add(message.apply {
+                                position = ChatMessageItem.MessagePosition.BOTTOM
+                            })
+                        }
+                        else -> { // ChatMessageItem.MessagePosition.BOTTOM
+                            lastMessage.position = ChatMessageItem.MessagePosition.MIDDLE
+                            _messageList.value?.add(message.apply {
+                                position = ChatMessageItem.MessagePosition.BOTTOM
+                            })
+                        }
+                    }
+                }
             }
         } ?: run {
             _messageList.value?.add(
@@ -162,9 +183,11 @@ class ChatViewModel : ViewModel() {
                     date = message.timestamp.getFormattedDate()
                 }
             )
-        }
 
-        _messageList.value?.add(message)
+            _messageList.value?.add(message.apply {
+                position = ChatMessageItem.MessagePosition.SINGLE
+            })
+        }
     }
 
     fun prepareMessageForSending(idUser: String?) {

@@ -1,7 +1,6 @@
 package es.rudo.justchat.ui.chat
 
 import android.annotation.SuppressLint
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -11,6 +10,7 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.resources.TextAppearance
 import es.rudo.justchat.R
 import es.rudo.justchat.databinding.ItemDateBinding
 import es.rudo.justchat.databinding.ItemMessageBinding
@@ -87,8 +87,8 @@ class ChatAdapter(
                 setOutgoingMessageGravity(item.position)
                 setOutgoingMessageBackground(item.position)
             } else {
-                setIncomingMessageGravity()
-                setIncomingMessageBackground()
+                setIncomingMessageGravity(item.position)
+                setIncomingMessageBackground(item.position)
             }
 
             setMessageStyle()
@@ -127,10 +127,21 @@ class ChatAdapter(
             }
         }
 
-        private fun setIncomingMessageGravity() {
+        private fun setIncomingMessageGravity(position: ChatMessageItem.MessagePosition?) {
             binding.layout.updateLayoutParams<RecyclerView.LayoutParams> {
-                marginStart = 0
+                marginStart = when (position) {
+                    ChatMessageItem.MessagePosition.TOP, ChatMessageItem.MessagePosition.MIDDLE -> {
+                        binding.root.context.dpToPx(10)
+                    }
+                    else -> 0
+                }
                 marginEnd = binding.root.context.dpToPx(inMsgPaddingDp)
+                topMargin = when (position) {
+                    ChatMessageItem.MessagePosition.BOTTOM, ChatMessageItem.MessagePosition.MIDDLE -> {
+                        binding.root.context.dpToPx(4)
+                    }
+                    else -> binding.root.context.dpToPx(8)
+                }
             }
             binding.textMessage.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 startToStart = ConstraintLayout.LayoutParams.PARENT_ID
@@ -158,10 +169,16 @@ class ChatAdapter(
             binding.viewBackground.background = drawable
         }
 
-        private fun setIncomingMessageBackground() {
-            val inMsgDrawable = ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left)
-            inMsgDrawable?.setTint(inMsgColor)
-            binding.viewBackground.background = inMsgDrawable
+        private fun setIncomingMessageBackground(position: ChatMessageItem.MessagePosition?) {
+            val drawable = when (position) {
+                ChatMessageItem.MessagePosition.TOP -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left_top)
+                ChatMessageItem.MessagePosition.MIDDLE -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left_middle)
+                ChatMessageItem.MessagePosition.BOTTOM -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left_bottom)
+                else -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left_single)
+            }
+
+            drawable?.setTint(inMsgColor)
+            binding.viewBackground.background = drawable
         }
 
         private fun setMessageStyle() {

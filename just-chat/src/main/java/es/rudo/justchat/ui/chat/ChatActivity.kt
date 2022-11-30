@@ -113,9 +113,11 @@ class ChatActivity : AppCompatActivity() {
                     if ((binding.recycler.layoutManager as LinearLayoutManager).findLastVisibleItemPosition() == adapter.itemCount - 2) {
                         adapter.itemCount.takeIf { it > 0 }?.let {
                             binding.recycler.scrollToPosition(it - 1)
+                            if (it > 1) adapter.notifyItemChanged(it - 2)
                         }
                     } else {
                         adapter.notifyItemInserted(adapter.itemCount - 1)
+                        if (adapter.itemCount > 1) adapter.notifyItemChanged(adapter.itemCount - 2)
                     }
                 }
             }
@@ -127,6 +129,7 @@ class ChatActivity : AppCompatActivity() {
                     adapter.submitList(messages)
                     adapter.itemCount.takeIf { it > 0 }?.let {
                         binding.recycler.scrollToPosition(it - 1)
+                        if (it > 1) adapter.notifyItemChanged(it - 2)
                     }
                 }
                 viewModel.sendNotification()
