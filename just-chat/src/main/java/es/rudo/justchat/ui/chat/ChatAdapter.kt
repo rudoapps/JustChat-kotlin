@@ -92,9 +92,7 @@ class ChatAdapter(
             }
 
             setMessageStyle()
-//            setMessageContent(item.text, item.timestamp)
-            binding.textMessage.text = "${item.text} - ${item.position?.name?.let { it.padEnd(it.length + 10, '\u00A0')}}"
-            binding.textTimestamp.text = item.timestamp.getTime()
+            setMessageContent(item.text, item.timestamp)
         }
 
         private fun setOutgoingMessageGravity(position: ChatMessageItem.MessagePosition?) {
@@ -119,11 +117,21 @@ class ChatAdapter(
             }
             binding.textMessage.updatePadding(
                 left = binding.root.context.dpToPx(10),
-                right = binding.root.context.dpToPx(20)
+                right = when (position) {
+                    ChatMessageItem.MessagePosition.BOTTOM, ChatMessageItem.MessagePosition.SINGLE -> {
+                        binding.root.context.dpToPx(20)
+                    }
+                    else -> binding.root.context.dpToPx(10)
+                }
             )
             binding.textTimestamp.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 marginStart = 0
-                marginEnd = binding.root.context.dpToPx(10)
+                marginEnd = when (position) {
+                    ChatMessageItem.MessagePosition.BOTTOM, ChatMessageItem.MessagePosition.SINGLE -> {
+                        binding.root.context.dpToPx(10)
+                    }
+                    else -> 0
+                }
             }
         }
 
@@ -148,12 +156,22 @@ class ChatAdapter(
                 endToEnd = ConstraintLayout.LayoutParams.UNSET
             }
             binding.textMessage.updatePadding(
-                left = binding.root.context.dpToPx(20),
+                left = when (position) {
+                    ChatMessageItem.MessagePosition.BOTTOM, ChatMessageItem.MessagePosition.SINGLE -> {
+                        binding.root.context.dpToPx(20)
+                    }
+                    else -> binding.root.context.dpToPx(10)
+                },
                 right = binding.root.context.dpToPx(10)
             )
             binding.textTimestamp.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                marginStart = binding.root.context.dpToPx(10)
-                marginEnd = 0
+                marginStart = when (position) {
+                    ChatMessageItem.MessagePosition.BOTTOM, ChatMessageItem.MessagePosition.SINGLE -> {
+                        binding.root.context.dpToPx(10)
+                    }
+                    else -> 0
+                }
+                marginEnd = binding.root.context.dpToPx(4)
             }
         }
 

@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel : ViewModel() {
 
+    val TIME_SPAN_MILLIS = 300000 // 5 minutes
+
     var chat: Chat? = null
     var userId: String? = null
 
@@ -91,7 +93,7 @@ class ChatViewModel : ViewModel() {
                 currentMsg.position = if (currentMsg.userId == lastMsg?.userId) {
                     if (listIterator.hasNext() &&
                             (list[listIterator.nextIndex()].timestamp.getDate() != currentMsg.timestamp.getDate() ||
-                            (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > 300000)) {
+                            (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > TIME_SPAN_MILLIS)) {
                         if (lastMsg?.position == ChatMessageItem.MessagePosition.SINGLE)
                             ChatMessageItem.MessagePosition.SINGLE
                         else
@@ -121,7 +123,7 @@ class ChatViewModel : ViewModel() {
                 } else {
                     if (listIterator.hasNext() &&
                             (list[listIterator.nextIndex()].timestamp.getDate() != currentMsg.timestamp.getDate() ||
-                            (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > 300000))
+                            (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > TIME_SPAN_MILLIS))
                         ChatMessageItem.MessagePosition.SINGLE
                     else if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == currentMsg.userId)
                         ChatMessageItem.MessagePosition.TOP
@@ -154,7 +156,7 @@ class ChatViewModel : ViewModel() {
                     position = ChatMessageItem.MessagePosition.SINGLE
                 })
             } else {
-                if ((message.timestamp?.minus(lastMessage.timestamp ?: 0) ?: 0) > 300000) {
+                if ((message.timestamp?.minus(lastMessage.timestamp ?: 0) ?: 0) > TIME_SPAN_MILLIS) {
                     _messageList.value?.add(message.apply {
                         position = ChatMessageItem.MessagePosition.SINGLE
                     })

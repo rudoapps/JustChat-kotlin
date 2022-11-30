@@ -36,7 +36,7 @@
         style="@style/text_body_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="6dp"
+        android:paddingEnd="8dp"
         android:paddingBottom="2dp"
         app:layout_constraintBottom_toBottomOf="@id/text_message"
         app:layout_constraintEnd_toEndOf="@id/text_message"
