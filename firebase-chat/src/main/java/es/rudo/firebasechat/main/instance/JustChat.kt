@@ -6,10 +6,10 @@ import es.rudo.firebasechat.helpers.Constants
 import es.rudo.firebasechat.helpers.preferences.AppPreferences
 import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.models.Chat
+import es.rudo.firebasechat.models.error.ChatNotFound
 import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
 
 class JustChat(val context: Context?, val userId: String?, events: Events?) {
@@ -48,7 +48,12 @@ class JustChat(val context: Context?, val userId: String?, events: Events?) {
         events?.getChat(userId.toString(), chatId)?.collect { chat ->
             withContext(Dispatchers.Main) {
                 if (chatNoExist(chat)) {
-                    throw Exception("FATAL EXCEPTION: This chat does not exist in the current user")
+                    throw ChatNotFound(
+                        "This chat '$chatId' does not exist in the current user '$userId'.",
+                        RuntimeException(
+                            "FATAL EXCEPTION: This chat '$chatId' does not exist in the current user '$userId'."
+                        )
+                    )
                 } else {
                     val intent = Intent(context, ChatActivity::class.java)
                     intent.putExtra(Constants.CHAT, chat)

@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseFragment<VM : BaseViewModel, VB: ViewDataBinding> : Fragment() {
+abstract class BaseFragment<VM : BaseViewModel, VB : ViewDataBinding> : Fragment() {
 
     lateinit var viewModel: VM
     lateinit var binding: VB
@@ -30,7 +30,10 @@ abstract class BaseFragment<VM : BaseViewModel, VB: ViewDataBinding> : Fragment(
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(
-            inflater, layoutId, container, false
+            inflater,
+            layoutId,
+            container,
+            false
         )
         return binding.root
     }

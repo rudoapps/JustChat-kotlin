@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.rudo.firebasechat.helpers.extensions.getDate
 import es.rudo.firebasechat.helpers.extensions.getFormattedDate
-import es.rudo.firebasechat.helpers.userId
+import es.rudo.firebasechat.helpers.utils.userId
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.* // ktlint-disable no-wildcard-imports
 import es.rudo.firebasechat.models.results.ResultInfo

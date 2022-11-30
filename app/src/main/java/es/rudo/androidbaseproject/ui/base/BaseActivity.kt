@@ -15,8 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.reflect.ParameterizedType
 
-
-abstract class BaseActivity<VM: BaseViewModel, VB: ViewDataBinding> : AppCompatActivity() {
+abstract class BaseActivity<VM : BaseViewModel, VB : ViewDataBinding> : AppCompatActivity() {
 
     lateinit var viewModel: VM
     lateinit var binding: VB

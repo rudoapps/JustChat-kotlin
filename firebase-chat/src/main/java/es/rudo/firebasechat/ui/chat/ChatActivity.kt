@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import es.rudo.firebasechat.R
 import es.rudo.firebasechat.databinding.ActivityChatBinding
 import es.rudo.firebasechat.helpers.Constants.CHAT
-import es.rudo.firebasechat.helpers.userId
+import es.rudo.firebasechat.helpers.utils.userId
 import es.rudo.firebasechat.main.instance.JustChat
 import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.models.ChatMessageItem

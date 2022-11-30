@@ -1,4 +1,4 @@
-package es.rudo.firebasechat.helpers
+package es.rudo.firebasechat.helpers.utils
 
 import es.rudo.firebasechat.main.instance.JustChat
 
