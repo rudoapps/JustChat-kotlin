@@ -2,9 +2,6 @@ package es.rudo.justchat.ui.chat
 
 import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RoundRectShape
-import android.graphics.fonts.Font
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -75,10 +72,7 @@ class ChatAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         private val textAppearance: TextAppearance? = null
-        private val outMsgDrawable: Drawable? = ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat)
-        private val inMsgDrawable: Drawable? = ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left)
-        private val outMsgColor: Int =
-            ContextCompat.getColor(binding.root.context, R.color.purple_200)
+        private val outMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.purple_200)
         private val inMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.teal_700)
         private val outMsgPaddingDp: Int = 40
         private val inMsgPaddingDp: Int = 40
@@ -90,21 +84,34 @@ class ChatAdapter(
             clickListener: MessageClickListener
         ) {
             if (item.userId == userId) {
-                setOutgoingMessageGravity()
-                setOutgoingMessageBackground()
+                setOutgoingMessageGravity(item.position)
+                setOutgoingMessageBackground(item.position)
             } else {
                 setIncomingMessageGravity()
                 setIncomingMessageBackground()
             }
 
             setMessageStyle()
-            setMessageContent(item.text, item.timestamp)
+//            setMessageContent(item.text, item.timestamp)
+            binding.textMessage.text = "${item.text} - ${item.position?.name?.let { it.padEnd(it.length + 10, '\u00A0')}}"
+            binding.textTimestamp.text = item.timestamp.getTime()
         }
 
-        private fun setOutgoingMessageGravity() {
+        private fun setOutgoingMessageGravity(position: ChatMessageItem.MessagePosition?) {
             binding.layout.updateLayoutParams<RecyclerView.LayoutParams> {
                 marginStart = binding.root.context.dpToPx(outMsgPaddingDp)
-                marginEnd = 0
+                marginEnd = when (position) {
+                    ChatMessageItem.MessagePosition.TOP, ChatMessageItem.MessagePosition.MIDDLE -> {
+                        binding.root.context.dpToPx(10)
+                    }
+                    else -> 0
+                }
+                topMargin = when (position) {
+                    ChatMessageItem.MessagePosition.BOTTOM, ChatMessageItem.MessagePosition.MIDDLE -> {
+                        binding.root.context.dpToPx(4)
+                    }
+                    else -> binding.root.context.dpToPx(8)
+                }
             }
             binding.textMessage.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 startToStart = ConstraintLayout.LayoutParams.UNSET
@@ -139,12 +146,20 @@ class ChatAdapter(
             }
         }
 
-        private fun setOutgoingMessageBackground() {
-            outMsgDrawable?.setTint(outMsgColor)
-            binding.viewBackground.background = outMsgDrawable
+        private fun setOutgoingMessageBackground(position: ChatMessageItem.MessagePosition?) {
+            val drawable = when (position) {
+                ChatMessageItem.MessagePosition.TOP -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_top)
+                ChatMessageItem.MessagePosition.MIDDLE -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_middle)
+                ChatMessageItem.MessagePosition.BOTTOM -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_bottom)
+                else -> ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_single)
+            }
+
+            drawable?.setTint(outMsgColor)
+            binding.viewBackground.background = drawable
         }
 
         private fun setIncomingMessageBackground() {
+            val inMsgDrawable = ContextCompat.getDrawable(binding.root.context, R.drawable.background_chat_left)
             inMsgDrawable?.setTint(inMsgColor)
             binding.viewBackground.background = inMsgDrawable
         }

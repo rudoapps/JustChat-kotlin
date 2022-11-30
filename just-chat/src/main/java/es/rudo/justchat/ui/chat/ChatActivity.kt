@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
@@ -91,7 +92,8 @@ class ChatActivity : AppCompatActivity() {
             stackFromEnd = true
             reverseLayout = false
         }
-        (binding.recycler.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+        val itemAnimator = DefaultItemAnimator().apply { supportsChangeAnimations = false }
+        binding.recycler.itemAnimator = itemAnimator
         binding.recycler.setHasFixedSize(false)
     }
 
@@ -158,7 +160,7 @@ class ChatActivity : AppCompatActivity() {
                     viewModel.chat = chat
                     JustChat.appPreferences?.chatId = chat.id.toString()
                     viewModel.initFlowReceiveMessage()
-                    viewModel.getMessages(chat.messages)
+                    viewModel.getMessageHistory(chat.messages)
                 }
             }
         }

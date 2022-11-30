@@ -1,5 +1,6 @@
 package es.rudo.justchat.ui.chat
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,9 +40,7 @@ class ChatViewModel : ViewModel() {
     private val _messageListHistoryUpdateFinished = MutableLiveData<Boolean>()
     val messageListHistoryUpdateFinished: LiveData<Boolean> = _messageListHistoryUpdateFinished
 
-    // TODO esto irá separado en getMessageHistory y getNewMessage
-    private var firstLoad = true
-    fun getMessages(initialMessageList: MutableList<ChatMessageItem>?) {
+    fun getMessageHistory(initialMessageList: MutableList<ChatMessageItem>?) {
         _messageList.value = getCompleteMessageList(initialMessageList)
 
         viewModelScope.launch {
@@ -51,13 +50,7 @@ class ChatViewModel : ViewModel() {
                     chat.id.toString(),
                     0
                 )?.collect { messages ->
-                    if (firstLoad) {
-                        _messageList.postValue(getCompleteMessageList(messages))
-                        firstLoad = false
-                    } else if (_messageList.value?.last() != messages.last()) {
-                        checkLastMessageDateAndAddMessage(messages.last())
-                        _newMessageReceived.postValue(true)
-                    }
+                    _messageList.postValue(getCompleteMessageList(messages))
                 }
             }
         }
@@ -69,7 +62,8 @@ class ChatViewModel : ViewModel() {
                 userId.toString(),
                 chat?.id.toString()
             )?.collect {
-                it
+                checkLastMessageDateAndAddMessage(it)
+                _newMessageReceived.postValue(true)
             }
         }
     }
@@ -83,7 +77,6 @@ class ChatViewModel : ViewModel() {
             var lastMsg: ChatMessageItem? = null
             var lastDateMsg: ChatMessageItem? = null
 
-
             while (listIterator.hasNext()) {
                 val currentMsg = listIterator.next()
 
@@ -91,28 +84,51 @@ class ChatViewModel : ViewModel() {
                     lastDateMsg = currentMsg
                     finalList.add(ChatDateItem().apply {
                         id = currentMsg.timestamp.getDate()
+                        originalTimestamp = currentMsg.timestamp
                         date = currentMsg.timestamp.getFormattedDate()
                     })
                 }
 
-                if (currentMsg.userId == userId && lastMsg?.userId == userId) {
-                    currentMsg.position = when (lastMsg?.position) {
-                        ChatMessageItem.MessagePosition.BOTTOM -> {
-                            if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == userId)
-                                ChatMessageItem.MessagePosition.MIDDLE
-                            else
-                                ChatMessageItem.MessagePosition.TOP
-                        }
-                        else -> { // ChatMessageItem.MessagePosition.MIDDLE
-                            if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == userId)
-                                ChatMessageItem.MessagePosition.MIDDLE
-                            else
-                                ChatMessageItem.MessagePosition.TOP
+                currentMsg.position = if (currentMsg.userId == lastMsg?.userId) {
+                    if (listIterator.hasNext() &&
+                            (list[listIterator.nextIndex()].timestamp.getDate() != currentMsg.timestamp.getDate() ||
+                            (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > 300000)) {
+
+                        Log.d("CRACKHEAD", "${lastMsg?.position?.name} - ${currentMsg.text}")
+
+                        if (lastMsg?.position == ChatMessageItem.MessagePosition.SINGLE)
+                            ChatMessageItem.MessagePosition.SINGLE
+                        else
+                            ChatMessageItem.MessagePosition.BOTTOM
+                    } else {
+                        when (lastMsg?.position) {
+                            ChatMessageItem.MessagePosition.TOP -> {
+                                if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == currentMsg.userId)
+                                    ChatMessageItem.MessagePosition.MIDDLE
+                                else
+                                    ChatMessageItem.MessagePosition.BOTTOM
+                            }
+                            ChatMessageItem.MessagePosition.MIDDLE -> {
+                                if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == currentMsg.userId)
+                                    ChatMessageItem.MessagePosition.MIDDLE
+                                else
+                                    ChatMessageItem.MessagePosition.BOTTOM
+                            }
+                            else -> { // ChatMessageItem.MessagePosition.SINGLE
+                                if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == currentMsg.userId)
+                                    ChatMessageItem.MessagePosition.TOP
+                                else
+                                    ChatMessageItem.MessagePosition.SINGLE
+                            }
                         }
                     }
                 } else {
-                    if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == userId)
-                        ChatMessageItem.MessagePosition.BOTTOM
+                    if (listIterator.hasNext() &&
+                            (list[listIterator.nextIndex()].timestamp.getDate() != currentMsg.timestamp.getDate() ||
+                            (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > 300000))
+                        ChatMessageItem.MessagePosition.SINGLE
+                    else if (listIterator.hasNext() && list[listIterator.nextIndex()].userId == currentMsg.userId)
+                        ChatMessageItem.MessagePosition.TOP
                     else
                         ChatMessageItem.MessagePosition.SINGLE
                 }
@@ -133,6 +149,7 @@ class ChatViewModel : ViewModel() {
                 _messageList.value?.add(
                     ChatDateItem().apply {
                         id = message.timestamp.getDate()
+                        originalTimestamp = message.timestamp
                         date = message.timestamp.getFormattedDate()
                     }
                 )
@@ -141,6 +158,7 @@ class ChatViewModel : ViewModel() {
             _messageList.value?.add(
                 ChatDateItem().apply {
                     id = message.timestamp.getDate()
+                    originalTimestamp = message.timestamp
                     date = message.timestamp.getFormattedDate()
                 }
             )

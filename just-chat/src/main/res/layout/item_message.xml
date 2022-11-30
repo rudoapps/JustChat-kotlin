@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="@id/text_message"
         app:layout_constraintStart_toStartOf="@id/text_message"
         app:layout_constraintTop_toTopOf="@id/text_message"
-        tools:background="@drawable/background_chat" />
+        tools:background="@drawable/background_chat_single" />
 
     <TextView
         android:id="@+id/text_message"
