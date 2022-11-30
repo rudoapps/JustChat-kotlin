@@ -8,10 +8,8 @@ import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.models.Chat
 import es.rudo.firebasechat.ui.chat.ChatActivity
 import es.rudo.firebasechat.ui.chat_list.ChatListActivity
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class JustChat(val context: Context?, val userId: String?, events: Events?) {
@@ -26,9 +24,9 @@ class JustChat(val context: Context?, val userId: String?, events: Events?) {
         var events: Events? = null
             private set
 
-        fun context(context: Context) = apply { this.context = context }
-        fun userId(userId: String?) = apply { this.userId = userId }
-        fun events(events: Events) = apply { this.events = events }
+        fun provideContext(context: Context) = apply { this.context = context }
+        fun setUserId(userId: String?) = apply { this.userId = userId }
+        fun setEventsImplementation(events: Events) = apply { this.events = events }
 
         fun build() = JustChat(this)
     }
@@ -46,17 +44,15 @@ class JustChat(val context: Context?, val userId: String?, events: Events?) {
         context?.startActivity(Intent(context, ChatListActivity::class.java))
     }
 
-    fun openChat(chatId: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            events?.getChat(userId.toString(), chatId)?.collect { chat ->
-                withContext(Dispatchers.Main) {
-                    if (chatNoExist(chat)) {
-                        throw Exception("FATAL EXCEPTION: This chat does not exist in the current user")
-                    } else {
-                        val intent = Intent(context, ChatActivity::class.java)
-                        intent.putExtra(Constants.CHAT, chat)
-                        context?.startActivity(intent)
-                    }
+    suspend fun openChat(chatId: String) {
+        events?.getChat(userId.toString(), chatId)?.collect { chat ->
+            withContext(Dispatchers.Main) {
+                if (chatNoExist(chat)) {
+                    throw Exception("FATAL EXCEPTION: This chat does not exist in the current user")
+                } else {
+                    val intent = Intent(context, ChatActivity::class.java)
+                    intent.putExtra(Constants.CHAT, chat)
+                    context?.startActivity(intent)
                 }
             }
         }

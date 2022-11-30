@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.auth.api.identity.* // ktlint-disable no-wildcard-imports
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -22,6 +23,8 @@ import es.rudo.androidbaseproject.ui.base.BaseActivity
 import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
 import es.rudo.firebasechat.interfaces.Events
 import es.rudo.firebasechat.main.instance.JustChat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
@@ -91,6 +94,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         initListeners()
         initObservers()
         initRequests()
+
         events = viewModel.events
         oneTapClient = Identity.getSignInClient(this)
     }
@@ -178,7 +182,9 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     if (buttonType == ButtonType.CHAT_LIST) {
                         justChat.openChatLists()
                     } else {
-                        justChat.openChat("1669114264311-1s7TQGpc4AZ0DUalBRnXMkvIuPgJ92")
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            justChat.openChat("1669114264311-1s7TQGpc4AZ0DUalBRnXMkvIuPgJ92")
+                        }
                     }
                 } else {
                     viewModel.initCurrentUserChats(isNetworkAvailable)
@@ -199,7 +205,9 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 if (buttonType == ButtonType.CHAT_LIST) {
                     justChat.openChatLists()
                 } else {
-                    justChat.openChat("1669114264311-1s7TQGpc4AZ0DUalBRnXMkvIuPgJ92")
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        justChat.openChat("1669114264311-1s7TQGpc4AZ0DUalBRnXMkvIuPgJ92")
+                    }
                 }
             }
         }
@@ -212,9 +220,9 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                 .addOnCompleteListener { task ->
                     Toast.makeText(this, "Login correct", Toast.LENGTH_SHORT).show()
                     justChat = JustChat.Builder()
-                        .context(this)
-                        .userId(firebaseAuth.currentUser?.uid)
-                        .events(events)
+                        .provideContext(this)
+                        .setUserId(firebaseAuth.currentUser?.uid)
+                        .setEventsImplementation(events)
                         .build()
                     MainActivity.firebaseAuth = firebaseAuth
                     onTapClient = oneTapClient
