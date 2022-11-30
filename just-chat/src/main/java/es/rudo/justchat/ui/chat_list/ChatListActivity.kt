@@ -59,7 +59,6 @@ class ChatListActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // TODO replace with call obtain  chats
         if (!viewModel.chats.value.isNullOrEmpty()) {
             viewModel.getChats()
         }
