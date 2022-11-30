@@ -10,9 +10,9 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.ui.base.BaseViewModel
-import es.rudo.firebasechat.interfaces.Events
-import es.rudo.firebasechat.models.results.ResultInfo
-import es.rudo.firebasechat.models.results.ResultUserChat
+import es.rudo.justchat.interfaces.Events
+import es.rudo.justchat.models.results.ResultInfo
+import es.rudo.justchat.models.results.ResultUserChat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

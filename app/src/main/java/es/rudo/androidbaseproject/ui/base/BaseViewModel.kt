@@ -9,17 +9,18 @@ import kotlinx.coroutines.withContext
 
 open class BaseViewModel : ViewModel() {
 
-    open fun initData(data: Bundle) { }
+    open fun initData(data: Bundle) {}
 
-    fun <T> background(callback: ((T?) -> Unit)? = null, process: () -> T?) = viewModelScope.launch {
-        val result = withContext(Dispatchers.IO) {
-            process()
-        }
+    fun <T> background(callback: ((T?) -> Unit)? = null, process: () -> T?) =
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO) {
+                process()
+            }
 
-        callback?.let {
-            withContext(Dispatchers.Main) {
-                callback(result)
+            callback?.let {
+                withContext(Dispatchers.Main) {
+                    callback(result)
+                }
             }
         }
-    }
 }

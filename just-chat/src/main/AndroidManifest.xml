@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="es.rudo.justchat">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true">
+
+        <activity
+            android:name="es.rudo.justchat.ui.chat.ChatActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Chat"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="es.rudo.justchat.ui.chat_list.ChatListActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Chat" />
+    </application>
+</manifest>

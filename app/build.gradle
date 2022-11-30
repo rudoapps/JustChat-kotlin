@@ -103,7 +103,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-firestore:8.0.2'
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
     implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
+    implementation project(path: ':just-chat')
 
     // Custom chat library
-    implementation project(path: ':firebase-chat')
 }

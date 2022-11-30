@@ -20,9 +20,9 @@ import es.rudo.androidbaseproject.databinding.ActivityMainBinding
 import es.rudo.androidbaseproject.helpers.extensions.saveUserId
 import es.rudo.androidbaseproject.helpers.setClickWithDebounce
 import es.rudo.androidbaseproject.ui.base.BaseActivity
-import es.rudo.firebasechat.helpers.extensions.isNetworkAvailable
-import es.rudo.firebasechat.interfaces.Events
-import es.rudo.firebasechat.main.instance.JustChat
+import es.rudo.justchat.helpers.extensions.isNetworkAvailable
+import es.rudo.justchat.interfaces.Events
+import es.rudo.justchat.main.instance.JustChat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -150,14 +150,14 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             .addOnCompleteListener {
                 Toast.makeText(
                     this,
-                    getString(es.rudo.firebasechat.R.string.correct),
+                    getString(es.rudo.justchat.R.string.correct),
                     Toast.LENGTH_SHORT
                 ).show()
             }
             .addOnFailureListener {
                 Toast.makeText(
                     this,
-                    getString(es.rudo.firebasechat.R.string.error_closing_session),
+                    getString(es.rudo.justchat.R.string.error_closing_session),
                     Toast.LENGTH_SHORT
                 ).show()
             }

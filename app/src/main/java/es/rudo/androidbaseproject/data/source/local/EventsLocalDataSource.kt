@@ -1,8 +1,8 @@
 package es.rudo.androidbaseproject.data.source.local
 
-import es.rudo.firebasechat.models.Chat
-import es.rudo.firebasechat.models.ChatMessageItem
-import es.rudo.firebasechat.models.Group
+import es.rudo.justchat.models.Chat
+import es.rudo.justchat.models.ChatMessageItem
+import es.rudo.justchat.models.Group
 import kotlinx.coroutines.flow.Flow
 
 interface EventsLocalDataSource {

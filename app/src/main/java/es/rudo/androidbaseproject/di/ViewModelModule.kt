@@ -10,7 +10,7 @@ import es.rudo.androidbaseproject.domain.EventsUseCase
 import es.rudo.androidbaseproject.domain.NotificationsUseCase
 import es.rudo.androidbaseproject.ui.main.EventsImpl
 import es.rudo.androidbaseproject.ui.main.MainViewModel
-import es.rudo.firebasechat.interfaces.Events
+import es.rudo.justchat.interfaces.Events
 import javax.inject.Singleton
 
 @Module

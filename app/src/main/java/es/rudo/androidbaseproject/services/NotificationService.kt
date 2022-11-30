@@ -18,15 +18,15 @@ import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import es.rudo.androidbaseproject.R
 import es.rudo.androidbaseproject.helpers.Constants
 import es.rudo.androidbaseproject.helpers.extensions.ImageInterface
 import es.rudo.androidbaseproject.helpers.extensions.downloadImageFromUrl
 import es.rudo.androidbaseproject.ui.main.MainActivity
-import es.rudo.firebasechat.R
-import es.rudo.firebasechat.helpers.Constants.CHAT_ID_PREFERENCES
-import es.rudo.firebasechat.helpers.Constants.PREFERENCES
-import es.rudo.firebasechat.models.Chat
-import es.rudo.firebasechat.ui.chat.ChatActivity
+import es.rudo.justchat.helpers.Constants.CHAT_ID_PREFERENCES
+import es.rudo.justchat.helpers.Constants.PREFERENCES
+import es.rudo.justchat.models.Chat
+import es.rudo.justchat.ui.chat.ChatActivity
 import kotlin.random.Random
 
 class NotificationService : FirebaseMessagingService() {

@@ -3,9 +3,9 @@ package es.rudo.androidbaseproject.data.repository.impl
 import es.rudo.androidbaseproject.data.repository.EventsRepository
 import es.rudo.androidbaseproject.data.source.local.EventsLocalDataSource
 import es.rudo.androidbaseproject.data.source.remote.EventsRemoteDataSource
-import es.rudo.firebasechat.models.*
-import es.rudo.firebasechat.models.results.ResultInfo
-import es.rudo.firebasechat.models.results.ResultUserChat
+import es.rudo.justchat.models.*
+import es.rudo.justchat.models.results.ResultInfo
+import es.rudo.justchat.models.results.ResultUserChat
 import getResult
 import getResultUserChat
 import kotlinx.coroutines.flow.Flow
