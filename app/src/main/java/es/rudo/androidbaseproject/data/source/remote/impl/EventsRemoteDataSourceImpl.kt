@@ -178,7 +178,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         return channelFlow {
             val query =
                 databaseReference.child("$userId/chats")
-            query.addListenerForSingleValueEvent(object : ValueEventListener {
+            query.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(chats: DataSnapshot) {
                     databaseReference.removeEventListener(this)
                     val chatList = mutableListOf<Chat>()
@@ -190,7 +190,16 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             otherUserId = chat.child("otherUserId").value as? String
                             otherUserImage =
                                 chat.child("otherUserImage").value as? String
-                            lastMessage = chat.child("lastMessage").value as? String
+                            val lastMessageReference = chat.child("lastMessage")
+                            val lastMessageItem = ChatMessageItem()
+                            lastMessageItem.id = lastMessageReference.child("id").value as? String
+                            lastMessageItem.text =
+                                lastMessageReference.child("text").value as? String
+                            lastMessageItem.timestamp =
+                                lastMessageReference.child("timestamp").value as? Long
+                            lastMessageItem.userId =
+                                lastMessageReference.child("userId").value as? String
+                            lastMessage = lastMessageItem
                             messages = messagesList
                         }
 
@@ -251,7 +260,6 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         otherUserId = chat.child("otherUserId").value as? String
                         otherUserImage =
                             chat.child("otherUserImage").value as? String
-                        lastMessage = chat.child("lastMessage").value as? String
                         messages = messagesList
                     }
 
@@ -435,9 +443,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         .child(messageId).setValue(backMessage)
                         .addOnCompleteListener {
                             // Update last message of both users
-                            currentUserChat.updateChildren(mapOf("lastMessage" to backMessage.text))
+                            currentUserChat.updateChildren(mapOf("lastMessage" to message))
                                 .addOnCompleteListener {
-                                    otherUserChat.updateChildren(mapOf("lastMessage" to backMessage.text))
+                                    otherUserChat.updateChildren(mapOf("lastMessage" to message))
                                         .addOnCompleteListener {
                                             trySend(getResult(true)).isSuccess
                                         }

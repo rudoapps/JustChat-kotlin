@@ -1,14 +1,20 @@
 # JustChat-kotlin #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
+Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
-### What is this repository for? ###
+### Información básica ###
 
-* Quick summary
-* Version
+* Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
+  En esta guía se explicará la configuración básica para implementar e inicializar la librería.
+* Versión: 1.0
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### How do I get set up? ###
+### Requitos ###
+* Android Studio 4.0 o superior.
+* Android 6.0 o superior.
+
+### Configuración ###
 
 * Summary of set up
 * Configuration

@@ -17,7 +17,8 @@ class EventsImpl @Inject constructor(
     private val eventsUseCase: EventsUseCase,
     private val notificationsUseCase: NotificationsUseCase
 ) : Events {
-    override fun getChats(userId: String): Flow<MutableList<Chat>> {
+
+    override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
         return eventsUseCase.getChats(context.isNetworkAvailable, userId)
     }
 
