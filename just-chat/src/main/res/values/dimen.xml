@@ -19,7 +19,10 @@
     <dimen name="margin_extra">32dp</dimen>
     <dimen name="margin_extra_large">48dp</dimen>
 
+    <!-- Chat Bubbles -->
+    <dimen name="chat_bubble_corner_wide">20dp</dimen>
+    <dimen name="chat_bubble_corner_small">8dp</dimen>
+
     <!-- Miscellanea -->
     <dimen name="user_picture_size">56dp</dimen>
-
 </resources>

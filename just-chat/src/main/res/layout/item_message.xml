@@ -12,9 +12,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="@id/text_message"
-        app:layout_constraintEnd_toEndOf="@id/text_timestamp"
+        app:layout_constraintEnd_toEndOf="@id/text_message"
         app:layout_constraintStart_toStartOf="@id/text_message"
-        app:layout_constraintTop_toTopOf="@id/text_message" />
+        app:layout_constraintTop_toTopOf="@id/text_message"
+        tools:background="@drawable/background_chat_single" />
 
     <TextView
         android:id="@+id/text_message"
@@ -22,11 +23,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:autoLink="all"
-        android:paddingHorizontal="10dp"
         android:paddingVertical="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:paddingEnd="20dp"
+        tools:paddingStart="10dp"
         tools:text="Mensaje          " />
 
     <TextView
@@ -34,9 +36,10 @@
         style="@style/text_body_small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="6dp"
+        android:paddingEnd="8dp"
         android:paddingBottom="2dp"
         app:layout_constraintBottom_toBottomOf="@id/text_message"
         app:layout_constraintEnd_toEndOf="@id/text_message"
+        tools:layout_marginEnd="10dp"
         tools:text="20:15" />
 </androidx.constraintlayout.widget.ConstraintLayout>

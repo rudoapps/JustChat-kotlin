@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil.setContentView
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.bumptech.glide.Glide
@@ -91,7 +92,8 @@ class ChatActivity : AppCompatActivity() {
             stackFromEnd = true
             reverseLayout = false
         }
-        (binding.recycler.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
+        val itemAnimator = DefaultItemAnimator().apply { supportsChangeAnimations = false }
+        binding.recycler.itemAnimator = itemAnimator
         binding.recycler.setHasFixedSize(false)
     }
 
@@ -111,9 +113,11 @@ class ChatActivity : AppCompatActivity() {
                     if ((binding.recycler.layoutManager as LinearLayoutManager).findLastVisibleItemPosition() == adapter.itemCount - 2) {
                         adapter.itemCount.takeIf { it > 0 }?.let {
                             binding.recycler.scrollToPosition(it - 1)
+                            if (it > 1) adapter.notifyItemChanged(it - 2)
                         }
                     } else {
                         adapter.notifyItemInserted(adapter.itemCount - 1)
+                        if (adapter.itemCount > 1) adapter.notifyItemChanged(adapter.itemCount - 2)
                     }
                 }
             }
@@ -125,6 +129,7 @@ class ChatActivity : AppCompatActivity() {
                     adapter.submitList(messages)
                     adapter.itemCount.takeIf { it > 0 }?.let {
                         binding.recycler.scrollToPosition(it - 1)
+                        if (it > 1) adapter.notifyItemChanged(it - 2)
                     }
                 }
                 viewModel.sendNotification()
@@ -151,13 +156,14 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun loadData() {
+        viewModel.userId = userId
         intent.extras?.let {
             if (it.containsKey(CHAT)) {
                 (it.getSerializable(CHAT) as? Chat)?.let { chat ->
                     viewModel.chat = chat
                     JustChat.appPreferences?.chatId = chat.id.toString()
                     viewModel.initFlowReceiveMessage()
-                    viewModel.getMessages(chat.messages)
+                    viewModel.getMessageHistory(chat.messages)
                 }
             }
         }
