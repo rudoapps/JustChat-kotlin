@@ -466,16 +466,17 @@ class EventsRemoteDataSourceImpl @Inject constructor(
         userId: String,
         chatId: String
     ): Flow<ChatMessageItem> {
+        initFlow = true
         return channelFlow {
-            if (initFlow) {
-                initFlow = false
-            } else {
-                val query =
-                    databaseReference.child("$userId/chats/$chatId/messages")
-                        .orderByChild("serverTimestamp")
-                        .limitToLast(1)
-                query.addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(messages: DataSnapshot) {
+            val query =
+                databaseReference.child("$userId/chats/$chatId/messages")
+                    .orderByChild("serverTimestamp")
+                    .limitToLast(1)
+            query.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(messages: DataSnapshot) {
+                    if (initFlow) {
+                        initFlow = false
+                    } else {
                         val message = messages.children.firstOrNull()
                         message?.let {
                             val userMessageId = message.child("userId").value.toString()
@@ -491,11 +492,11 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             }
                         }
                     }
+                }
 
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-                })
-            }
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
             awaitClose {
                 this.channel.close()
             }
