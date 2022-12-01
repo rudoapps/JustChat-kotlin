@@ -94,7 +94,8 @@ class ChatViewModel : ViewModel() {
                     if (listIterator.hasNext() &&
                             (list[listIterator.nextIndex()].timestamp.getDate() != currentMsg.timestamp.getDate() ||
                             (list[listIterator.nextIndex()].timestamp?.minus(currentMsg.timestamp ?: 0) ?: 0) > TIME_SPAN_MILLIS)) {
-                        if (lastMsg?.position == ChatMessageItem.MessagePosition.SINGLE)
+                        if (lastMsg?.position == ChatMessageItem.MessagePosition.SINGLE ||
+                                (currentMsg.timestamp?.minus(lastMsg?.timestamp ?: 0) ?: 0) > TIME_SPAN_MILLIS)
                             ChatMessageItem.MessagePosition.SINGLE
                         else
                             ChatMessageItem.MessagePosition.BOTTOM
@@ -156,25 +157,31 @@ class ChatViewModel : ViewModel() {
                     position = ChatMessageItem.MessagePosition.SINGLE
                 })
             } else {
-                if ((message.timestamp?.minus(lastMessage.timestamp ?: 0) ?: 0) > TIME_SPAN_MILLIS) {
+                if (message.userId == lastMessage.userId) {
+                    if ((message.timestamp?.minus(lastMessage.timestamp ?: 0) ?: 0) > TIME_SPAN_MILLIS) {
+                        _messageList.value?.add(message.apply {
+                            position = ChatMessageItem.MessagePosition.SINGLE
+                        })
+                    } else {
+                        when (lastMessage.position) {
+                            ChatMessageItem.MessagePosition.SINGLE -> {
+                                lastMessage.position = ChatMessageItem.MessagePosition.TOP
+                                _messageList.value?.add(message.apply {
+                                    position = ChatMessageItem.MessagePosition.BOTTOM
+                                })
+                            }
+                            else -> { // ChatMessageItem.MessagePosition.BOTTOM
+                                lastMessage.position = ChatMessageItem.MessagePosition.MIDDLE
+                                _messageList.value?.add(message.apply {
+                                    position = ChatMessageItem.MessagePosition.BOTTOM
+                                })
+                            }
+                        }
+                    }
+                } else {
                     _messageList.value?.add(message.apply {
                         position = ChatMessageItem.MessagePosition.SINGLE
                     })
-                } else {
-                    when (lastMessage.position) {
-                        ChatMessageItem.MessagePosition.SINGLE -> {
-                            lastMessage.position = ChatMessageItem.MessagePosition.TOP
-                            _messageList.value?.add(message.apply {
-                                position = ChatMessageItem.MessagePosition.BOTTOM
-                            })
-                        }
-                        else -> { // ChatMessageItem.MessagePosition.BOTTOM
-                            lastMessage.position = ChatMessageItem.MessagePosition.MIDDLE
-                            _messageList.value?.add(message.apply {
-                                position = ChatMessageItem.MessagePosition.BOTTOM
-                            })
-                        }
-                    }
                 }
             }
         } ?: run {
