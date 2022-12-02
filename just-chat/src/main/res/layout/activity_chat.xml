@@ -23,7 +23,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
-            android:background="@color/teal_200"
+            android:background="@color/appbar"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,17 +35,18 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginStart="12dp"
-                    android:src="@color/purple_700"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:shapeAppearance="@style/circle_image_view" />
+                    app:shapeAppearance="@style/circle_image_view"
+                    tools:src="@color/out_message" />
 
                 <TextView
                     android:id="@+id/text_user"
                     style="@style/text_body_regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/text"
                     android:layout_marginStart="12dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/image_user"
@@ -91,13 +92,14 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edit_text"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="wrap_content"
                     android:hint="Mensaje"
                     android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+                    android:maxLength="2000"
                     android:maxLines="5"
-                    android:paddingTop="0dp"
-                    android:paddingBottom="0dp"
-                    android:text="@={viewModel.newMessageText}" />
+                    android:paddingVertical="8dp"
+                    android:text="@={viewModel.newMessageText}"
+                    android:textColor="@color/text" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -106,7 +108,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
-            android:background="@color/teal_700"
+            android:background="@color/send_button"
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/ic_send"

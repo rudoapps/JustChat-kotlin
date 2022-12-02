@@ -72,8 +72,8 @@ class ChatAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         private val textAppearance: TextAppearance? = null
-        private val outMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.purple_200)
-        private val inMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.teal_700)
+        private val outMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.out_message)
+        private val inMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.in_message)
         private val outMsgPaddingDp: Int = 40
         private val inMsgPaddingDp: Int = 40
         private val showMsgTime: Boolean = true

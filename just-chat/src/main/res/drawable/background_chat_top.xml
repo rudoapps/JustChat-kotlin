@@ -8,5 +8,5 @@
         android:topLeftRadius="@dimen/chat_bubble_corner_wide"
         android:topRightRadius="@dimen/chat_bubble_corner_wide" />
 
-    <solid android:color="@color/purple_200" />
+    <solid android:color="@color/out_message" />
 </shape>
