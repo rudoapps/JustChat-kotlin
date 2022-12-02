@@ -12,10 +12,6 @@ class Chat : Serializable, Comparable<Chat> {
     var userDeviceToken: String? = null
     var messages: MutableList<ChatMessageItem>? = null
 
-    fun getTimestamp(): Long {
-        return lastMessage?.timestamp ?: System.currentTimeMillis()
-    }
-
     override fun compareTo(other: Chat): Int {
 //        val currentTimestamp = getTimestamp()
 //        val otherTimestamp = other.getTimestamp()
