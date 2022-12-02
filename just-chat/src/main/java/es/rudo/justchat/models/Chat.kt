@@ -1,6 +1,7 @@
 package es.rudo.justchat.models
 
 import android.util.Log
+import es.rudo.justchat.helpers.extensions.getAllDate
 import java.io.Serializable
 
 class Chat : Serializable, Comparable<Chat> {
@@ -12,29 +13,19 @@ class Chat : Serializable, Comparable<Chat> {
     var userDeviceToken: String? = null
     var messages: MutableList<ChatMessageItem>? = null
 
+    private fun getCorrectTimestamp(): Long {
+        return lastMessage?.timestamp ?: 315529200
+    }
+
     override fun compareTo(other: Chat): Int {
-        // TODO: Currently working
-//        val currentTimestamp = getTimestamp()
-//        val otherTimestamp = other.getTimestamp()
-//        return if (currentTimestamp > otherTimestamp) {
-//            -1
-//        } else if (currentTimestamp < otherTimestamp) {
-//            1
-//        } else {
-//            0
-//        }
-        lastMessage?.timestamp?.let { currentTimestamp ->
-            other.lastMessage?.timestamp?.let { otherTimestamp ->
-                return if (currentTimestamp > otherTimestamp) {
-                    Log.d("_TAG_", "")
-                    -1
-                } else if (currentTimestamp < otherTimestamp) {
-                    1
-                } else {
-                    1
-                }
-            }
+        val currentTimestamp = getCorrectTimestamp()
+        val otherTimestamp = other.getCorrectTimestamp()
+        return if (currentTimestamp > otherTimestamp) {
+            -1
+        } else if (currentTimestamp < otherTimestamp) {
+            1
+        } else {
+            0
         }
-        return 1
     }
 }
