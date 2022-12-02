@@ -15,7 +15,7 @@ class ChatListViewModel : ViewModel() {
 
     fun getChats() {
         viewModelScope.launch(Dispatchers.IO) {
-            JustChat.events?.getChats(userId.toString())?.collect {
+            JustChat.events?.initFlowGetChats(userId.toString())?.collect {
                 withContext(Dispatchers.Main) {
                     chats.value = it
                 }

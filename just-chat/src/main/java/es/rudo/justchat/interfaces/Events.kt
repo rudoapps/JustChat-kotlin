@@ -5,7 +5,7 @@ import es.rudo.justchat.models.results.ResultInfo
 import kotlinx.coroutines.flow.Flow
 
 interface Events {
-    fun getChats(userId: String): Flow<MutableList<Chat>>
+    fun initFlowGetChats(userId: String): Flow<MutableList<Chat>>
     fun getChat(userId: String, chatId: String): Flow<Chat>
     fun getGroups(userId: String): Flow<MutableList<Group>>
     fun getChatMessages(

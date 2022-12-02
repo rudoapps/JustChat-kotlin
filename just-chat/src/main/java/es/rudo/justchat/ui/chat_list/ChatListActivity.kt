@@ -9,6 +9,7 @@ import es.rudo.justchat.R
 import es.rudo.justchat.databinding.ActivityChatListBinding
 import es.rudo.justchat.helpers.Constants.CHAT
 import es.rudo.justchat.ui.chat.ChatActivity
+import java.util.*
 
 class ChatListActivity : AppCompatActivity() {
 
@@ -48,6 +49,8 @@ class ChatListActivity : AppCompatActivity() {
     private fun setUpObservables() {
         viewModel.chats.observe(this) {
             if (!it.isNullOrEmpty()) {
+                // TODO: Currently working
+//                adapter.submitList(it.sorted())
                 adapter.submitList(it)
             }
         }

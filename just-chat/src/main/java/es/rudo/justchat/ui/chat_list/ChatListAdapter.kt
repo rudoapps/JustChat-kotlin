@@ -18,6 +18,7 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import es.rudo.justchat.R
 import es.rudo.justchat.databinding.ItemChatBinding
+import es.rudo.justchat.helpers.extensions.getTime
 import es.rudo.justchat.models.Chat
 
 class ChatListAdapter(
@@ -40,6 +41,8 @@ class ChatListAdapter(
             clickListener: (Chat) -> Unit
         ) {
             binding.chat = item
+            binding.textHour.text = item.lastMessage?.timestamp.getTime()
+            binding.textLastMessage.text = item.lastMessage?.text ?: ""
             binding.chatContainer.setOnClickListener {
                 clickListener.invoke(item)
             }
