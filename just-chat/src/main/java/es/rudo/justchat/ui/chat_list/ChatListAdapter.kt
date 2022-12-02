@@ -69,7 +69,7 @@ class ChatListAdapter(
                         p2: Target<Drawable>?,
                         p3: Boolean
                     ): Boolean {
-                        Log.d("_TAG_", "Fail: $p0")
+                        Log.d("_TAG_", "Glide load chat list image fail: $p0")
                         return false
                     }
 
@@ -80,7 +80,7 @@ class ChatListAdapter(
                         p3: DataSource?,
                         p4: Boolean
                     ): Boolean {
-                        Log.d("_TAG_", "Correct")
+                        Log.d("_TAG_", "Glide load chat list image correct")
                         return false
                     }
                 })

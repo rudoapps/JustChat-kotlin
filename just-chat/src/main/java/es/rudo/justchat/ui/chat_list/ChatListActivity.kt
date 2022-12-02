@@ -49,9 +49,7 @@ class ChatListActivity : AppCompatActivity() {
     private fun setUpObservables() {
         viewModel.chats.observe(this) {
             if (!it.isNullOrEmpty()) {
-                // TODO: Currently working
-//                adapter.submitList(it.sorted())
-                adapter.submitList(it)
+                adapter.submitList(it.sorted())
             }
         }
     }
