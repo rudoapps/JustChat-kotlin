@@ -13,6 +13,7 @@ class Chat : Serializable, Comparable<Chat> {
     var messages: MutableList<ChatMessageItem>? = null
 
     override fun compareTo(other: Chat): Int {
+        // TODO: Currently working
 //        val currentTimestamp = getTimestamp()
 //        val otherTimestamp = other.getTimestamp()
 //        return if (currentTimestamp > otherTimestamp) {
