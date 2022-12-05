@@ -4,17 +4,17 @@ Esta es una librería la cual tiene la finalidad de abstraer la parte visual de 
 Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
 ## Índice ##
-1. [Información básica]()
-2. [Requisitos]()
-3. [Implementación]()
-4. [Inicialización]()
-5. [Información básica]()
-6. [Abrir chat individual o lista de chats]()
-> + [Lista de chats]()
-> + [Chat individual]()
-7. [Notificaciones (beta)]()
-> + [Servicio de notificaciones]()
-> + [Abrir chat desde una notificación](#open-chat-from-notification)
+* [Información básica]()
+* [Requisitos]()
+* [Implementación]()
+* [Inicialización]()
+* [Información básica]()
+* [Abrir chat individual o lista de chats]()
+  * [Lista de chats]()
+  * [Chat individual]()
+* [Notificaciones (beta)]()
+  * [Servicio de notificaciones]()
+  * [Abrir chat desde una notificación](#abrir-chat-desde-una-notificación)
 
 ## Información básica ##
 
@@ -216,7 +216,7 @@ class NotificationService : FirebaseMessagingService() {
 }
 </code></pre>
 
-### Abrir chat desde una notificación ###]
+### Abrir chat desde una notificación ###
 #open-chat-from-notification
 Para abrir un chat desde una notificación, tendremos que obtener los datos del propio chat desde la notificación, y crear un objeto <code>Chat</code> proporcionado por la librería:
 <pre><code>
