@@ -104,7 +104,7 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 ##### Nota: La función de grupos aún está en fase beta #####
 
 ## Notificaciones (beta) ##
-La siguiente funcionalidad se puede implementar desde back por completo o desde la app, para implementarlo desde la app sigue los siguientes pasos.<br>
+La siguiente funcionalidad se puede implementar desde back por completo o desde la app, para implementarlo desde la app sigue los siguientes pasos. Se ha tenido en cuenta que para este tipo de notificaciones se usará Firebase.<br>
 Si queremos mostrar las notificaciones se tendrá que utilizar las mismas preferencias que la librería:
 
 <pre><code>
@@ -202,7 +202,7 @@ class NotificationService : FirebaseMessagingService() {
 }
 </code></pre>
 
-### Abrir chat desde la notificación ###
+### Abrir chat desde una notificación ###
 Para abrir un chat desde una notificación, tendremos que obtener los datos del propio chat desde la notificación, y crear un objeto <code>Chat</code> proporcionado por la librería:
 <pre><code>
 val chatId = message.data["chat_id"]
