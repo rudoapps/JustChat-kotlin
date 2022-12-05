@@ -104,7 +104,9 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 ##### Nota: La función de grupos aún está en fase beta #####
 
 ## Notificaciones (beta) ##
+La siguiente funcionalidad se puede implementar desde back por completo o desde la app, para implementarlo desde la app sigue los pasos de debajo.
 Para mostrar las notificaciones se tendrá que utilizar las mismas preferencias que la librería:
+
 <pre><code>
 @Singleton
 @Provides
@@ -112,8 +114,10 @@ fun provideSharedPreferences(@ApplicationContext context: Context): SharedPrefer
     return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
 }
 </code></pre>
+
 Donde <code>PREFERENCES</code> viene de la propia librería.<br>
 Y en la implementación de la intefaz mencionada con anterioridad <code>Events</code>, se implementará la notificación de la siguiente forma:
+
 <pre><code>
 override suspend fun sendNotification(
     userId: String,
@@ -142,6 +146,7 @@ La forma anterior se usará si se quiere hacer una llamada a Firebase para envia
 
 ### Servicio de notificaciones ###
 Para el servicio de notificaciones se puede implementar de la siguiente forma y teniendo en cuenta de usar siempre las preferencias de la librería:
+
 <pre><code>
 class NotificationService : FirebaseMessagingService() {
 
@@ -174,12 +179,8 @@ class NotificationService : FirebaseMessagingService() {
             userDeviceToken = chatDestinationUserDeviceToken
         }
 
-        val intent = if (MainActivity.getFirebaseAuth() == null) {
-            Intent(applicationContext, MainActivity::class.java)
-        } else {
-            Intent(applicationContext, ChatActivity::class.java).apply {
-                putExtra(Constants.CHAT, chat)
-            }
+        val intent = Intent(applicationContext, ChatActivity::class.java).apply {
+            putExtra(Constants.CHAT, chat)
         }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -200,3 +201,5 @@ class NotificationService : FirebaseMessagingService() {
     override fun onMessageSent(msgId: String) {}
 }
 </code></pre>
+
+### Abrir chat desde la notificación ###
