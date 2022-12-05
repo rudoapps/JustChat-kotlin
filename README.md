@@ -8,7 +8,6 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 * [Requisitos](#requisitos)
 * [Implementación](#implementación)
 * [Inicialización](#inicialización)
-* [Información básica](#información-básica)
 * [Abrir lista de chats o chat individual](#abrir-lista-de-chats-o-chat-individual)
   * [Lista de chats](#lista-de-chats)
   * [Chat individual](#chat-individual)
