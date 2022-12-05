@@ -10,24 +10,19 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 * Versión: 1.0
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### Requitos ###
+### Requisitos ###
 * Android Studio 4.0 o superior.
 * Android 6.0 o superior.
 
-### Configuración ###
+### Implementación ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+* Descargar la librería, y desde Android Studio pulsar en <b>File > Project Structure > Dependencies > All Dependencies ><br> + > Add Jar/Aar Dependency > 'Seleccionar la librería a incluir'</b>
+* Implementarla en el <b>gradle.app</b>:<br><br>
+<pre><code>implementation project(path: ':just-chat')</code></pre>
 
-### Contribution guidelines ###
+### Inicialización ###
 
-* Writing tests
-* Code review
-* Other guidelines
+Para inicializar la librería JustChat, utilizaremos la clase
 
 ### Who do I talk to? ###
 
