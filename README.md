@@ -15,8 +15,6 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
   * [Servicio de notificaciones](#servicio-de-notificaciones)
   * [Abrir chat desde una notificación](#abrir-chat-desde-una-notificación)
 
-![text](images/library-one.png)
-
 ## Información básica ##
 
 * Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
@@ -30,6 +28,9 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 ## Implementación ##
 
 * Descargar la librería, y desde Android Studio pulsar en <b>File > Project Structure > Dependencies > All Dependencies > + > Add Jar/Aar Dependency > 'Seleccionar la librería a incluir'</b>
+![128](images/library-one.png)
+![128](images/library-two.png)
+![128](images/library-three.png)
 * Implementarla en el <b>gradle.app</b>:
 <pre>implementation project(path: ':just-chat')</pre>
 
