@@ -138,3 +138,77 @@ override suspend fun sendNotification(
     }
 }
 </code></pre>
+La forma anterior se usará si se quiere hacer una llamada a Firebase para enviar la notificación a x dispositivo. En caso de ir por back, no haría falta tal implementación.
+
+### Servicio de notificaciones ###
+Para el servicio de notificaciones se puede implementar de la siguiente forma y teniendo en cuenta de usar siempre las preferencias de la librería:
+<pre><code>
+class NotificationService : FirebaseMessagingService() {
+
+    override fun onNewToken(token: String) {}
+
+    override fun onMessageReceived(message: RemoteMessage) {
+        val preferences =
+            applicationContext.getSharedPreferences(PREFERENCES, MODE_PRIVATE)
+        val chatId = message.data["chat_id"]
+        val chatIdPreferences = preferences.getString(CHAT_ID_PREFERENCES, "")
+        val normalizedChatIdPreferences = chatIdPreferences?.removePrefix("\"")?.removeSuffix("\"")
+        if (normalizedChatIdPreferences == chatId) { // If user is in the same chat, avoid sending notification
+            return
+        } else {
+            val chatDestinationUserImage = message.data["chat_destination_user_image"]
+            chatDestinationUserImage.downloadImageFromUrl(object : ImageInterface {
+                override fun onImageSuccess(bitmap: Bitmap) {
+                    createNotification(message, bitmap)
+                }
+
+                override fun onImageError(exception: Exception) {
+                    createNotification(message)
+                }
+            })
+        }
+    }
+
+    private fun createNotification(message: RemoteMessage, bitmap: Bitmap? = null) {
+        val chatId = message.data["chat_id"]
+        val chatMessage = message.data["chat_message"]
+        val chatDestinationUserName = message.data["chat_destination_user_name"]
+        val chatDestinationUserId = message.data["chat_destination_user_id"]
+        val chatDestinationUserImage = message.data["chat_destination_user_image"]
+        val chatDestinationUserDeviceToken = message.data["destination_user_device_token"]
+
+        val chat = Chat().apply {
+            id = chatId
+            name = chatDestinationUserName
+            otherUserId = chatDestinationUserId
+            otherUserImage = chatDestinationUserImage
+            userDeviceToken = chatDestinationUserDeviceToken
+        }
+
+        val intent = if (MainActivity.getFirebaseAuth() == null) {
+            Intent(applicationContext, MainActivity::class.java)
+        } else {
+            Intent(applicationContext, ChatActivity::class.java).apply {
+                putExtra(Constants.CHAT, chat)
+            }
+        }
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+         val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.bell)
+                .setLargeIcon(largeIcon)
+                .setContentTitle(chatDestinationUserName)
+                .setContentText(chatMessage)
+                .setAutoCancel(true)
+                .setSound(notificationSoundUri)
+                .setContentIntent(pendingIntent)
+
+        notificationManager.notify(notificationId, notificationBuilder.build())
+    }
+
+    override fun onMessageSent(msgId: String) {}
+}
+</code></pre>
