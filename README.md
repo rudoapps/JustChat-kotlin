@@ -152,24 +152,14 @@ class NotificationService : FirebaseMessagingService() {
             applicationContext.getSharedPreferences(PREFERENCES, MODE_PRIVATE)
         val chatId = message.data["chat_id"]
         val chatIdPreferences = preferences.getString(CHAT_ID_PREFERENCES, "")
-        val normalizedChatIdPreferences = chatIdPreferences?.removePrefix("\"")?.removeSuffix("\"")
-        if (normalizedChatIdPreferences == chatId) { // If user is in the same chat, avoid sending notification
+        if (chatId == chatIdPreferences) {
             return
         } else {
-            val chatDestinationUserImage = message.data["chat_destination_user_image"]
-            chatDestinationUserImage.downloadImageFromUrl(object : ImageInterface {
-                override fun onImageSuccess(bitmap: Bitmap) {
-                    createNotification(message, bitmap)
-                }
-
-                override fun onImageError(exception: Exception) {
-                    createNotification(message)
-                }
-            })
+            createNotification(message)
         }
     }
 
-    private fun createNotification(message: RemoteMessage, bitmap: Bitmap? = null) {
+    private fun createNotification(message: RemoteMessage) {
         val chatId = message.data["chat_id"]
         val chatMessage = message.data["chat_message"]
         val chatDestinationUserName = message.data["chat_destination_user_name"]
