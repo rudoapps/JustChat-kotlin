@@ -116,7 +116,7 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
     justChat.openChat("RUEUW483832NDNDA")
 }</code></pre>
 
-##### Nota: La función de grupos aún está en fase beta #####
+<b>Nota: La función de grupos aún está en fase beta.</b>
 
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
