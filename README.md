@@ -148,8 +148,7 @@ class NotificationService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {}
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val preferences =
-            applicationContext.getSharedPreferences(PREFERENCES, MODE_PRIVATE)
+        val preferences = applicationContext.getSharedPreferences(PREFERENCES, MODE_PRIVATE)
         val chatId = message.data["chat_id"]
         val chatIdPreferences = preferences.getString(CHAT_ID_PREFERENCES, "")
         if (chatId == chatIdPreferences) {
@@ -183,8 +182,7 @@ class NotificationService : FirebaseMessagingService() {
             }
         }
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
          val notificationBuilder: NotificationCompat.Builder =
             NotificationCompat.Builder(this, CHANNEL_ID)
