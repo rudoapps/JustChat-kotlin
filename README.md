@@ -3,12 +3,24 @@
 Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
 Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
+## Índice ##
+* [Información básica]()
+* [Requisitos]()
+* [Implementación]()
+* [Inicialización]()
+* [Información básica]()
+* [Abrir chat individual o lista de chats]()
+* [Lista de chats]()
+* [Chat individual]()
+* [Notificaciones (beta)]()
+* [Servicio de notificaciones]()
+* [Abrir chat desde una notificación]()
+
 ## Información básica ##
 
 * Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
   En esta guía se explicará la configuración básica para implementar e inicializar la librería.
 * Versión: 1.0
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ## Requisitos ##
 * Android Studio 4.0 o superior.
@@ -90,6 +102,7 @@ class EventsImpl @Inject constructor(
 </code></pre>
 
 ## Abrir chat individual o lista de chats ##
+JustChat te permite abrir tanto una lista de chats del propio usuario, como un chat individual.
 
 ### Lista de chats ###
 Para abrir un chat individual, utilizaremos el método <code>justChat.openChatLists()</code> de la librería.
