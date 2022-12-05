@@ -33,7 +33,7 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 ![library-three.png](images/library-three.png)<br>
 * Implementarla en el <b>gradle.app</b>:
 <pre>implementation project(path: ':just-chat')</pre>
-Para más información visita el siguiente [enlace](https://developer.android.com/studio/projects/android-library?hl=es-419#psd-add-library-dependency)
+Para más información visita el siguiente [enlace](https://developer.android.com/studio/projects/android-library?hl=es-419#psd-add-library-dependency).
 
 ## Inicialización ##
 
