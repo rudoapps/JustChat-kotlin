@@ -32,7 +32,7 @@ Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de
 Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
 
 En <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
-<code>
+<pre><code>
 class EventsImpl @Inject constructor(
     private val context: Context,
     private val eventsUseCase: EventsUseCase,
@@ -85,7 +85,7 @@ class EventsImpl @Inject constructor(
         notificationsUseCase.sendNotification(notification)
     }
 }
-</code>
+</pre></code>
 
 ## Abrir chat individual o lista de chats ##
 
