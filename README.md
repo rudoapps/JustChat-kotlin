@@ -3,24 +3,24 @@
 Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
 Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
-### Información básica ###
+## Información básica ##
 
 * Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
   En esta guía se explicará la configuración básica para implementar e inicializar la librería.
 * Versión: 1.0
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### Requisitos ###
+## Requisitos ##
 * Android Studio 4.0 o superior.
 * Android 6.0 o superior.
 
-### Implementación ###
+## Implementación ##
 
 * Descargar la librería, y desde Android Studio pulsar en <b>File > Project Structure > Dependencies > All Dependencies > + > Add Jar/Aar Dependency > 'Seleccionar la librería a incluir'</b>
 * Implementarla en el <b>gradle.app</b>:
 <pre>implementation project(path: ':just-chat')</pre>
 
-### Inicialización ###
+## Inicialización ##
 
 Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de la librería de la siguiente forma:
 <pre>JustChat.Builder()
@@ -32,7 +32,8 @@ Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de
 Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
 
 En <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
-<pre>class EventsImpl @Inject constructor(
+<code>
+class EventsImpl @Inject constructor(
     private val context: Context,
     private val eventsUseCase: EventsUseCase,
     private val notificationsUseCase: NotificationsUseCase
@@ -84,12 +85,12 @@ En <code>justChat.setEventsImplementation()</code> le pasaremos la implementaci�
         notificationsUseCase.sendNotification(notification)
     }
 }
-</code></code>
+</code>
 
-### Abrir chat individual o lista de chats ###
+## Abrir chat individual o lista de chats ##
 
-## Lista de chats ##
+### Lista de chats ###
 Para abrir un chat individual, utilizaremos el método <code>justChat.openChatLists()</code> de la librería.
 
-## Chat individual ##
+### Chat individual ###
 Si por el contrario quieres abrir un chat individual, tendrás que utilizar el método <code>justChat.openChat(chatId)</code>
