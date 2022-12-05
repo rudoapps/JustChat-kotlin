@@ -98,3 +98,5 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 <pre><code>lifecycleScope.launch(Dispatchers.IO) {
     justChat.openChat("RUEUW483832NDNDA")
 }</code></pre>
+
+##### Nota: La función de grupos aún está en fase beta #####
