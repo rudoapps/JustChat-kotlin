@@ -4,15 +4,15 @@ Esta es una librería la cual tiene la finalidad de abstraer la parte visual de 
 Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
 ## Índice ##
-- [Información básica]()
-- [Requisitos]()
-- [Implementación]()
-- [Inicialización]()
-- [Información básica]()
-- [Abrir chat individual o lista de chats]()
+1. [Información básica]()
+2. [Requisitos]()
+3. [Implementación]()
+4. [Inicialización]()
+5. [Información básica]()
+6. [Abrir chat individual o lista de chats]()
 > + [Lista de chats]()
 > + [Chat individual]()
-- [Notificaciones (beta)]()
+7. [Notificaciones (beta)]()
 > + [Servicio de notificaciones]()
 > + [Abrir chat desde una notificación]()
 
