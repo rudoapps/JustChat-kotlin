@@ -18,21 +18,21 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
 * Descargar la librería, y desde Android Studio pulsar en <b>File > Project Structure > Dependencies > All Dependencies > + > Add Jar/Aar Dependency > 'Seleccionar la librería a incluir'</b>
 * Implementarla en el <b>gradle.app</b>:
-<pre><code>implementation project(path: ':just-chat')</code></pre>
+<pre>implementation project(path: ':just-chat')</pre>
 
 ### Inicialización ###
 
 Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de la librería de la siguiente forma:
-<pre><code>JustChat.Builder()
+<pre>JustChat.Builder()
     .provideContext(this)
     .setUserId(firebaseAuth.currentUser?.uid)
     .setEventsImplementation(events)
-    .build()</code></pre>
+    .build()</pre>
 
 Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
 
 En <code>setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
-<pre><code>class EventsImpl @Inject constructor(
+<pre>class EventsImpl @Inject constructor(
     private val context: Context,
     private val eventsUseCase: EventsUseCase,
     private val notificationsUseCase: NotificationsUseCase
@@ -84,7 +84,7 @@ En <code>setEventsImplementation()</code> le pasaremos la implementación con la
         
       notificationsUseCase.sendNotification(notification)
     }
-}</pre></code>
+}</code>
 
 ### Who do I talk to? ###
 
