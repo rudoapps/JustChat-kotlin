@@ -10,11 +10,11 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 * [Inicialización]()
 * [Información básica]()
 * [Abrir chat individual o lista de chats]()
-* [Lista de chats]()
-* [Chat individual]()
+* > [Lista de chats]()
+* > [Chat individual]()
 * [Notificaciones (beta)]()
-* [Servicio de notificaciones]()
-* [Abrir chat desde una notificación]()
+* > [Servicio de notificaciones]()
+* > [Abrir chat desde una notificación]()
 
 ## Información básica ##
 
