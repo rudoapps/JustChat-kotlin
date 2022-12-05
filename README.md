@@ -203,7 +203,7 @@ class NotificationService : FirebaseMessagingService() {
 </code></pre>
 
 ### Abrir chat desde la notificación ###
-Para abrir un chat desde una notificación tendremos que obtener los datos del propio chat desde la notificación y crear un objeto <code>Chat</code> proporcionado por la librería:
+Para abrir un chat desde una notificación, tendremos que obtener los datos del propio chat desde la notificación, y crear un objeto <code>Chat</code> proporcionado por la librería:
 <pre><code>
 val chatId = message.data["chat_id"]
 val chatMessage = message.data["chat_message"]
@@ -221,7 +221,7 @@ val chat = Chat().apply {
 }
 </code></pre>
 
-Posteriormente utilizando la constante <code>CHAT</code> proporcionada por la librería, abriremos la pantalla de <code>ChatActivity</code> porporcionada también por lam librería, pasándole el chat creado en el paso anterior:
+Posteriormente utilizando la constante <code>CHAT</code> proporcionada por la librería, abriremos la pantalla de <code>ChatActivity</code> porporcionada también por la librería, pasándole el chat creado en el paso anterior:
 <pre><code>
 Intent(applicationContext, ChatActivity::class.java).apply {
     putExtra(Constants.CHAT, chat)
