@@ -24,10 +24,10 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
 Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de la librería de la siguiente forma:
 <pre><code>JustChat.Builder()
-              .provideContext(this)
-              .setUserId(firebaseAuth.currentUser?.uid)
-              .setEventsImplementation(events)
-              .build()</code></pre>
+    .provideContext(this)
+    .setUserId(firebaseAuth.currentUser?.uid)
+    .setEventsImplementation(events)
+    .build()</code></pre>
 
 ### Who do I talk to? ###
 
