@@ -142,7 +142,7 @@ override suspend fun sendNotification(
     }
 }
 </code></pre>
-La forma anterior se usará si se quiere hacer una llamada a Firebase para enviar la notificación a x dispositivo. En caso de ir por back, no haría falta tal implementación.
+La forma anterior se usará si se quiere hacer una llamada a Firebase para enviar la notificación a 'x' dispositivo. En caso de ir por back, no haría falta tal implementación.
 
 ### Servicio de notificaciones ###
 Para el servicio de notificaciones se puede implementar de la siguiente forma y teniendo en cuenta de usar siempre las preferencias de la librería:
