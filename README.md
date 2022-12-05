@@ -33,7 +33,7 @@ JustChat.Builder()
 
 Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
 
-En <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
+En <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
 <pre><code>
 class EventsImpl @Inject constructor(
     private val context: Context,
@@ -105,7 +105,7 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar desde back por completo o desde la app, para implementarlo desde la app sigue los siguientes pasos.
-<br><b>Nota</b>: Se ha utilizado Firebase como método estándar para enviar y recibir notificaciones.<br>
+<br><b>Nota</b>: Se ha utilizado Firebase como método estándar para enviar y recibir notificaciones.<br><br>
 Si queremos mostrar las notificaciones se tendrá que utilizar las mismas preferencias que la librería:
 
 <pre><code>
@@ -116,7 +116,7 @@ fun provideSharedPreferences(@ApplicationContext context: Context): SharedPrefer
 }
 </code></pre>
 
-Donde <code>PREFERENCES</code> viene de la propia librería.<br>
+Donde <code>PREFERENCES</code> viene de la propia librería.<br><br>
 Y en la implementación de la intefaz mencionada con anterioridad <code>Events</code>, se implementará la notificación de la siguiente forma:
 
 <pre><code>
