@@ -15,6 +15,8 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
   * [Servicio de notificaciones](#servicio-de-notificaciones)
   * [Abrir chat desde una notificación](#abrir-chat-desde-una-notificación)
 
+![text](images/library-one.png)
+
 ## Información básica ##
 
 * Esta es una librería la cual tiene la finalidad de abstraer la parte visual de un chat en una aplicación.<br>
