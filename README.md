@@ -81,8 +81,7 @@ En <code>setEventsImplementation()</code> le pasaremos la implementación con la
         chat: Chat?,
         message: String?
     ) {
-        
-      notificationsUseCase.sendNotification(notification)
+        notificationsUseCase.sendNotification(notification)
     }
 }</code>
 
