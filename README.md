@@ -93,4 +93,8 @@ class EventsImpl @Inject constructor(
 Para abrir un chat individual, utilizaremos el método <code>justChat.openChatLists()</code> de la librería.
 
 ### Chat individual ###
-Si por el contrario quieres abrir un chat individual, tendrás que utilizar el método <code>justChat.openChat(chatId)</code>
+Si por el contrario quieres abrir un chat individual, tendrás que utilizar el método <code>justChat.openChat(chatId)</code>.
+Este método debe lanzarse dentro de una corutina y puede lanzar una excepción tipo <code>ChatNotFound</code> ya que puede ocurrir que ese chat no exista.
+<code>lifecycleScope.launch(Dispatchers.IO) {
+    justChat.openChat("RUEUW483832NDNDA")
+}</code>
