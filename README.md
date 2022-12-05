@@ -104,7 +104,8 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 ##### Nota: La función de grupos aún está en fase beta #####
 
 ## Notificaciones (beta) ##
-La siguiente funcionalidad se puede implementar desde back por completo o desde la app, para implementarlo desde la app sigue los siguientes pasos. Se ha tenido en cuenta que para este tipo de notificaciones se usará Firebase.<br>
+La siguiente funcionalidad se puede implementar desde back por completo o desde la app, para implementarlo desde la app sigue los siguientes pasos.
+<br><b>Nota</b>: Se ha utilizado Firebase como método estándar para enviar y recibir notificaciones.<br>
 Si queremos mostrar las notificaciones se tendrá que utilizar las mismas preferencias que la librería:
 
 <pre><code>
