@@ -4,16 +4,16 @@ Esta es una librería la cual tiene la finalidad de abstraer la parte visual de 
 Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
 ## Índice ##
-* [Información básica]()
-* [Requisitos]()
-* [Implementación]()
-* [Inicialización]()
-* [Información básica]()
-* [Abrir chat individual o lista de chats]()
-  * [Lista de chats]()
-  * [Chat individual]()
-* [Notificaciones (beta)]()
-  * [Servicio de notificaciones]()
+* [Información básica](#información-básica)
+* [Requisitos](#requisitos)
+* [Implementación](#implementación)
+* [Inicialización](#inicialización)
+* [Información básica](#información-básica)
+* [Abrir lista de chats o chat individual](#abrir-lista-de-chats-o-chat-individual)
+  * [Lista de chats](#lista-de-chats)
+  * [Chat individual](#chat-individual)
+* [Notificaciones (beta)](#notificaciones-beta)
+  * [Servicio de notificaciones](#servicio-de-notificaciones)
   * [Abrir chat desde una notificación](#abrir-chat-desde-una-notificación)
 
 ## Información básica ##
@@ -101,7 +101,7 @@ class EventsImpl @Inject constructor(
 }
 </code></pre>
 
-## Abrir chat individual o lista de chats ##
+## Abrir lista de chats o chat individual ##
 JustChat te permite abrir tanto una lista de chats del propio usuario, como un chat individual.
 
 ### Lista de chats ###
