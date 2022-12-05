@@ -27,7 +27,7 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 
 ## Implementación ##
 
-* Descargar la librería, y desde Android Studio pulsar en <b>File > Project Structure > Dependencies > All Dependencies > + > JAR/AAR Dependency > 'Seleccionar la librería a incluir'</b><br>
+* Descargar la librería, y desde Android Studio pulsar en <b>File > Project Structure > Dependencies > All Dependencies > + > JAR/AAR Dependency > 'Seleccionar la librería a incluir'</b><br><br><br>
 ![library-one.png](images/library-one.png)<br>
 ![images/library-two.png](images/library-two.png)<br>
 ![library-three.png](images/library-three.png)<br>
