@@ -23,11 +23,13 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 ## Inicialización ##
 
 Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de la librería de la siguiente forma:
-<pre>JustChat.Builder()
+<pre><code>
+JustChat.Builder()
     .provideContext(this)
     .setUserId(firebaseAuth.currentUser?.uid)
     .setEventsImplementation(events)
-    .build()</pre>
+    .build()
+</code></pre>
 
 Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
 
@@ -85,7 +87,7 @@ class EventsImpl @Inject constructor(
         notificationsUseCase.sendNotification(notification)
     }
 }
-</pre></code>
+</code></pre>
 
 ## Abrir chat individual o lista de chats ##
 
@@ -100,3 +102,39 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 }</code></pre>
 
 ##### Nota: La función de grupos aún está en fase beta #####
+
+## Notificaciones (beta) ##
+Para mostrar las notificaciones se tendrá que utilizar las mismas preferencias que la librería:
+<pre><code>
+@Singleton
+@Provides
+fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences? {
+    return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
+}
+</code></pre>
+Donde <code>PREFERENCES</code> viene de la propia librería.<br>
+Y en la implementación de la intefaz mencionada con anterioridad <code>Events</code>, se implementará la notificación de la siguiente forma:
+<pre><code>
+override suspend fun sendNotification(
+    userId: String,
+    chat: Chat?,
+    message: String?
+) {
+    eventsUseCase.getCurrentUser(context.isNetworkAvailable, userId).collect {
+        val dataNotification = DataNotification(
+            chatId = chat?.id.toString(),
+            chatDestinationUserName = it.userName.toString(),
+            chatDestinationUserId = it.userId.toString(),
+            chatDestinationUserImage = it.userPhoto.toString(),
+            destinationUserDeviceToken = it.userDeviceToken.toString(),
+            chatMessage = message.toString()
+        )
+        val notification = Notification(
+            to = chat?.userDeviceToken.toString(),
+            data = dataNotification,
+            priority = 10
+        )
+        notificationsUseCase.sendNotification(notification)
+    }
+}
+</code></pre>
