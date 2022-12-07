@@ -143,7 +143,13 @@ override fun getChatMessages(
 </code></pre>
 
 ### Obtener información de un usuario ###
-Para que JustChat pueda funcionar correctamente, necesit
+Para obtener información de un usuario, sea para mostrar sus datos o para enviar una notificación, hará falta la implementación del método 
+<pre><code>getCurrentUser(userId): Flow<UserData></code></pre>, un ejemplo de implementación sería el siguiente:
+<pre><code>
+override fun getCurrentUser(userId: String): Flow<UserData> {
+    return eventsUseCase.getCurrentUser(context.isNetworkAvailable, userId)
+}
+</code></pre>
 
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
