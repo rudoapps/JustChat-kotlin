@@ -151,6 +151,19 @@ override fun getCurrentUser(userId: String): Flow<UserData> {
 }
 </code></pre>
 
+### Envío de un mensaje ###
+Como toda app o librería de chat, se va a necesitar de un método para enviar los mensajes, para ello se utilizará el método 
+<code>sendMessage(chatInfo, message): Flow<ResultInfo></code> la cual se puede implementar de la siguiente forma:
+<pre><code>
+override fun sendMessage(
+    chatInfo: ChatInfo,
+    message: ChatMessageItem
+): Flow<ResultInfo> {
+    return eventsUseCase.sendMessage(context.isNetworkAvailable, chatInfo, message)
+}
+</code></pre>
+El resultado que devuelve es una excepción en caso de que haya ocurrido algo, o un true en caso de que todo haya ido correctamente.
+
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
 <br><b>Nota</b>: Se ha utilizado Firebase como método estándar para enviar y recibir notificaciones.<br><br>
