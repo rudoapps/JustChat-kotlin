@@ -143,7 +143,7 @@ override fun getChatMessages(
 </code></pre>
 
 ### Obtener información de un usuario ###
-Para obtener información de un usuario, sea para mostrar sus datos o para enviar una notificación, hará falta la implementación del método 
+Para obtener información de un usuario, sea para mostrar sus datos o para enviar una notificación, se necesitará la implementación del método 
 <pre><code>getCurrentUser(userId): Flow<UserData></code></pre>, un ejemplo de implementación sería el siguiente:
 <pre><code>
 override fun getCurrentUser(userId: String): Flow<UserData> {
