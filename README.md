@@ -123,7 +123,7 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 Los siguientes métodos requieren de una implementación, en caso contrario la librería no funcionará.
 
 ### Obtener una lista de chats ###
-JustChat automáticamente crea un flujo el cual permite estar a la escucha de nuevos chats '<pre><code>initFlowGetChats(userId): Flow<MutableList<Chat>></code></pre>', este flujo se utiliza por defecto de la lista de chats, y puedes implementarlo muy fácilmente como en el siguiente ejemplo:
+JustChat automáticamente crea un flujo el cual permite estar a la escucha de nuevos chats <code>initFlowGetChats(userId): Flow<MutableList<Chat>></code>, este flujo se utiliza por defecto de la lista de chats, y puedes implementarlo muy fácilmente como en el siguiente ejemplo:
 <pre><code>
 override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
     return eventsUseCase.getChats(context.isNetworkAvailable, userId)
@@ -131,7 +131,7 @@ override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
 </code></pre>
 
 ### Obtener los mensajes de un chat ###
-Para poder chatear con un usuario primero se tienen que cargar los mensajes del propio chat, y para ello JustChat necesitará la implementación del método '<pre><code>fun getChatMessages(userId, chatId, page): Flow<MutableList<ChatMessageItem>></code></pre>'. Se puede implementar muy fácilmente como en el siguiente ejemplo:
+Para poder chatear con un usuario primero se tienen que cargar los mensajes del propio chat, y para ello JustChat necesitará la implementación del método <code>fun getChatMessages(userId, chatId, page): Flow<MutableList<ChatMessageItem>></code>. Se puede implementar muy fácilmente como en el siguiente ejemplo:
 override fun getChatMessages(
     userId: String,
     chatId: String,
