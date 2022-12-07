@@ -284,7 +284,6 @@ class NotificationService : FirebaseMessagingService() {
 ```
 
 ### Abrir chat desde una notificación ###
-#open-chat-from-notification
 Para abrir un chat desde una notificación, tendremos que obtener los datos del propio chat desde la notificación, y crear un objeto <code>Chat</code> proporcionado por la librería:
 ```kotlin
 val chatId = message.data["chat_id"]
