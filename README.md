@@ -119,6 +119,31 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 
 <b>Nota: La función de grupos aún está en fase beta.</b>
 
+## Implementaciones necesarias para el correcto funcionamiento de JustChat ##
+Los siguientes métodos requieren de una implementación, en caso contrario la librería no funcionará.
+
+### Obtener una lista de chats ###
+JustChat automáticamente crea un flujo el cual permite estar a la escucha de nuevos chats '<pre><code>initFlowGetChats(userId)</code></pre>', este flujo se utiliza por defecto de la lista de chats, y puedes implementarlo muy fácilmente como en el siguiente ejemplo:
+<pre><code>
+override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
+    return eventsUseCase.getChats(context.isNetworkAvailable, userId)
+}
+</code></pre>
+
+### Obtener los mensajes de un chat ###
+Para poder chatear con un usuario primero se tienen que cargar los mensajes del propio chat, y para ello JustChat necesitará la implementación del método '<pre><code>fun getChatMessages(userId, chatId, page)</code></pre>'. Se puede implementar muy fácilmente como en el siguiente ejemplo:
+override fun getChatMessages(
+    userId: String,
+    chatId: String,
+    page: Int
+): Flow<MutableList<ChatMessageItem>> {
+    return eventsUseCase.getChatMessages(context.isNetworkAvailable, userId, chatId, page)
+}
+</code></pre>
+
+### Obtener información de un usuario ###
+Para que JustChat pueda funcionar correctamente, necesit
+
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
 <br><b>Nota</b>: Se ha utilizado Firebase como método estándar para enviar y recibir notificaciones.<br><br>
