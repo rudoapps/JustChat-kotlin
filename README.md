@@ -165,7 +165,7 @@ override fun sendMessage(
 </code></pre>
 
 ### Flujo para recibir mensajes en tiempo real ###
-Para que el chat tenga un correcto funcionamiento, tiene que haber un flujo de datos contínuo que se encargue de estar a la escucha de si hay nuevos mensajes <code>initFlowReceiveMessage(userId, chatId)</code>. JustChat necesita esta implementación para que desde la pantalla de chats se obtengan los nuevos mensajes:
+Para que el chat tenga un correcto funcionamiento, tiene que haber un flujo de datos contínuo que se encargue de estar a la escucha de si hay nuevos mensajes <code>initFlowReceiveMessage(userId, chatId)</code>. JustChat necesita esta implementación para que desde la pantalla de chat se obtengan los nuevos mensajes:
 <pre><code>
 override fun initFlowReceiveMessage(
     userId: String,
