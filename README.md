@@ -123,7 +123,7 @@ Este método debe lanzarse dentro de una corutina y puede lanzar una excepción 
 Los siguientes métodos requieren de una implementación, en caso contrario la librería no funcionará.
 
 ### Obtener una lista de chats ###
-JustChat automáticamente crea un flujo el cual permite estar a la escucha de nuevos chats <code>initFlowGetChats(userId): Flow<MutableList<Chat>></code>, este flujo se utiliza por defecto de la lista de chats, y puedes implementarlo muy fácilmente como en el siguiente ejemplo:
+JustChat automáticamente crea un flujo el cual permite estar a la escucha de nuevos chats <code>initFlowGetChats(userId)</code>, este flujo se utiliza por defecto de la lista de chats, y puedes implementarlo muy fácilmente como en el siguiente ejemplo:
 <pre><code>
 override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
     return eventsUseCase.getChats(context.isNetworkAvailable, userId)
@@ -131,7 +131,8 @@ override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
 </code></pre>
 
 ### Obtener los mensajes de un chat ###
-Para poder chatear con un usuario primero se tienen que cargar los mensajes del propio chat, y para ello JustChat necesitará la implementación del método <code>fun getChatMessages(userId, chatId, page): Flow<MutableList<ChatMessageItem>></code>. Se puede implementar muy fácilmente como en el siguiente ejemplo:
+Para poder chatear con un usuario primero se tienen que cargar los mensajes del propio chat, y para ello JustChat necesitará la implementación del método 
+<code>fun getChatMessages(userId, chatId, page)</code>. Se puede implementar muy fácilmente como en el siguiente ejemplo:
 <pre><code>
 override fun getChatMessages(
     userId: String,
@@ -144,7 +145,7 @@ override fun getChatMessages(
 
 ### Obtener información de un usuario ###
 Para obtener información de un usuario, sea para mostrar sus datos o para enviar una notificación, se necesitará la implementación del método 
-<code>getCurrentUser(userId): Flow<UserData></code>, un ejemplo de implementación sería el siguiente:
+<code>getCurrentUser(userId)</code>, un ejemplo de implementación sería el siguiente:
 <pre><code>
 override fun getCurrentUser(userId: String): Flow<UserData> {
     return eventsUseCase.getCurrentUser(context.isNetworkAvailable, userId)
@@ -153,7 +154,7 @@ override fun getCurrentUser(userId: String): Flow<UserData> {
 
 ### Envío de un mensaje ###
 Como toda app o librería de chat, se va a necesitar de un método para enviar los mensajes, para ello se utilizará el método 
-<code>sendMessage(chatInfo, message): Flow<ResultInfo> </code> la cual se puede implementar de la siguiente forma:
+<code>sendMessage(chatInfo, message)</code> la cual se puede implementar de la siguiente forma:
 <pre><code>
 override fun sendMessage(
     chatInfo: ChatInfo,
@@ -162,7 +163,6 @@ override fun sendMessage(
     return eventsUseCase.sendMessage(context.isNetworkAvailable, chatInfo, message)
 }
 </code></pre>
-El resultado que devuelve es una excepción en caso de que haya ocurrido algo, o un true en caso de que todo haya ido correctamente.
 
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
