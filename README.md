@@ -132,6 +132,7 @@ override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
 
 ### Obtener los mensajes de un chat ###
 Para poder chatear con un usuario primero se tienen que cargar los mensajes del propio chat, y para ello JustChat necesitará la implementación del método <code>fun getChatMessages(userId, chatId, page): Flow<MutableList<ChatMessageItem>></code>. Se puede implementar muy fácilmente como en el siguiente ejemplo:
+<pre><code>
 override fun getChatMessages(
     userId: String,
     chatId: String,
