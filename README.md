@@ -164,6 +164,17 @@ override fun sendMessage(
 }
 </code></pre>
 
+## Flujo para recibir mensajes en tiempo real ##
+Para que el chat tenga un correcto funcionamiento, tiene que haber un flujo de datos contínuo que se encargue de estar a la escucha de si hay nuevos mensajes <code>initFlowReceiveMessage(userId, chatId)</code>. JustChat necesita esta implementación para que desde la pantalla de chats se obtengan los nuevos mensajes:
+<pre><code>
+override fun initFlowReceiveMessage(
+    userId: String,
+    chatId: String
+): Flow<ChatMessageItem> {
+    return eventsUseCase.initFlowReceiveMessage(context.isNetworkAvailable, userId, chatId)
+}
+</code></pre>
+
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
 <br><b>Nota</b>: Se ha utilizado Firebase como método estándar para enviar y recibir notificaciones.<br><br>
