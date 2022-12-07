@@ -44,13 +44,13 @@ Para más información visita el siguiente <a href="https://developer.android.co
 ## Inicialización ##
 
 Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de la librería de la siguiente forma:
-<pre><code>
+```kotlin
 JustChat.Builder()
     .provideContext(this)
     .setUserId(firebaseAuth.currentUser?.uid)
     .setEventsImplementation(events)
     .build()
-</code></pre>
+```
 
 Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
 
@@ -119,9 +119,11 @@ Para abrir un chat individual, utilizaremos el método <code>justChat.openChatLi
 ### Chat individual ###
 Si por el contrario quieres abrir un chat individual, tendrás que utilizar el método <code>justChat.openChat(chatId)</code>.<br>
 Este método debe lanzarse dentro de una corutina y puede lanzar una excepción tipo <code>ChatNotFound</code> ya que puede ocurrir que ese chat no exista.
-<pre><code>lifecycleScope.launch(Dispatchers.IO) {
+```kotlin
+lifecycleScope.launch(Dispatchers.IO) {
     justChat.openChat("RUEUW483832NDNDA")
-}</code></pre>
+}
+```
 
 <b>Nota: La función de grupos aún está en fase beta.</b>
 
@@ -130,16 +132,16 @@ Los siguientes métodos requieren de una implementación, en caso contrario la l
 
 ### Obtener una lista de chats ###
 JustChat automáticamente crea un flujo el cual permite estar a la escucha de nuevos chats <code>initFlowGetChats(userId)</code>, este flujo se utiliza por defecto de la lista de chats, y puedes implementarlo muy fácilmente como en el siguiente ejemplo:
-<pre><code>
+```kotlin
 override fun initFlowGetChats(userId: String): Flow<MutableList<Chat>> {
     return eventsUseCase.getChats(context.isNetworkAvailable, userId)
 }
-</code></pre>
+```
 
 ### Obtener los mensajes de un chat ###
 Para poder chatear con un usuario primero se tienen que cargar los mensajes del propio chat, y para ello JustChat necesitará la implementación del método 
 <code>fun getChatMessages(userId, chatId, page)</code>. Se puede implementar muy fácilmente como en el siguiente ejemplo:
-<pre><code>
+```kotlin
 override fun getChatMessages(
     userId: String,
     chatId: String,
@@ -147,28 +149,28 @@ override fun getChatMessages(
 ): Flow<MutableList<ChatMessageItem>> {
     return eventsUseCase.getChatMessages(context.isNetworkAvailable, userId, chatId, page)
 }
-</code></pre>
+```
 
 ### Obtener información de un usuario ###
 Para obtener información de un usuario, sea para mostrar sus datos o para enviar una notificación, se necesitará la implementación del método 
 <code>getCurrentUser(userId)</code>, un ejemplo de implementación sería el siguiente:
-<pre><code>
+```kotlin
 override fun getCurrentUser(userId: String): Flow<UserData> {
     return eventsUseCase.getCurrentUser(context.isNetworkAvailable, userId)
 }
-</code></pre>
+```
 
 ### Envío de un mensaje ###
 Como toda app o librería de chat, se va a necesitar de un método para enviar los mensajes, para ello se utilizará el método 
 <code>sendMessage(chatInfo, message)</code> la cual se puede implementar de la siguiente forma:
-<pre><code>
+```kotlin
 override fun sendMessage(
     chatInfo: ChatInfo,
     message: ChatMessageItem
 ): Flow<ResultInfo> {
     return eventsUseCase.sendMessage(context.isNetworkAvailable, chatInfo, message)
 }
-</code></pre>
+```
 
 ### Flujo para recibir mensajes en tiempo real ###
 Para que el chat tenga un correcto funcionamiento, tiene que haber un flujo de datos contínuo que se encargue de estar a la escucha de si hay nuevos mensajes <code>initFlowReceiveMessage(userId, chatId)</code>. JustChat necesita esta implementación para que desde la pantalla de chat se obtengan los nuevos mensajes:
