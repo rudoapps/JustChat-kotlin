@@ -8,15 +8,15 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 * [Requisitos](#requisitos)
 * [Implementación](#implementación)
 * [Inicialización](#inicialización)
-* [Abrir lista de chats o chat individual](#abrir-lista-de-chats-o-chat-individual)
-  * [Lista de chats](#lista-de-chats)
-  * [Chat individual](#chat-individual)
 * [Implementaciones necesarias para el correcto funcionamiento de JustChat](#implementaciones-necesarias-para-el-correcto-funcionamiento-de-justchat)
   * [Obtener una lista de chats](#obtener-una-lista-de-chats)
   * [Obtener los mensajes de un chat](#obtener-los-mensajes-de-un-chat)
   * [Obtener información de un usuario](#obtener-información-de-un-usuario)
   * [Envío de un mensaje](#envío-de-un-mensaje)
   * [Flujo para recibir mensajes en tiempo real](#flujo-para-recibir-mensajes-en-tiempo-real)
+* [Abrir lista de chats o chat individual](#abrir-lista-de-chats-o-chat-individual)
+  * [Lista de chats](#lista-de-chats)
+  * [Chat individual](#chat-individual)
 * [Notificaciones (beta)](#notificaciones-beta)
   * [Servicio de notificaciones](#servicio-de-notificaciones)
   * [Abrir chat desde una notificación](#abrir-chat-desde-una-notificación)
@@ -110,23 +110,6 @@ class EventsImpl @Inject constructor(
 }
 ```
 
-## Abrir lista de chats o chat individual ##
-JustChat te permite abrir tanto una lista de chats del propio usuario, como un chat individual.
-
-### Lista de chats ###
-Para abrir un chat individual, utilizaremos el método <code>justChat.openChatLists()</code> de la librería.
-
-### Chat individual ###
-Si por el contrario quieres abrir un chat individual, tendrás que utilizar el método <code>justChat.openChat(chatId)</code>.<br>
-Este método debe lanzarse dentro de una corutina y puede lanzar una excepción tipo <code>ChatNotFound</code> ya que puede ocurrir que ese chat no exista.
-```kotlin
-lifecycleScope.launch(Dispatchers.IO) {
-    justChat.openChat("RUEUW483832NDNDA")
-}
-```
-
-<b>Nota: La función de grupos aún está en fase beta.</b>
-
 ## Implementaciones necesarias para el correcto funcionamiento de JustChat ##
 Los siguientes métodos requieren de una implementación, en caso contrario la librería no funcionará.
 
@@ -182,6 +165,23 @@ override fun initFlowReceiveMessage(
     return eventsUseCase.initFlowReceiveMessage(context.isNetworkAvailable, userId, chatId)
 }
 ```
+
+## Abrir lista de chats o chat individual ##
+JustChat te permite abrir tanto una lista de chats del propio usuario, como un chat individual.
+
+### Lista de chats ###
+Para abrir un chat individual, utilizaremos el método <code>justChat.openChatLists()</code> de la librería.
+
+### Chat individual ###
+Si por el contrario quieres abrir un chat individual, tendrás que utilizar el método <code>justChat.openChat(chatId)</code>.<br>
+Este método debe lanzarse dentro de una corutina y puede lanzar una excepción tipo <code>ChatNotFound</code> ya que puede ocurrir que ese chat no exista.
+```kotlin
+lifecycleScope.launch(Dispatchers.IO) {
+    justChat.openChat("RUEUW483832NDNDA")
+}
+```
+
+<b>Nota: La función de grupos aún está en fase beta.</b>
 
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
