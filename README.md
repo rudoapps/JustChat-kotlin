@@ -153,7 +153,7 @@ override fun getCurrentUser(userId: String): Flow<UserData> {
 
 ### Envío de un mensaje ###
 Como toda app o librería de chat, se va a necesitar de un método para enviar los mensajes, para ello se utilizará el método 
-<code>sendMessage(chatInfo, message): Flow<ResultInfo></code> la cual se puede implementar de la siguiente forma:
+<code>sendMessage(chatInfo, message): Flow<ResultInfo> </code> la cual se puede implementar de la siguiente forma:
 <pre><code>
 override fun sendMessage(
     chatInfo: ChatInfo,
