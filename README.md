@@ -174,32 +174,32 @@ override fun sendMessage(
 
 ### Flujo para recibir mensajes en tiempo real ###
 Para que el chat tenga un correcto funcionamiento, tiene que haber un flujo de datos contínuo que se encargue de estar a la escucha de si hay nuevos mensajes <code>initFlowReceiveMessage(userId, chatId)</code>. JustChat necesita esta implementación para que desde la pantalla de chat se obtengan los nuevos mensajes:
-<pre><code>
+```kotlin
 override fun initFlowReceiveMessage(
     userId: String,
     chatId: String
 ): Flow<ChatMessageItem> {
     return eventsUseCase.initFlowReceiveMessage(context.isNetworkAvailable, userId, chatId)
 }
-</code></pre>
+```
 
 ## Notificaciones (beta) ##
 La siguiente funcionalidad se puede implementar por completo desde back o desde la app, para implementarlo desde la app sigue los siguientes pasos.
 <br><b>Nota</b>: Se ha utilizado Firebase como método estándar para enviar y recibir notificaciones.<br><br>
 Si queremos mostrar las notificaciones se tendrá que utilizar las mismas preferencias que la librería:
 
-<pre><code>
+```kotlin
 @Singleton
 @Provides
 fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences? {
     return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
 }
-</code></pre>
+```
 
 Donde <code>PREFERENCES</code> viene de la propia librería.<br><br>
 Y en la implementación de la intefaz mencionada con anterioridad <code>Events</code>, se implementará la notificación de la siguiente forma:
 
-<pre><code>
+```kotlin
 override suspend fun sendNotification(
     userId: String,
     chat: Chat?,
@@ -222,13 +222,13 @@ override suspend fun sendNotification(
         notificationsUseCase.sendNotification(notification)
     }
 }
-</code></pre>
+```
 La forma anterior se usará si se quiere hacer una llamada a Firebase para enviar la notificación a 'x' dispositivo. En caso de ir por back, no haría falta tal implementación.
 
 ### Servicio de notificaciones ###
 Para el servicio de notificaciones se puede implementar de la siguiente forma y teniendo en cuenta de usar siempre las preferencias de la librería:
 
-<pre><code>
+```kotlin
 class NotificationService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {}
@@ -281,12 +281,12 @@ class NotificationService : FirebaseMessagingService() {
 
     override fun onMessageSent(msgId: String) {}
 }
-</code></pre>
+```
 
 ### Abrir chat desde una notificación ###
 #open-chat-from-notification
 Para abrir un chat desde una notificación, tendremos que obtener los datos del propio chat desde la notificación, y crear un objeto <code>Chat</code> proporcionado por la librería:
-<pre><code>
+```kotlin
 val chatId = message.data["chat_id"]
 val chatMessage = message.data["chat_message"]
 val chatDestinationUserName = message.data["chat_destination_user_name"]
@@ -301,11 +301,11 @@ val chat = Chat().apply {
     otherUserImage = chatDestinationUserImage
     userDeviceToken = chatDestinationUserDeviceToken
 }
-</code></pre>
+```
 
 Posteriormente utilizando la constante <code>CHAT</code> proporcionada por la librería, abriremos la pantalla de <code>ChatActivity</code> porporcionada también por la librería, pasándole el chat creado en el paso anterior:
-<pre><code>
+```kotlin
 Intent(applicationContext, ChatActivity::class.java).apply {
     putExtra(Constants.CHAT, chat)
 }
-</code></pre>
+```
