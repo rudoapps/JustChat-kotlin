@@ -8,7 +8,7 @@ Contiene tanto las funcionalidades para abrir un chat como una lista de chats.
 * [Requisitos](#requisitos)
 * [Implementación](#implementación)
 * [Inicialización](#inicialización)
-* [Implementaciones necesarias para el correcto funcionamiento de JustChat](#implementaciones-necesarias-para-el-correcto-funcionamiento-de-justchat)
+* [Interfaces necesarias para el correcto funcionamiento de JustChat](#interfaces-necesarias-para-el-correcto-funcionamiento-de-justchat)
   * [Obtener una lista de chats](#obtener-una-lista-de-chats)
   * [Obtener los mensajes de un chat](#obtener-los-mensajes-de-un-chat)
   * [Obtener información de un usuario](#obtener-información-de-un-usuario)
@@ -110,7 +110,7 @@ class EventsImpl @Inject constructor(
 }
 ```
 
-## Implementaciones necesarias para el correcto funcionamiento de JustChat ##
+## Interfaces necesarias para el correcto funcionamiento de JustChat ##
 Los siguientes métodos requieren de una implementación, en caso contrario la librería no funcionará.
 
 ### Obtener una lista de chats ###
