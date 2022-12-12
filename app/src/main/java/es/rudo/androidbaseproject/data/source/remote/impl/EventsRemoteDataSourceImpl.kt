@@ -188,15 +188,13 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             id = chat.key
                             name = chat.child("name").value as? String
                             otherUserId = chat.child("otherUserId").value as? String
-                            otherUserImage =
-                                chat.child("otherUserImage").value as? String
+                            otherUserImage = chat.child("otherUserImage").value as? String
                             val lastMessageReference = chat.child("lastMessage")
                             val lastMessageItem = ChatMessageItem()
-                            lastMessageItem.id = lastMessageReference.child("id").value as? String
+                            lastMessageItem.timestamp =
+                                lastMessageReference.child("serverTimestamp").value as? Long
                             lastMessageItem.text =
                                 lastMessageReference.child("text").value as? String
-                            lastMessageItem.timestamp =
-                                lastMessageReference.child("timestamp").value as? Long
                             lastMessageItem.userId =
                                 lastMessageReference.child("userId").value as? String
                             lastMessage = lastMessageItem
@@ -443,9 +441,9 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                         .child(messageId).setValue(backMessage)
                         .addOnCompleteListener {
                             // Update last message of both users
-                            currentUserChat.updateChildren(mapOf("lastMessage" to message))
+                            currentUserChat.updateChildren(mapOf("lastMessage" to backMessage))
                                 .addOnCompleteListener {
-                                    otherUserChat.updateChildren(mapOf("lastMessage" to message))
+                                    otherUserChat.updateChildren(mapOf("lastMessage" to backMessage))
                                         .addOnCompleteListener {
                                             trySend(getResult(true)).isSuccess
                                         }
