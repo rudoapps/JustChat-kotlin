@@ -188,8 +188,7 @@ class EventsRemoteDataSourceImpl @Inject constructor(
                             id = chat.key
                             name = chat.child("name").value as? String
                             otherUserId = chat.child("otherUserId").value as? String
-                            otherUserImage =
-                                chat.child("otherUserImage").value as? String
+                            otherUserImage = chat.child("otherUserImage").value as? String
                             val lastMessageReference = chat.child("lastMessage")
                             val lastMessageItem = ChatMessageItem()
                             lastMessageItem.timestamp =
