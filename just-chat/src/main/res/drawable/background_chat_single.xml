@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:gravity="center"
+        android:right="10dp">
+
+        <shape
+            android:width="80dp"
+            android:height="80dp"
+            android:shape="rectangle">
+
+            <corners
+                android:bottomLeftRadius="@dimen/chat_bubble_corner_wide"
+                android:topLeftRadius="@dimen/chat_bubble_corner_wide"
+                android:topRightRadius="@dimen/chat_bubble_corner_wide" />
+
+            <solid android:color="@color/out_message" />
+        </shape>
+    </item>
+
+    <item
+        android:drawable="@drawable/ic_chat_bubble_leg"
+        android:gravity="bottom|end"
+        android:left="10dp" />
+</layer-list>

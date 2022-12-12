@@ -1,0 +1,60 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.FirebaseChat" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/appbar</item>
+        <item name="colorPrimaryVariant">@color/send_button</item>
+        <item name="colorOnPrimary">@color/black</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/appbar</item>
+        <item name="colorSecondaryVariant">@color/send_button</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <!-- TEXT STYLES -->
+    <style name="text_large_bold">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="text_body_regular">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="text_body_small">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="input_layout_round_borders" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxBackgroundColor">@color/chat_box</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColorHint">@android:color/white</item>
+    </style>
+
+    <!--    <color name="mtrl_textinput_default_box_stroke_color" tools:ignore="PrivateResource">-->
+    <!--        @color/colorText-->
+    <!--    </color>-->
+
+    <style name="Chat" parent="Theme.FirebaseChat">
+        <item name="colorPrimary">@color/appbar</item>
+        <item name="colorPrimaryVariant">@color/send_button</item>
+        <item name="colorOnPrimary">@color/white</item>
+    </style>
+
+    <style name="circle_image_view">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>

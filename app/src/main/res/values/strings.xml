@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">JustChatLibrary</string>
+    <string name="simple_dialog_title">Título</string>
+    <string name="simple_dialog_text">Texto</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_gray">#D3D3D3</color>
+
+    <!-- Custom -->
+    <color name="in_message">#B2F5A9</color>
+    <color name="out_message">#CFB6EF</color>
+    <color name="appbar">#FF03DAC5</color>
+    <color name="send_button">#FF018786</color>
+    <color name="chat_box">#D3D3D3</color>
+    <color name="text">#111111</color>
+</resources>
