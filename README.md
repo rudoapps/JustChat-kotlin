@@ -48,13 +48,25 @@ Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de
 JustChat.Builder()
     .provideContext(this)
     .setUserId(firebaseAuth.currentUser?.uid)
+    .setChatStyle(ChatStyle()) // Optional
     .setEventsImplementation(events)
     .build()
 ```
 
-Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
+Mediante <code>setUserId()</code> proporcionaremos el id del usuario actual.
 
-En <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
+<code>setChatStyle()</code> es opcional, así como todos sus parámetros. Si no se proporciona ningún estilo personalizado se usarán los valores por defecto que proporciona la librería. Un ejemplo de cómo crear un estilo personalizado sería:
+```kotlin
+ChatStyle(
+    showMessageTime = true,
+    outgoingMessageColor = getColor(R.color.yotsuba_green),
+    incomingMessageColor = getColor(R.color.miku_blue)
+)
+```
+
+Donde con <code>showMessageTime</code> indicamos si queremos mostrar la hora en los mensajes, y <code>outgoingMessageColor</code> e <code>incomingMessageColor</code> modifican el color de sus respectivas burbujas de chat. Además, podemos indicar la separación en dp con el límite opuesto de la pantalla para cada burbuja de chat con <code>outgoingMessagePadding</code> e <code>incomingMessagePadding</code>.
+
+Por último, en <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
 ```kotlin
 class EventsImpl @Inject constructor(
     private val context: Context,
