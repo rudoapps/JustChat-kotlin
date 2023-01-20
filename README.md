@@ -64,7 +64,9 @@ ChatStyle(
 )
 ```
 
-En <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
+Donde con <code>showMessageTime</code> indicamos si queremos mostrar la hora en los mensajes, y <code>outgoingMessageColor</code> e <code>incomingMessageColor</code> modifican el color de sus respectivas burbujas de chat. Además, podemos indicar la separación en dp con el límite opuesto de la pantalla para cada burbuja de chat con <code>outgoingMessagePadding</code> e <code>incomingMessagePadding</code>.
+
+Por último, en <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
 ```kotlin
 class EventsImpl @Inject constructor(
     private val context: Context,
