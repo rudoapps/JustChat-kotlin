@@ -48,11 +48,21 @@ Para inicializar la librería JustChat, utilizaremos la clase <b>JustChat</b> de
 JustChat.Builder()
     .provideContext(this)
     .setUserId(firebaseAuth.currentUser?.uid)
+    .setChatStyle(ChatStyle()) // Optional
     .setEventsImplementation(events)
     .build()
 ```
 
-Donde <code>setUserId()</code> le pasaremos el id del usuario actual.
+Mediante <code>setUserId()</code> proporcionaremos el id del usuario actual.
+
+<code>setChatStyle()</code> es opcional, así como todos sus parámetros. Si no se proporciona ningún estilo personalizado se usarán los valores por defecto que proporciona la librería. Un ejemplo de cómo crear un estilo personalizado sería:
+```kotlin
+ChatStyle(
+    showMessageTime = true,
+    outgoingMessageColor = getColor(R.color.yotsuba_green),
+    incomingMessageColor = getColor(R.color.miku_blue)
+)
+```
 
 En <code>justChat.setEventsImplementation()</code> le pasaremos la implementación con las llamadas que pide la librería y que son necesarios para funcionar.<br><br><b>IMPORTANTE</b>: Esta implementación tiene que extender de la interfaz <code>Events</code> de la librería:
 ```kotlin
