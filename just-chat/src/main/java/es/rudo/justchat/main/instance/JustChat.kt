@@ -6,26 +6,35 @@ import es.rudo.justchat.helpers.Constants
 import es.rudo.justchat.helpers.preferences.AppPreferences
 import es.rudo.justchat.interfaces.Events
 import es.rudo.justchat.models.Chat
+import es.rudo.justchat.models.ChatStyle
 import es.rudo.justchat.models.error.ChatNotFound
 import es.rudo.justchat.ui.chat.ChatActivity
 import es.rudo.justchat.ui.chat_list.ChatListActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class JustChat(val context: Context?, val userId: String?, events: Events?) {
+class JustChat(val context: Context?, val userId: String?, val style: ChatStyle?, events: Events?) {
 
-    private constructor(builder: Builder) : this(builder.context, builder.userId, builder.events)
+    private constructor(builder: Builder) : this(
+        builder.context,
+        builder.userId,
+        builder.style,
+        builder.events
+    )
 
     class Builder {
         var context: Context? = null
             private set
         var userId: String? = null
             private set
+        var style: ChatStyle? = null
+            private set
         var events: Events? = null
             private set
 
         fun provideContext(context: Context) = apply { this.context = context }
         fun setUserId(userId: String?) = apply { this.userId = userId }
+        fun setChatStyle(style: ChatStyle?) = apply { this.style = style }
         fun setEventsImplementation(events: Events) = apply { this.events = events }
 
         fun build() = JustChat(this)
@@ -33,6 +42,7 @@ class JustChat(val context: Context?, val userId: String?, events: Events?) {
 
     init {
         JustChat.userId = userId
+        JustChat.style = style
         JustChat.events = events
         appPreferences = AppPreferences(
             context?.getSharedPreferences(Constants.PREFERENCES, Context.MODE_PRIVATE)
@@ -69,6 +79,7 @@ class JustChat(val context: Context?, val userId: String?, events: Events?) {
 
     companion object {
         var userId: String? = null
+        var style: ChatStyle? = null
         var events: Events? = null
         var appPreferences: AppPreferences? = null
     }

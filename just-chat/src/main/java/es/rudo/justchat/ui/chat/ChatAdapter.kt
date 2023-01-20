@@ -18,6 +18,7 @@ import es.rudo.justchat.helpers.Constants.DATE
 import es.rudo.justchat.helpers.Constants.MESSAGE
 import es.rudo.justchat.helpers.extensions.dpToPx
 import es.rudo.justchat.helpers.extensions.getTime
+import es.rudo.justchat.main.instance.JustChat
 import es.rudo.justchat.models.ChatBaseItem
 import es.rudo.justchat.models.ChatDateItem
 import es.rudo.justchat.models.ChatMessageItem
@@ -72,11 +73,11 @@ class ChatAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         private val textAppearance: TextAppearance? = null
-        private val outMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.out_message)
-        private val inMsgColor: Int = ContextCompat.getColor(binding.root.context, R.color.in_message)
-        private val outMsgPaddingDp: Int = 40
-        private val inMsgPaddingDp: Int = 40
-        private val showMsgTime: Boolean = true
+        private val outMsgColor: Int = JustChat.style?.outgoingMessageColor ?: ContextCompat.getColor(binding.root.context, R.color.out_message)
+        private val inMsgColor: Int = JustChat.style?.incomingMessageColor ?: ContextCompat.getColor(binding.root.context, R.color.in_message)
+        private val outMsgPaddingDp: Int = JustChat.style?.outgoingMessagePadding ?: binding.root.context.resources.getInteger(R.integer.outgoing_message_default_padding)
+        private val inMsgPaddingDp: Int = JustChat.style?.incomingMessagePadding ?: binding.root.context.resources.getInteger(R.integer.incoming_message_default_padding)
+        private val showMsgTime: Boolean = JustChat.style?.showMessageTime ?: true
 
         fun bind(
             item: ChatMessageItem,

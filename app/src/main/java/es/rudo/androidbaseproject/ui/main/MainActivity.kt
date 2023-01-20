@@ -23,6 +23,7 @@ import es.rudo.androidbaseproject.ui.base.BaseActivity
 import es.rudo.justchat.helpers.extensions.isNetworkAvailable
 import es.rudo.justchat.interfaces.Events
 import es.rudo.justchat.main.instance.JustChat
+import es.rudo.justchat.models.ChatStyle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -222,6 +223,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
                     justChat = JustChat.Builder()
                         .provideContext(this)
                         .setUserId(firebaseAuth.currentUser?.uid)
+                        .setChatStyle(ChatStyle())
                         .setEventsImplementation(events)
                         .build()
                     MainActivity.firebaseAuth = firebaseAuth
